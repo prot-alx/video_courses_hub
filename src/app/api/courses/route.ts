@@ -60,7 +60,11 @@ export async function GET(request: NextRequest) {
 
     // Создаем Map для быстрого поиска доступа пользователя
     const userAccessMap = new Set(
-      courses.flatMap((course) => course.userAccess.map((access) => course.id))
+      courses.flatMap((course) =>
+        Array.isArray(course.userAccess)
+          ? course.userAccess.map(() => course.id)
+          : []
+      )
     );
 
     // Преобразуем данные для фронтенда

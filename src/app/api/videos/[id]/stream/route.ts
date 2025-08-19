@@ -11,6 +11,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
+    const isAdmin = session?.user?.role === "ADMIN";
     const { id: videoId } = await params;
 
     // Получаем видео с информацией о курсе
@@ -37,10 +38,17 @@ export async function GET(
     }
 
     // Проверяем доступ к видео
-    const hasAccess =
-      video.isFree || // Видео бесплатное
-      video.course.isFree || // Курс бесплатный
-      (session?.user?.id && video.course.userAccess.length > 0); // Есть доступ к курсу
+    let hasAccess = video.isFree || video.course.isFree;
+
+    if (!hasAccess && session?.user?.id) {
+      if (isAdmin) {
+        // Админу доступны все видео
+        hasAccess = true;
+      } else {
+        // Для обычных пользователей проверяем доступ к курсу
+        hasAccess = video.course.userAccess.length > 0;
+      }
+    }
 
     if (!hasAccess) {
       return new NextResponse("Доступ запрещен", { status: 403 });
@@ -63,7 +71,6 @@ export async function GET(
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunksize = end - start + 1;
-
       const stream = createReadStream(videoPath, { start, end });
 
       return new NextResponse(stream as any, {
@@ -79,7 +86,6 @@ export async function GET(
     } else {
       // Обычная отдача файла
       const stream = createReadStream(videoPath);
-
       return new NextResponse(stream as any, {
         headers: {
           "Content-Length": fileSize.toString(),
