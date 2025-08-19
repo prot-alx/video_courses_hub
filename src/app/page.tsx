@@ -1,102 +1,216 @@
-import Image from "next/image";
+// app/page.tsx (обновленная версия)
+"use client";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import Header from "@/components/layout/Header";
+import CourseGrid from "@/components/courses/CourseGrid";
+import CourseFilter from "@/components/courses/CourseFilter";
 
-export default function Home() {
+interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number | null;
+  isFree: boolean;
+  hasAccess: boolean;
+  videosCount: number;
+  freeVideosCount: number;
+  totalDuration: number; // Теперь получаем из API
+  thumbnail: string | null;
+}
+
+export default function HomePage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "free" | "paid">("all");
+
+  const fetchCourses = async (filterType: "all" | "free" | "paid" = "all") => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/courses?type=${filterType}`);
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("Данные курсов:", data.data); // ← Отладочная информация
+        setCourses(data.data);
+        setError(null);
+      } else {
+        setError(data.error || "Ошибка загрузки курсов");
+      }
+    } catch (err) {
+      setError("Ошибка сети при загрузке курсов");
+      console.error("Ошибка загрузки курсов:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses(filter);
+  }, [filter]);
+
+  const handleFilterChange = (newFilter: "all" | "free" | "paid") => {
+    setFilter(newFilter);
+  };
+
+  if (authLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex flex-col flex-1">
+      <Header />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main className="flex-grow max-w-7xl mx-auto px-6 py-8">
+        {/* Hero section */}
+        <div className="text-center mb-12">
+          <h2
+            className="text-3xl font-bold mb-4"
+            style={{ color: "var(--color-text-primary)" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {isAuthenticated
+              ? "Добро пожаловать обратно!"
+              : "Платформа видеокурсов"}
+          </h2>
+          <p
+            className="text-lg mb-8"
+            style={{ color: "var(--color-text-secondary)" }}
           >
-            Read our docs
-          </a>
+            {isAuthenticated
+              ? "Продолжайте изучение или выберите новый курс"
+              : "Изучайте новые навыки с помощью качественных видеокурсов"}
+          </p>
+
+          {/* Course Filter */}
+          <CourseFilter
+            activeFilter={filter}
+            onFilterChange={handleFilterChange}
+          />
         </div>
+
+        {/* Error State */}
+        {error && (
+          <div
+            className="mb-6 p-4 rounded-lg border"
+            style={{
+              background: "var(--color-danger-bg, #fee)",
+              borderColor: "var(--color-danger, #f00)",
+            }}
+          >
+            <div className="flex justify-between items-center">
+              <p style={{ color: "var(--color-danger, #f00)" }}>❌ {error}</p>
+              <button
+                onClick={() => fetchCourses(filter)}
+                className="text-sm underline hover:opacity-80"
+                style={{ color: "var(--color-danger, #f00)" }}
+              >
+                Попробовать снова
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+            <span
+              className="ml-3"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Загрузка курсов...
+            </span>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && courses.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📚</div>
+            <h3
+              className="text-lg font-medium mb-2"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Пока нет курсов
+            </h3>
+            <p style={{ color: "var(--color-text-secondary)" }}>
+              {filter === "all"
+                ? "Курсы появятся здесь, когда администратор их добавит."
+                : `Нет курсов в категории "${
+                    filter === "free" ? "бесплатные" : "платные"
+                  }".`}
+            </p>
+          </div>
+        )}
+
+        {/* Courses Grid */}
+        {!loading && !error && courses.length > 0 && (
+          <CourseGrid
+            courses={courses.map((course) => ({
+              id: course.id,
+              title: course.title,
+              description: course.description || "",
+              price: course.price,
+              isFree: course.isFree,
+              videosCount: course.videosCount,
+              totalDuration: course.totalDuration, // Теперь точная длительность!
+              thumbnail: course.thumbnail,
+            }))}
+            isLoading={loading}
+            isAuthenticated={isAuthenticated}
+            userCourseAccess={courses
+              .filter((c) => c.hasAccess)
+              .map((c) => c.id)}
+            onPurchaseClick={(courseId) => {
+              window.location.href = `/courses/${courseId}`;
+            }}
+          />
+        )}
+
+        {/* CTA for Non-Authenticated Users */}
+        {!isAuthenticated && courses.length > 0 && (
+          <div
+            className="mt-8 p-6 rounded-lg border text-center"
+            style={{
+              background: "var(--color-primary-100)",
+              borderColor: "var(--color-accent)",
+            }}
+          >
+            <h3
+              className="text-lg font-medium mb-2"
+              style={{ color: "var(--color-primary-400)" }}
+            >
+              Хотите получить полный доступ?
+            </h3>
+            <p className="mb-4" style={{ color: "var(--color-primary-400)" }}>
+              Войдите в аккаунт, чтобы запрашивать доступ к платным курсам и
+              отслеживать прогресс
+            </p>
+            <a href="/auth/signin" className="btn-discord btn-discord-primary">
+              Войти через Google
+            </a>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer
+        className="border-t py-8"
+        style={{
+          background: "var(--color-primary-300)",
+          borderColor: "var(--color-primary-400)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p style={{ color: "var(--color-text-secondary)" }}>
+            © 2025 VideoCourses Platform. Сделано с ❤️
+          </p>
+        </div>
       </footer>
     </div>
   );

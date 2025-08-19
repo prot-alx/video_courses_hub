@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum PreferredContact {
+  email
+  phone
+  telegram
+}
+
+enum RequestStatus {
+  new
+  approved
+  rejected
+  cancelled
+}
+
+model User {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  googleId          String           @unique
+  name              String?
+  role              UserRole         @default(USER)
+  phone             String?
+  telegram          String?
+  preferredContact  PreferredContact @default(email)
+  createdAt         DateTime         @default(now())
+  
+  // Relations
+  courseAccess      UserCourseAccess[]
+  courseRequests    CourseRequest[]
+  processedRequests CourseRequest[]    @relation("ProcessedBy")
+  grantedAccess     UserCourseAccess[] @relation("GrantedBy")
+  
+  @@map("users")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  price       Decimal? // null для бесплатных
+  isFree      Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  thumbnail   String?
+  totalDuration Int    @default(0)  // ← ИЗМЕНИТЬ: было String?, стало Int @default(0)
+  createdAt   DateTime @default(now())
+ 
+  // Relations
+  videos        Video[]
+  userAccess    UserCourseAccess[]
+  requests      CourseRequest[]
+ 
+  @@map("courses")
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String   // Остается для совместимости с существующим кодом
+  displayName String?  // Временно nullable для миграции
+  description String?
+  filename    String   // Техническое имя файла на сервере  
+  orderIndex  Int      @default(0)
+  isFree      Boolean  @default(false)
+  duration    Int?     // в секундах
+  poster      String?  // путь к постеру
+  createdAt   DateTime @default(now())
+ 
+  // Relations
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+ 
+  @@map("videos")
+}
+
+model UserCourseAccess {
+  userId      String
+  courseId    String
+  grantedAt   DateTime @default(now())
+  grantedBy   String
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  grantedByUser User   @relation("GrantedBy", fields: [grantedBy], references: [id])
+  
+  @@id([userId, courseId])
+  @@map("user_course_access")
+}
+
+model CourseRequest {
+  id            String        @id @default(cuid())
+  userId        String
+  courseId      String
+  status        RequestStatus @default(new)
+  contactMethod PreferredContact
+  createdAt     DateTime      @default(now())
+  processedAt   DateTime?
+  processedBy   String?
+  
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  processedByUser User?       @relation("ProcessedBy", fields: [processedBy], references: [id])
+  
+  @@unique([userId, courseId, status]) // Один активный запрос на курс
+  @@map("course_requests")
+}
+
+model SimpleLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  
+  @@map("simple_logs")
+}
