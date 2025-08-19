@@ -28,7 +28,8 @@ export default function AdminUsersPage() {
     withActiveRequests: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   const fetchUsers = async () => {
