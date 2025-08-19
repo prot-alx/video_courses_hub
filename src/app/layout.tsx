@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import SessionProvider from "@/components/auth/SessionProvider";
+import AdminContactButton from "@/components/layout/AdminContactButton";
 
 export const metadata: Metadata = {
   title: "VideoCourses Platform",
@@ -22,7 +23,10 @@ export default function RootLayout({
           fontFamily: "var(--font-display)",
         }}
       >
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          {children}
+          <AdminContactButton />
+        </SessionProvider>
       </body>
     </html>
   );

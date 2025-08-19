@@ -1,6 +1,8 @@
+// components/layout/Header.tsx
 "use client";
 import { signIn, signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import Link from "next/link";
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
@@ -60,7 +62,6 @@ export default function Header() {
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              {/* Показываем имя пользователя */}
               <span
                 className="text-sm font-medium"
                 style={{ color: "var(--color-text-primary)" }}
@@ -73,12 +74,19 @@ export default function Header() {
                 )}
               </span>
 
+              {/* КНОПКА НАСТРОЕК */}
+              <Link
+                href="/profile"
+                className="btn-discord btn-discord-secondary"
+              >
+                Настройки
+              </Link>
+
               {isAdmin && (
                 <a href="/admin" className="btn-discord btn-discord-secondary">
                   Админка
                 </a>
               )}
-
               <button
                 onClick={handleSignOut}
                 className="btn-discord btn-discord-secondary"

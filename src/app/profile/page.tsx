@@ -1,35 +1,78 @@
+// app/profile/page.tsx
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import NotificationTip from "@/components/profile/NotificationTip";
+import { signOut } from "next-auth/react";
 import type { ProfileData } from "@/types/profile";
 
 export default function ProfilePage() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
-  // Моковые данные пользователя (потом заменим на API)
-  const initialProfileData: ProfileData = {
-    name: "Иван Иванов",
-    email: "ivan@example.com",
-    phone: "+7 999 123-45-67",
-    telegram: "@ivan_dev",
-    preferredContact: "email",
+  // Загружаем данные профиля при монтировании
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchProfile();
+    } else if (!authLoading && !isAuthenticated) {
+      // Перенаправляем на главную если не авторизован
+      window.location.href = "/";
+    }
+  }, [isAuthenticated, user, authLoading]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch("/api/profile");
+      if (!response.ok) throw new Error("Ошибка загрузки профиля");
+
+      const data = await response.json();
+      setProfileData({
+        name: data.user.name,
+        email: data.user.email,
+        phone: data.user.phone,
+        telegram: data.user.telegram,
+        preferredContact: data.user.preferredContact,
+      });
+    } catch (error) {
+      console.error("Ошибка загрузки профиля:", error);
+      alert("Ошибка загрузки данных профиля");
+    } finally {
+      setIsPageLoading(false);
+    }
   };
 
-  // Обработчики
   const handleSaveProfile = async (data: ProfileData) => {
     setIsLoading(true);
-    console.log("Saving profile:", data);
-
-    // Здесь будет API вызов для обновления профиля
     try {
-      // Симуляция сохранения
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: data.phone,
+          telegram: data.telegram,
+          preferredContact: data.preferredContact,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Ошибка сохранения");
+
+      const updatedData = await response.json();
+      setProfileData({
+        name: updatedData.user.name,
+        email: updatedData.user.email,
+        phone: updatedData.user.phone,
+        telegram: updatedData.user.telegram,
+        preferredContact: updatedData.user.preferredContact,
+      });
+
       alert("Профиль успешно обновлен!");
     } catch (error) {
+      console.error("Ошибка сохранения:", error);
       alert("Ошибка при сохранении профиля");
     } finally {
       setIsLoading(false);
@@ -38,18 +81,31 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     setIsLoading(true);
-    console.log("Sign out clicked");
-
-    // Здесь будет NextAuth signOut
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // router.push('/');
+      await signOut({ callbackUrl: "/" });
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error("Ошибка выхода:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Показываем загрузку
+  if (authLoading || isPageLoading || !profileData) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "var(--color-primary-200)" }}
+      >
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p style={{ color: "var(--color-text-primary)" }}>
+            Загрузка профиля...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -57,19 +113,16 @@ export default function ProfilePage() {
       style={{ background: "var(--color-primary-200)" }}
     >
       <ProfileHeader />
-
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ProfileForm
-            initialData={initialProfileData}
+            initialData={profileData}
             isLoading={isLoading}
             onSave={handleSaveProfile}
           />
-
           <ProfileSidebar onSignOut={handleSignOut} isLoading={isLoading} />
         </div>
 
-        {/* Подсказка */}
         <div className="mt-6">
           <NotificationTip
             title="Совет"

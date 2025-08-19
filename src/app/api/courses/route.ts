@@ -7,6 +7,7 @@ import { GetCoursesSchema } from "@/lib/validations";
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+    const isAdmin = session?.user?.role === "ADMIN";
     const { searchParams } = new URL(request.url);
 
     // Валидация параметров
@@ -57,10 +58,16 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Создаем Map для быстрого поиска доступа пользователя
+    const userAccessMap = new Set(
+      courses.flatMap((course) => course.userAccess.map((access) => course.id))
+    );
+
     // Преобразуем данные для фронтенда
     const coursesWithAccess = courses.map((course) => {
+      // Для админа - доступ ко всем курсам
       const hasAccess =
-        course.isFree || (session?.user?.id && course.userAccess.length > 0);
+        isAdmin || course.isFree || userAccessMap.has(course.id);
 
       const freeVideosCount = course.videos.filter(
         (video) => video.isFree
@@ -72,7 +79,7 @@ export async function GET(request: NextRequest) {
         description: course.description,
         price: course.price,
         isFree: course.isFree,
-        hasAccess,
+        hasAccess, // Админу всегда true
         videosCount: course._count.videos,
         freeVideosCount,
         totalDuration: course.totalDuration, // ← Возвращаем точное время

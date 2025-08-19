@@ -38,6 +38,11 @@ interface RequestStatus {
   status: string;
   canRequest?: boolean;
   canCancel?: boolean;
+  requestId?: string;
+  createdAt?: string;
+  processedAt?: string;
+  grantedAt?: string;
+  lastCancelled?: string;
 }
 
 export default function CoursePage({
@@ -84,7 +89,7 @@ export default function CoursePage({
 
     try {
       const response = await getRequestStatus(course.id);
-      if (response.success) {
+      if (response.success && response.data) {
         setRequestStatus(response.data);
       }
     } catch (err) {
@@ -110,7 +115,7 @@ export default function CoursePage({
       if (response.success) {
         await fetchRequestStatus();
         alert(
-          "Заявка отправлена! Администратор рассмотрит её в ближайшее время."
+          "Заявка отправлена! Администратор рассмотрит её в течение 24 часов. Если есть вопросы - напишите в Telegram через кнопку внизу экрана."
         );
       } else {
         alert(response.error || "Ошибка отправки заявки");
@@ -154,6 +159,18 @@ export default function CoursePage({
   const renderActionButton = () => {
     if (!course) return null;
 
+    // Проверяем, является ли пользователь админом
+    const isAdmin = user?.role === "ADMIN";
+
+    // Для админа всегда показываем кнопку доступа
+    if (isAdmin) {
+      return (
+        <button className="btn-discord btn-discord-success">
+          ✓ Админский доступ
+        </button>
+      );
+    }
+
     // Бесплатный курс
     if (course.isFree) {
       return (
@@ -181,7 +198,7 @@ export default function CoursePage({
       );
     }
 
-    // Обработка заявок
+    // Обработка заявок для обычных пользователей
     if (requestStatus) {
       switch (requestStatus.status) {
         case "new":
@@ -217,20 +234,20 @@ export default function CoursePage({
               disabled={requestLoading}
               className="btn-discord btn-discord-primary"
             >
-              Купить курс
+              Отправить заявку
             </button>
           );
       }
     }
 
-    // По умолчанию
+    // По умолчанию для обычных пользователей
     return (
       <button
         onClick={handlePurchaseRequest}
         disabled={requestLoading}
         className="btn-discord btn-discord-primary"
       >
-        Купить курс
+        Отправить заявку
       </button>
     );
   };

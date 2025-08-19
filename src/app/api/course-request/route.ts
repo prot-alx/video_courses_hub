@@ -1,3 +1,4 @@
+// course-request/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
@@ -58,42 +59,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Проверяем, нет ли активной заявки
-    const existingRequest = await prisma.courseRequest.findFirst({
+    // Проверяем существующую заявку
+    const existingRequest = await prisma.courseRequest.findUnique({
       where: {
-        userId,
-        courseId,
-        status: {
-          in: ["new", "approved"],
+        userId_courseId: {
+          userId,
+          courseId,
         },
       },
     });
 
-    if (existingRequest) {
-      if (existingRequest.status === "new") {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "У вас уже есть активная заявка на этот курс",
-          },
-          { status: 400 }
-        );
-      }
-      if (existingRequest.status === "approved") {
-        return NextResponse.json(
-          { success: false, error: "Ваша заявка уже одобрена" },
-          { status: 400 }
-        );
-      }
+    // Если есть активная заявка - блокируем
+    if (existingRequest && existingRequest.status === "new") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "У вас уже есть активная заявка на этот курс",
+        },
+        { status: 400 }
+      );
     }
 
-    // Создаем заявку
-    const courseRequest = await prisma.courseRequest.create({
-      data: {
+    if (existingRequest && existingRequest.status === "approved") {
+      return NextResponse.json(
+        { success: false, error: "Ваша заявка уже одобрена" },
+        { status: 400 }
+      );
+    }
+
+    // Создаем или обновляем заявку
+    const courseRequest = await prisma.courseRequest.upsert({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+      create: {
         userId,
         courseId,
         contactMethod,
         status: "new",
+      },
+      update: {
+        contactMethod,
+        status: "new",
+        createdAt: new Date(),
+        processedAt: null,
+        processedBy: null,
       },
       include: {
         course: {

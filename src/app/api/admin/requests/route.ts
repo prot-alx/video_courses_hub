@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "50");
 
     const whereClause: any = {};
-
     if (
       statusFilter &&
       ["new", "approved", "rejected", "cancelled"].includes(statusFilter)
@@ -39,6 +38,7 @@ export async function GET(request: NextRequest) {
             email: true,
             phone: true,
             telegram: true,
+            preferredContact: true, // ← Добавили это поле
           },
         },
         course: {

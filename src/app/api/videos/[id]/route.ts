@@ -9,6 +9,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
+    const isAdmin = session?.user?.role === "ADMIN";
     const { id: videoId } = await params;
 
     // Получаем видео с информацией о курсе
@@ -23,6 +24,7 @@ export async function GET(
         duration: true,
         isFree: true,
         orderIndex: true,
+        courseId: true,
         course: {
           select: {
             id: true,
@@ -47,10 +49,17 @@ export async function GET(
     }
 
     // Проверяем доступ к видео
-    const hasAccess =
-      video.isFree || // Видео бесплатное
-      video.course.isFree || // Курс бесплатный
-      (session?.user?.id && video.course.userAccess.length > 0); // Есть доступ к курсу
+    let hasAccess = video.isFree || video.course.isFree;
+
+    if (!hasAccess && session?.user?.id) {
+      if (isAdmin) {
+        // Админу доступны все видео
+        hasAccess = true;
+      } else {
+        // Для обычных пользователей проверяем доступ к курсу
+        hasAccess = video.course.userAccess.length > 0;
+      }
+    }
 
     // Формируем ответ
     const videoData = {

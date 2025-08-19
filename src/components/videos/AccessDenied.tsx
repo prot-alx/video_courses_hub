@@ -87,7 +87,7 @@ export default function AccessDenied({
             className="btn-discord btn-discord-primary w-full"
             disabled={isLoading}
           >
-            {isLoading ? "Отправляем заявку..." : "Купить курс"}
+            {isLoading ? "Отправляем заявку..." : "Отправить заявку"}
           </button>
         );
     }

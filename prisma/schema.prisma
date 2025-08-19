@@ -107,13 +107,13 @@ model CourseRequest {
   createdAt     DateTime      @default(now())
   processedAt   DateTime?
   processedBy   String?
-  
+
   // Relations
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   processedByUser User?       @relation("ProcessedBy", fields: [processedBy], references: [id])
-  
-  @@unique([userId, courseId, status]) // Один активный запрос на курс
+
+  @@unique([userId, courseId]) // ← ИЗМЕНЕНО: убрали status из constraint
   @@map("course_requests")
 }
 

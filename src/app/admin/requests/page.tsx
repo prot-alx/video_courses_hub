@@ -13,9 +13,11 @@ interface User {
   email: string;
   phone?: string | null;
   telegram?: string | null;
+  preferredContact: "email" | "phone" | "telegram";
 }
 
 interface Course {
+  id: string; // ← Добавили id
   title: string;
   price: number | null;
 }
@@ -32,8 +34,18 @@ interface ApiRequest {
 
 interface TableRequest {
   id: string;
-  user: { name: string; email: string };
-  course: { title: string; price: number };
+  user: {
+    name: string;
+    email: string;
+    phone?: string | null;
+    telegram?: string | null;
+    preferredContact: "email" | "phone" | "telegram";
+  };
+  course: {
+    id: string; // ← Добавили id
+    title: string;
+    price: number;
+  };
   status: "new" | "approved" | "rejected" | "cancelled";
   contactMethod: "email" | "phone" | "telegram";
   createdAt: string;
@@ -81,15 +93,18 @@ export default function AdminRequestsPage() {
       if (data.success) {
         const requestsData: RequestsData = data.data;
 
-        // Преобразуем данные API в формат для таблицы
         const transformedRequests: TableRequest[] = requestsData.requests.map(
           (apiRequest) => ({
             id: apiRequest.id,
             user: {
               name: apiRequest.user.name || "Без имени",
               email: apiRequest.user.email,
+              phone: apiRequest.user.phone,
+              telegram: apiRequest.user.telegram,
+              preferredContact: apiRequest.user.preferredContact,
             },
             course: {
+              id: apiRequest.course.id, // ← Добавить courseId
               title: apiRequest.course.title,
               price: apiRequest.course.price || 0,
             },

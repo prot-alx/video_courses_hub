@@ -2,8 +2,18 @@ import RequestTableRow from "./RequestTableRow";
 
 interface Request {
   id: string;
-  user: { name: string; email: string };
-  course: { title: string; price: number };
+  user: {
+    name: string;
+    email: string;
+    phone?: string | null;
+    telegram?: string | null;
+    preferredContact: "email" | "phone" | "telegram";
+  };
+  course: { 
+    id: string;           // ← Добавили courseId
+    title: string; 
+    price: number; 
+  };
   status: "new" | "approved" | "rejected" | "cancelled";
   contactMethod: "email" | "phone" | "telegram";
   createdAt: string;

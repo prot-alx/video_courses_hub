@@ -23,7 +23,6 @@ export function useApi() {
         },
         ...options,
       });
-
       const data = await response.json();
       return data;
     } catch (error) {
@@ -40,6 +39,29 @@ export function useApi() {
   return { request, loading };
 }
 
+// Типы для курсовых заявок
+interface RequestStatusData {
+  hasAccess: boolean;
+  status: string;
+  canRequest?: boolean;
+  canCancel?: boolean;
+  requestId?: string;
+  createdAt?: string;
+  processedAt?: string;
+  grantedAt?: string;
+  lastCancelled?: string;
+}
+
+interface CreateRequestData {
+  id: string;
+  status: string;
+  createdAt: string;
+  course: {
+    title: string;
+  };
+  message: string;
+}
+
 // Специализированные хуки
 export function useCourseRequest() {
   const { request, loading } = useApi();
@@ -47,21 +69,30 @@ export function useCourseRequest() {
   const createRequest = async (
     courseId: string,
     contactMethod: "email" | "phone" | "telegram"
-  ) => {
-    return request("/api/course-request", {
+  ): Promise<ApiResponse<CreateRequestData>> => {
+    return request<CreateRequestData>("/api/course-request", {
       method: "POST",
       body: JSON.stringify({ courseId, contactMethod }),
     });
   };
 
-  const cancelRequest = async (courseId: string) => {
-    return request(`/api/course-request?courseId=${courseId}`, {
-      method: "DELETE",
-    });
+  const cancelRequest = async (
+    courseId: string
+  ): Promise<ApiResponse<{ message: string }>> => {
+    return request<{ message: string }>(
+      `/api/course-request?courseId=${courseId}`,
+      {
+        method: "DELETE",
+      }
+    );
   };
 
-  const getRequestStatus = async (courseId: string) => {
-    return request(`/api/course-request/status?courseId=${courseId}`);
+  const getRequestStatus = async (
+    courseId: string
+  ): Promise<ApiResponse<RequestStatusData>> => {
+    return request<RequestStatusData>(
+      `/api/course-request/status?courseId=${courseId}`
+    );
   };
 
   return {

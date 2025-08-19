@@ -42,7 +42,7 @@ export default function ContactField({
           borderColor: "var(--color-primary-400)",
           color: disabled
             ? "var(--color-text-secondary)"
-            : "var(--color-text-primary)",
+            : "var(--color-primary-400)",
         }}
       />
       {helpText && (

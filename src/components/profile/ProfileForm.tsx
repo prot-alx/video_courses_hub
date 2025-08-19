@@ -1,3 +1,4 @@
+// components/profile/ProfileForm.tsx
 "use client";
 
 import { useState } from "react";
@@ -20,6 +21,11 @@ export default function ProfileForm({
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleFieldChange = (field: keyof ProfileData, value: string) => {
+    // Валидация telegram username
+    if (field === "telegram" && value && !value.startsWith("@")) {
+      value = "@" + value.replace(/^@+/, ""); // Убираем лишние @ и добавляем один
+    }
+
     const newData = { ...formData, [field]: value };
     setFormData(newData);
     setHasChanges(JSON.stringify(newData) !== JSON.stringify(initialData));
@@ -132,17 +138,26 @@ export default function ProfileForm({
                 handleFieldChange("preferredContact", e.target.value as any)
               }
               disabled={!isEditing}
-              className="w-full px-3 py-2 rounded border disabled:opacity-50"
+              className="w-full px-3 py-2 rounded border disabled:opacity-50 transition-colors"
               style={{
                 background: isEditing
                   ? "var(--color-primary-100)"
                   : "var(--color-primary-400)",
                 borderColor: "var(--color-primary-400)",
-                color: "var(--color-text-primary)",
+                color: isEditing 
+                  ? "var(--color-primary-400)"
+                  : "var(--color-text-secondary)",
               }}
             >
               {contactOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  style={{
+                    background: "var(--color-primary-300)",
+                    color: "var(--color-text-primary)",
+                  }}
+                >
                   {option.label}
                 </option>
               ))}

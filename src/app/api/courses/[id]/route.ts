@@ -14,6 +14,7 @@ export async function GET(
     // Получение сессии для проверки доступа
     const session = await auth();
     const userId = session?.user?.id;
+    const isAdmin = session?.user?.role === "ADMIN";
 
     const course = await prisma.course.findUnique({
       where: {
@@ -59,8 +60,16 @@ export async function GET(
     }
 
     // Проверяем доступ пользователя к курсу
-    const hasAccess =
-      userId && course.userAccess && course.userAccess.length > 0;
+    let hasAccess = course.isFree;
+    if (userId && !hasAccess) {
+      if (isAdmin) {
+        // Админу доступны все курсы автоматически
+        hasAccess = true;
+      } else {
+        // Для обычных пользователей проверяем в таблице доступа
+        hasAccess = course.userAccess && course.userAccess.length > 0;
+      }
+    }
 
     const freeVideosCount = course.videos.filter((v) => v.isFree).length;
 
@@ -71,7 +80,7 @@ export async function GET(
       price: course.price,
       isFree: course.isFree,
       thumbnail: course.thumbnail,
-      hasAccess: hasAccess || course.isFree,
+      hasAccess,
       videosCount: course._count.videos,
       freeVideosCount,
       videos: course.videos.map((video) => ({
@@ -80,7 +89,7 @@ export async function GET(
         isFree: video.isFree,
         duration: video.duration,
         orderIndex: video.orderIndex,
-        hasAccess: hasAccess || video.isFree || course.isFree,
+        hasAccess: isAdmin || video.isFree || hasAccess, // Админу доступны все видео
       })),
     };
 

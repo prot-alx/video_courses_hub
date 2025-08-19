@@ -3,8 +3,18 @@ import RequestActions from "./RequestActions";
 
 interface Request {
   id: string;
-  user: { name: string; email: string };
-  course: { title: string; price: number };
+  user: {
+    name: string;
+    email: string;
+    phone?: string | null;
+    telegram?: string | null;
+    preferredContact: "email" | "phone" | "telegram";
+  };
+  course: { 
+    id: string;           // ← Добавили courseId
+    title: string; 
+    price: number; 
+  };
   status: "new" | "approved" | "rejected" | "cancelled";
   contactMethod: "email" | "phone" | "telegram";
   createdAt: string;
@@ -16,6 +26,73 @@ interface RequestTableRowProps {
   onApprove: (requestId: string) => void;
   onReject: (requestId: string) => void;
   isLoading?: boolean;
+}
+
+function handleContactClick(contactType: string, contactValue: string) {
+  switch (contactType) {
+    case "email":
+      window.open(`mailto:${contactValue}`, "_blank");
+      break;
+    case "phone":
+      window.open(`tel:${contactValue}`, "_blank");
+      break;
+    case "telegram":
+      // Убираем @ если есть, и добавляем https://t.me/
+      const telegramUsername = contactValue.replace("@", "");
+      window.open(`https://t.me/${telegramUsername}`, "_blank");
+      break;
+  }
+}
+
+function getPreferredContactElement(request: Request) {
+  const { user } = request;
+
+  switch (user.preferredContact) {
+    case "email":
+      return (
+        <button
+          onClick={() => handleContactClick("email", user.email)}
+          className="text-blue-600 hover:text-blue-800 underline transition-colors"
+          title="Написать email"
+        >
+          ✉️ {user.email}
+        </button>
+      );
+    case "phone":
+      return user.phone ? (
+        <button
+          onClick={() => handleContactClick("phone", user.phone!)}
+          className="text-blue-600 hover:text-blue-800 underline transition-colors"
+          title="Позвонить"
+        >
+          📞 {user.phone}
+        </button>
+      ) : (
+        <span style={{ color: "var(--color-text-secondary)" }}>
+          📞 Телефон не указан
+        </span>
+      );
+    case "telegram":
+      return user.telegram ? (
+        <button
+          onClick={() => handleContactClick("telegram", user.telegram!)}
+          className="text-blue-600 hover:text-blue-800 underline transition-colors"
+          title="Написать в Telegram"
+        >
+          💬 {user.telegram}
+        </button>
+      ) : (
+        <span style={{ color: "var(--color-text-secondary)" }}>
+          💬 Telegram не указан
+        </span>
+      );
+    default:
+      return (
+        <span style={{ color: "var(--color-text-secondary)" }}>
+          Неизвестный способ связи
+        </span>
+      );
+  }
 }
 
 export default function RequestTableRow({
@@ -32,19 +109,6 @@ export default function RequestTableRow({
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const getContactMethodLabel = (method: string) => {
-    switch (method) {
-      case "email":
-        return "Email";
-      case "phone":
-        return "Телефон";
-      case "telegram":
-        return "Telegram";
-      default:
-        return method;
-    }
   };
 
   return (
@@ -70,15 +134,18 @@ export default function RequestTableRow({
         </div>
       </td>
 
-      {/* Курс */}
+      {/* Курс - теперь с кликабельной ссылкой */}
       <td className="py-3 px-4">
         <div>
-          <div
-            className="font-medium"
-            style={{ color: "var(--color-text-primary)" }}
+          <a
+            href={`/courses/${request.course.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-blue-600 hover:text-blue-800 underline transition-colors"
+            title="Открыть курс (как пользователь)"
           >
-            {request.course.title}
-          </div>
+            {request.course.title} 🔗
+          </a>
           <div
             className="text-sm"
             style={{ color: "var(--color-text-secondary)" }}
@@ -88,17 +155,19 @@ export default function RequestTableRow({
         </div>
       </td>
 
-      {/* Способ связи */}
+      {/* Контакт - теперь кликабельный */}
       <td className="py-3 px-4">
-        <span
-          className="px-2 py-1 text-xs rounded"
-          style={{
-            background: "var(--color-primary-400)",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          {getContactMethodLabel(request.contactMethod)}
-        </span>
+        <div className="space-y-1">
+          {/* Предпочитаемый способ связи - кликабельный */}
+          <div className="font-medium">
+            {getPreferredContactElement(request)}
+          </div>
+
+          {/* Метка способа связи */}
+          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+            Предпочитает: {request.user.preferredContact}
+          </div>
+        </div>
       </td>
 
       {/* Статус */}

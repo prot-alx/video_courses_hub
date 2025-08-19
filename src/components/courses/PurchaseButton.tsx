@@ -96,7 +96,7 @@ export default function PurchaseButton({
           className="btn-discord btn-discord-primary"
           disabled={isLoading}
         >
-          {isLoading ? "Отправляем заявку..." : "Купить курс"}
+          {isLoading ? "Отправляем заявку..." : "Отправить заявку"}
         </button>
       );
   }

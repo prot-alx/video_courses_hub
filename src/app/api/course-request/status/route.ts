@@ -1,5 +1,5 @@
+// course-request/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
@@ -46,13 +46,13 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Проверяем активную заявку
+    // Проверяем активную заявку (включая cancelled)
     const activeRequest = await prisma.courseRequest.findFirst({
       where: {
         userId,
         courseId,
         status: {
-          in: ["new", "approved", "rejected"],
+          in: ["new", "approved", "rejected", "cancelled"], // ← Добавили cancelled
         },
       },
       orderBy: {
@@ -61,6 +61,19 @@ export async function GET(request: NextRequest) {
     });
 
     if (activeRequest) {
+      // Если заявка отменена, можем создать новую
+      if (activeRequest.status === "cancelled") {
+        return NextResponse.json({
+          success: true,
+          data: {
+            hasAccess: false,
+            status: "no_request", // ← Возвращаем как будто заявки нет
+            canRequest: true,
+            lastCancelled: activeRequest.processedAt,
+          },
+        });
+      }
+
       return NextResponse.json({
         success: true,
         data: {

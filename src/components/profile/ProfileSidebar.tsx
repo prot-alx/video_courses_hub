@@ -1,4 +1,6 @@
+// components/profile/ProfileSidebar.tsx
 import Link from "next/link";
+import UserStats from "./UserStats";
 
 interface ProfileSidebarProps {
   onSignOut: () => void;
@@ -26,20 +28,6 @@ export default function ProfileSidebar({
           Действия
         </h3>
         <div className="space-y-3">
-          <Link
-            href="/"
-            className="btn-discord btn-discord-secondary w-full block text-center"
-          >
-            📚 Мои курсы
-          </Link>
-
-          <Link
-            href="/profile/history"
-            className="btn-discord btn-discord-secondary w-full block text-center"
-          >
-            📋 История заказов
-          </Link>
-
           <button
             onClick={onSignOut}
             disabled={isLoading}
@@ -65,32 +53,7 @@ export default function ProfileSidebar({
         >
           Ваша статистика
         </h3>
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              Курсов куплено:
-            </span>
-            <span style={{ color: "var(--color-text-primary)" }}>2</span>
-          </div>
-          <div className="flex justify-between">
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              Видео просмотрено:
-            </span>
-            <span style={{ color: "var(--color-text-primary)" }}>15</span>
-          </div>
-          <div className="flex justify-between">
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              Время обучения:
-            </span>
-            <span style={{ color: "var(--color-text-primary)" }}>8ч 30м</span>
-          </div>
-          <div className="flex justify-between">
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              На платформе с:
-            </span>
-            <span style={{ color: "var(--color-text-primary)" }}>Янв 2024</span>
-          </div>
-        </div>
+        <UserStats />
       </div>
     </div>
   );
