@@ -9,10 +9,10 @@ interface AdminContactButtonProps {
   position?: "fixed" | "static";
 }
 
-export default function AdminContactButton({ 
-  className = "", 
-  position = "fixed" 
-}: AdminContactButtonProps) {
+export default function AdminContactButton({
+  className = "",
+  position = "fixed",
+}: Readonly<AdminContactButtonProps>) {
   const { isAuthenticated, isAdmin } = useAuth();
   const [adminTelegram, setAdminTelegram] = useState<string | null>(null);
 
@@ -46,9 +46,10 @@ export default function AdminContactButton({
     window.open(`https://t.me/${username}`, "_blank");
   };
 
-  const buttonClasses = position === "fixed" 
-    ? "fixed bottom-6 right-6 z-50 btn-discord btn-discord-primary shadow-lg hover:shadow-xl"
-    : "btn-discord btn-discord-primary";
+  const buttonClasses =
+    position === "fixed"
+      ? "fixed bottom-6 right-6 z-50 btn-discord btn-discord-primary shadow-lg hover:shadow-xl"
+      : "btn-discord btn-discord-primary";
 
   return (
     <button

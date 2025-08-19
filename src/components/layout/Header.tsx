@@ -79,7 +79,7 @@ export default function Header() {
                 href="/profile"
                 className="btn-discord btn-discord-secondary"
               >
-                Настройки
+                Профиль
               </Link>
 
               {isAdmin && (

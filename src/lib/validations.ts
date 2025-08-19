@@ -1,4 +1,4 @@
-// lib/validations.ts
+// lib/validations.ts (обновленная версия - только схемы Zod)
 import { z } from "zod";
 
 // Схемы для курсов
@@ -79,7 +79,7 @@ export const GrantAccessSchema = z.object({
 
 export const RevokeAccessSchema = GrantAccessSchema;
 
-// Схемы для запросов курсов
+// Схемы для запросов курсов (обновлено с централизованным типом)
 export const GetCoursesSchema = z.object({
   type: z.enum(["all", "free", "paid"]).optional().default("all"),
 });
@@ -93,14 +93,3 @@ export const PaginationSchema = z.object({
 export const ReorderVideosSchema = z.object({
   videoIds: z.array(z.string()).min(1, "Список видео не может быть пустым"),
 });
-
-// Типы для использования в компонентах
-export type CreateCourseInput = z.infer<typeof CreateCourseSchema>;
-export type UpdateCourseInput = z.infer<typeof UpdateCourseSchema>;
-export type CreateVideoInput = z.infer<typeof CreateVideoSchema>;
-export type UpdateVideoInput = z.infer<typeof UpdateVideoSchema>;
-export type CourseRequestInput = z.infer<typeof CourseRequestSchema>;
-export type ProcessRequestInput = z.infer<typeof ProcessRequestSchema>;
-export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
-export type GrantAccessInput = z.infer<typeof GrantAccessSchema>;
-export type ReorderVideosInput = z.infer<typeof ReorderVideosSchema>;

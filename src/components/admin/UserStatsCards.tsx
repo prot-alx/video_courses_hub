@@ -1,4 +1,4 @@
-import { UserStats } from "@/types/admin";
+import { UserStats } from "@/types";
 import StatCard from "./StatCard";
 
 interface UserStatsCardsProps {

@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 // GET /api/admin/users - получить всех пользователей
 export async function GET() {
   try {
-    const session = await auth()
-    
+    const session = await auth();
+
     // Проверка админских прав
-    if (!session?.user?.id || session.user.role !== 'ADMIN') {
+    if (!session?.user?.id || session.user.role !== "ADMIN") {
       return NextResponse.json(
-        { success: false, error: 'Доступ запрещен' },
+        { success: false, error: "Доступ запрещен" },
         { status: 403 }
-      )
+      );
     }
 
     const users = await prisma.user.findMany({
@@ -30,19 +30,19 @@ export async function GET() {
             courseAccess: true,
             courseRequests: {
               where: {
-                status: 'new'
-              }
-            }
-          }
-        }
+                status: "new",
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: "desc",
+      },
+    });
 
     // Преобразуем данные для фронтенда
-    const usersWithStats = users.map(user => ({
+    const usersWithStats = users.map((user) => ({
       id: user.id,
       name: user.name,
       email: user.email,
@@ -52,19 +52,18 @@ export async function GET() {
       preferredContact: user.preferredContact,
       createdAt: user.createdAt.toISOString(),
       coursesAccess: user._count.courseAccess,
-      activeRequests: user._count.courseRequests
-    }))
+      activeRequests: user._count.courseRequests,
+    }));
 
     return NextResponse.json({
       success: true,
-      data: usersWithStats
-    })
-
+      data: usersWithStats,
+    });
   } catch (error) {
-    console.error('Ошибка получения пользователей:', error)
+    console.error("Ошибка получения пользователей:", error);
     return NextResponse.json(
-      { success: false, error: 'Внутренняя ошибка сервера' },
+      { success: false, error: "Внутренняя ошибка сервера" },
       { status: 500 }
-    )
+    );
   }
 }

@@ -1,19 +1,17 @@
+// components/admin/CourseTable.tsx (обновленная версия с централизованными типами)
 import Link from "next/link";
 import CourseTableRow from "./CourseTableRow";
+import type { Course } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  price: number | null;
-  isFree: boolean;
+// Расширяем базовый Course для админских полей
+interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;
   createdAt: string;
 }
 
 interface CourseTableProps {
-  courses: Course[];
+  courses: AdminCourse[];
   onDelete: (courseId: string) => void;
   isLoading?: boolean;
 }
@@ -75,7 +73,6 @@ export default function CourseTable({
           + Создать курс
         </Link>
       </div>
-
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

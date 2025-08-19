@@ -1,39 +1,32 @@
-// app/page.tsx (обновленная версия)
+// app/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import CourseGrid from "@/components/courses/CourseGrid";
 import CourseFilter from "@/components/courses/CourseFilter";
+import type { Course, ApiResponse, CourseFilterType } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number | null;
-  isFree: boolean;
-  hasAccess: boolean;
-  videosCount: number;
-  freeVideosCount: number;
-  totalDuration: number; // Теперь получаем из API
-  thumbnail: string | null;
+// Расширяем базовый Course для главной страницы
+interface HomePageCourse extends Course {
+  totalDuration: number;
 }
 
 export default function HomePage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<HomePageCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "free" | "paid">("all");
+  const [filter, setFilter] = useState<CourseFilterType>("all");
 
-  const fetchCourses = async (filterType: "all" | "free" | "paid" = "all") => {
+  const fetchCourses = async (filterType: CourseFilterType = "all") => {
     try {
       setLoading(true);
       const response = await fetch(`/api/courses?type=${filterType}`);
-      const data = await response.json();
+      const data: ApiResponse<HomePageCourse[]> = await response.json();
 
-      if (data.success) {
-        console.log("Данные курсов:", data.data); // ← Отладочная информация
+      if (data.success && data.data) {
+        console.log("Данные курсов:", data.data);
         setCourses(data.data);
         setError(null);
       } else {
@@ -51,7 +44,7 @@ export default function HomePage() {
     fetchCourses(filter);
   }, [filter]);
 
-  const handleFilterChange = (newFilter: "all" | "free" | "paid") => {
+  const handleFilterChange = (newFilter: CourseFilterType) => {
     setFilter(newFilter);
   };
 
@@ -152,16 +145,7 @@ export default function HomePage() {
         {/* Courses Grid */}
         {!loading && !error && courses.length > 0 && (
           <CourseGrid
-            courses={courses.map((course) => ({
-              id: course.id,
-              title: course.title,
-              description: course.description || "",
-              price: course.price,
-              isFree: course.isFree,
-              videosCount: course.videosCount,
-              totalDuration: course.totalDuration, // Теперь точная длительность!
-              thumbnail: course.thumbnail,
-            }))}
+            courses={courses}
             isLoading={loading}
             isAuthenticated={isAuthenticated}
             userCourseAccess={courses
@@ -208,7 +192,7 @@ export default function HomePage() {
       >
         <div className="max-w-7xl mx-auto px-6 text-center">
           <p style={{ color: "var(--color-text-secondary)" }}>
-            © 2025 VideoCourses Platform. Сделано с ❤️
+            © 2025 VideoCourses Platform. Сделано на заказ.
           </p>
         </div>
       </footer>

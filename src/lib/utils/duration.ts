@@ -1,4 +1,5 @@
-// lib/utils/duration.ts
+// lib/utils/duration.ts (финальная унифицированная версия)
+
 /**
  * Форматирует длительность в секундах в читаемый вид
  * @param seconds - длительность в секундах
@@ -27,13 +28,11 @@ export function formatDuration(
       }
 
     case "short":
-      // Короткий формат: 1ч 23м или 23м или 45с
+      // Короткий формат для UI: 1ч 23м или 23м (без секунд для чистоты)
       if (hours > 0) {
         return minutes > 0 ? `${hours}ч ${minutes}м` : `${hours}ч`;
       } else if (minutes > 0) {
-        return remainingSeconds > 0
-          ? `${minutes}м ${remainingSeconds}с`
-          : `${minutes}м`;
+        return `${minutes}м`;
       } else {
         return `${remainingSeconds}с`;
       }
@@ -87,6 +86,8 @@ export function parseDuration(timeString: string): number | null {
   if (!timeString || timeString.trim() === "") return null;
 
   const parts = timeString.split(":").map((part) => parseInt(part, 10));
+
+  if (parts.some((part) => isNaN(part))) return null;
 
   if (parts.length === 2) {
     // MM:SS формат

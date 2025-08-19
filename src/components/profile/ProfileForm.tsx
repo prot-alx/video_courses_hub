@@ -1,9 +1,8 @@
-// components/profile/ProfileForm.tsx
+// components/profile/ProfileForm.tsx (обновленная версия с типизацией)
 "use client";
-
 import { useState } from "react";
 import ContactField from "./ContactField";
-import type { ProfileData } from "@/types/profile";
+import type { ProfileData, PreferredContact } from "@/types";
 
 interface ProfileFormProps {
   initialData: ProfileData;
@@ -31,6 +30,15 @@ export default function ProfileForm({
     setHasChanges(JSON.stringify(newData) !== JSON.stringify(initialData));
   };
 
+  const handlePreferredContactChange = (value: string) => {
+    // Проверяем, что значение соответствует нашему типу
+    const validContacts: PreferredContact[] = ["email", "phone", "telegram"];
+
+    if (validContacts.includes(value as PreferredContact)) {
+      handleFieldChange("preferredContact", value as PreferredContact);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -51,7 +59,10 @@ export default function ProfileForm({
     setHasChanges(false);
   };
 
-  const contactOptions = [
+  const contactOptions: Array<{
+    value: PreferredContact;
+    label: string;
+  }> = [
     { value: "email", label: "Email" },
     { value: "phone", label: "Телефон" },
     { value: "telegram", label: "Telegram" },
@@ -134,10 +145,7 @@ export default function ProfileForm({
             </label>
             <select
               value={formData.preferredContact}
-              onChange={(e) =>
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                handleFieldChange("preferredContact", e.target.value as any)
-              }
+              onChange={(e) => handlePreferredContactChange(e.target.value)}
               disabled={!isEditing}
               className="w-full px-3 py-2 rounded border disabled:opacity-50 transition-colors"
               style={{

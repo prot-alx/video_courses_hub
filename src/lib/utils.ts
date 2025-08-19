@@ -1,78 +1,34 @@
-// lib/utils.ts
+// lib/utils.ts (обновленная версия без дублирования)
 
-/**
- * Форматирует длительность в секундах в читаемый вид
- * @param seconds - длительность в секундах
- * @param format - формат вывода ('full' | 'short' | 'compact')
- * @returns отформатированная строка
- */
-export function formatDuration(
-  seconds: number | null | undefined,
-  format: "full" | "short" | "compact" = "full"
-): string {
-  if (!seconds || seconds <= 0) return "N/A";
+// Реэкспорт утилит для работы с длительностью
+export {
+  formatDuration,
+  formatCourseDuration,
+  parseDuration,
+} from "./utils/duration";
 
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
+// Другие утилиты для классов CSS, валидации и т.д.
+export function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(" ");
+}
 
-  switch (format) {
-    case "compact":
-      // Компактный формат: 1:23:45 или 23:45 или 0:45
-      if (hours > 0) {
-        return `${hours}:${minutes
-          .toString()
-          .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-      } else {
-        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-      }
-
-    case "short":
-      // Короткий формат: 1ч 23м или 23м или 45с
-      if (hours > 0) {
-        return minutes > 0 ? `${hours}ч ${minutes}м` : `${hours}ч`;
-      } else if (minutes > 0) {
-        return remainingSeconds > 0 ? `${minutes}м` : `${minutes}м`;
-      } else {
-        return `${remainingSeconds}с`;
-      }
-
-    case "full":
-    default:
-      // Полный формат: 1ч 23м 45с
-      if (hours > 0) {
-        if (minutes > 0 && remainingSeconds > 0) {
-          return `${hours}ч ${minutes}м ${remainingSeconds}с`;
-        } else if (minutes > 0) {
-          return `${hours}ч ${minutes}м`;
-        } else if (remainingSeconds > 0) {
-          return `${hours}ч ${remainingSeconds}с`;
-        } else {
-          return `${hours}ч`;
-        }
-      } else if (minutes > 0) {
-        return remainingSeconds > 0
-          ? `${minutes}м ${remainingSeconds}с`
-          : `${minutes}м`;
-      } else {
-        return `${remainingSeconds}с`;
-      }
+// Утилита для безопасного парсинга JSON
+export function safeJsonParse<T>(json: string, fallback: T): T {
+  try {
+    return JSON.parse(json);
+  } catch {
+    return fallback;
   }
 }
 
-/**
- * Форматирует общую длительность курса (суммирует все видео)
- * @param videos - массив видео с полем duration
- * @param format - формат вывода
- * @returns отформатированная строка общей длительности
- */
-export function formatCourseDuration(
-  videos: Array<{ duration: number | null }>,
-  format: "full" | "short" | "compact" = "short"
-): string {
-  const totalSeconds = videos.reduce(
-    (acc, video) => acc + (video.duration || 0),
-    0
-  );
-  return formatDuration(totalSeconds, format);
+// Утилита для дебаунса (улучшенная типизация)
+export function debounce<TArgs extends unknown[], TReturn>(
+  func: (...args: TArgs) => TReturn,
+  wait: number
+): (...args: TArgs) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: TArgs) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
 }

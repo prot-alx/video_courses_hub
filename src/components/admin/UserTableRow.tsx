@@ -1,4 +1,4 @@
-import { User } from "@/types/admin";
+import { User } from "@/types";
 import UserRoleBadge from "./UserRowBagde";
 
 interface UserTableRowProps {

@@ -1,13 +1,6 @@
-// components/courses/VideoList.tsx
+// components/courses/VideoList.tsx (обновленная версия с централизованными типами)
 import VideoItem from "./VideoItem";
-
-interface Video {
-  id: string;
-  title: string;
-  isFree: boolean;
-  duration: number;
-  orderIndex: number;
-}
+import type { Video } from "@/types/course";
 
 interface VideoListProps {
   videos: Video[];
@@ -73,7 +66,6 @@ export default function VideoList({
         >
           Содержание курса
         </h3>
-
         <div className="space-y-3">
           {sortedVideos.map((video, index) => (
             <VideoItem
@@ -85,7 +77,6 @@ export default function VideoList({
             />
           ))}
         </div>
-
         {/* Статистика */}
         <div
           className="mt-6 pt-4 border-t"

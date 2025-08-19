@@ -25,6 +25,17 @@ enum RequestStatus {
   cancelled
 }
 
+model AdminSettings {
+  id              String @id @default("main") // Фиксированный ID
+  supportTelegram String?
+  supportPhone    String?
+  supportEmail    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("admin_settings")
+}
+
 model User {
   id                String           @id @default(cuid())
   email             String           @unique
@@ -50,6 +61,7 @@ model Course {
   title       String
   description String?
   price       Decimal? // null для бесплатных
+  orderIndex  Int      @default(0)
   isFree      Boolean  @default(false)
   isActive    Boolean  @default(true)
   thumbnail   String?

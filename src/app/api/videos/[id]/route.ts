@@ -19,7 +19,7 @@ export async function GET(
         id: true,
         title: true,
         displayName: true,
-        description: true, // Добавляем description
+        description: true,
         filename: true,
         duration: true,
         isFree: true,
@@ -64,15 +64,15 @@ export async function GET(
     // Формируем ответ
     const videoData = {
       id: video.id,
-      title: video.displayName || video.title, // Приоритет displayName
-      description: video.description, // Добавляем описание
+      title: video.displayName || video.title,
+      description: video.description,
       duration: video.duration,
       isFree: video.isFree,
       orderIndex: video.orderIndex,
       courseId: video.course.id,
       courseTitle: video.course.title,
       hasAccess,
-      videoUrl: hasAccess ? video.filename : null, // URL только если есть доступ
+      videoUrl: hasAccess ? video.filename : null,
     };
 
     return NextResponse.json({

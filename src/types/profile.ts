@@ -1,5 +1,5 @@
 // types/profile.ts
-export type PreferredContact = "email" | "phone" | "telegram";
+import { PreferredContact } from "./user";
 
 export interface ProfileData {
   name: string;

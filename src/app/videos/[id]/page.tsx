@@ -1,26 +1,14 @@
-// app/videos/[id]/page.tsx (обновленная версия)
+// app/videos/[id]/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 import VideoPlayer from "@/components/videos/VideoPlayer";
 import { formatDuration } from "@/lib/utils";
+import type { VideoDetails } from "@/types/course";
 
 interface Params {
   id: string;
-}
-
-interface Video {
-  id: string;
-  title: string;
-  description: string | null;
-  duration: number | null;
-  isFree: boolean;
-  orderIndex: number;
-  courseId: string;
-  courseTitle: string;
-  hasAccess: boolean;
-  videoUrl: string | null; // Путь к видеофайлу
 }
 
 export default function VideoPage({
@@ -29,7 +17,7 @@ export default function VideoPage({
   const resolvedParams = use(params);
   const { isAuthenticated } = useAuth();
 
-  const [video, setVideo] = useState<Video | null>(null);
+  const [video, setVideo] = useState<VideoDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +43,7 @@ export default function VideoPage({
 
   useEffect(() => {
     fetchVideo();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const formatDurationLocal = (seconds: number | null) => {
@@ -224,7 +212,7 @@ export default function VideoPage({
               <div className="space-y-3">
                 {isAuthenticated ? (
                   <button className="btn-discord btn-discord-primary w-full">
-                    Купить курс
+                    Открыть курс
                   </button>
                 ) : (
                   <Link

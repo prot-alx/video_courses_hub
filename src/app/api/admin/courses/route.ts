@@ -1,4 +1,4 @@
-// app/api/admin/courses/route.ts
+// app/api/admin/courses/route.ts (обновленная версия с orderIndex)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -23,8 +23,8 @@ export async function GET() {
           select: {
             id: true,
             title: true,
-            displayName: true, // Новое поле
-            description: true, // Новое поле
+            displayName: true,
+            description: true,
             filename: true,
             isFree: true,
             duration: true,
@@ -48,7 +48,7 @@ export async function GET() {
         },
       },
       orderBy: {
-        createdAt: "desc",
+        orderIndex: "asc", // ← ИЗМЕНЕНО: сортируем по orderIndex вместо createdAt
       },
     });
 
@@ -60,7 +60,8 @@ export async function GET() {
       isFree: course.isFree,
       isActive: course.isActive,
       thumbnail: course.thumbnail,
-      totalDuration: course.totalDuration, // Используем готовое поле
+      totalDuration: course.totalDuration,
+      orderIndex: course.orderIndex, // ← ДОБАВЛЕНО: включаем orderIndex в ответ
       createdAt: course.createdAt,
       videosCount: course._count.videos,
       usersWithAccess: course._count.userAccess,
@@ -99,6 +100,13 @@ export async function POST(request: NextRequest) {
     // Валидация данных
     const validatedData = CreateCourseSchema.parse(body);
 
+    // Получаем следующий orderIndex
+    const lastCourse = await prisma.course.findFirst({
+      orderBy: { orderIndex: "desc" },
+    });
+
+    const nextOrderIndex = (lastCourse?.orderIndex ?? -1) + 1;
+
     // Создание курса
     const course = await prisma.course.create({
       data: {
@@ -108,6 +116,7 @@ export async function POST(request: NextRequest) {
         isFree: validatedData.isFree,
         isActive: validatedData.isActive,
         thumbnail: validatedData.thumbnail || null,
+        orderIndex: nextOrderIndex, // ← ДОБАВЛЕНО: устанавливаем orderIndex
       },
     });
 

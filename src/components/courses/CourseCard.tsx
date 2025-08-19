@@ -1,18 +1,15 @@
+// components/courses/CourseCard.tsx (обновленная версия с централизованными типами)
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import type { Course } from "@/types";
+
+interface CourseCardData extends Course {
+  totalDuration: number;
+}
 
 interface CourseCardProps {
-  course: {
-    id: string;
-    title: string;
-    description: string;
-    price: number | null;
-    isFree: boolean;
-    videosCount: number;
-    totalDuration: number; // в секундах
-    thumbnail: string | null; // Добавлено поле для превьюшки
-  };
+  course: CourseCardData;
   isAuthenticated?: boolean;
   hasAccess?: boolean;
   onPurchaseClick?: (courseId: string) => void;
@@ -77,7 +74,7 @@ export default function CourseCard({
         onClick={handleActionClick}
         className="btn-discord btn-discord-primary w-full"
       >
-        Купить курс
+        Открыть курс
       </button>
     );
   };
@@ -151,7 +148,7 @@ export default function CourseCard({
         className="text-sm mb-4"
         style={{ color: "var(--color-text-secondary)" }}
       >
-        {course.description}
+        {course.description || "Описание курса скоро появится."}
       </p>
 
       {/* Метаинформация */}

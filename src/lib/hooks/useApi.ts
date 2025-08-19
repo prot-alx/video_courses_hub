@@ -1,11 +1,11 @@
+// lib/hooks/useApi.ts (обновленная версия с централизованными типами)
 import { useState } from "react";
-
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
+import {
+  ApiResponse,
+  ContactMethod,
+  CreateRequestData,
+  RequestStatus,
+} from "@/types";
 
 export function useApi() {
   const [loading, setLoading] = useState(false);
@@ -39,36 +39,13 @@ export function useApi() {
   return { request, loading };
 }
 
-// Типы для курсовых заявок
-interface RequestStatusData {
-  hasAccess: boolean;
-  status: string;
-  canRequest?: boolean;
-  canCancel?: boolean;
-  requestId?: string;
-  createdAt?: string;
-  processedAt?: string;
-  grantedAt?: string;
-  lastCancelled?: string;
-}
-
-interface CreateRequestData {
-  id: string;
-  status: string;
-  createdAt: string;
-  course: {
-    title: string;
-  };
-  message: string;
-}
-
 // Специализированные хуки
 export function useCourseRequest() {
   const { request, loading } = useApi();
 
   const createRequest = async (
     courseId: string,
-    contactMethod: "email" | "phone" | "telegram"
+    contactMethod: ContactMethod
   ): Promise<ApiResponse<CreateRequestData>> => {
     return request<CreateRequestData>("/api/course-request", {
       method: "POST",
@@ -89,8 +66,8 @@ export function useCourseRequest() {
 
   const getRequestStatus = async (
     courseId: string
-  ): Promise<ApiResponse<RequestStatusData>> => {
-    return request<RequestStatusData>(
+  ): Promise<ApiResponse<RequestStatus>> => {
+    return request<RequestStatus>(
       `/api/course-request/status?courseId=${courseId}`
     );
   };

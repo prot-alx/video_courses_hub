@@ -1,24 +1,20 @@
-// components/admin/SortableVideoList.tsx
+// components/admin/SortableVideoList.tsx (обновленная версия с централизованными типами)
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { Video } from "@/types";
 
-interface Video {
-  id: string;
-  title: string;
+// Расширяем базовый Video для админских полей
+interface AdminVideo extends Video {
   displayName: string;
-  description: string | null;
   filename: string;
-  orderIndex: number;
-  isFree: boolean;
-  duration: number | null;
   createdAt: string;
 }
 
 interface SortableVideoListProps {
-  videos: Video[];
-  onEdit: (video: Video) => void;
+  videos: AdminVideo[];
+  onEdit: (video: AdminVideo) => void;
   onDelete: (videoId: string, videoTitle: string) => void;
   deletingVideo: string | null;
 }
@@ -29,14 +25,14 @@ export default function SortableVideoList({
   onDelete,
   deletingVideo,
 }: Readonly<SortableVideoListProps>) {
-  const [sortedVideos, setSortedVideos] = useState(videos);
+  const [sortedVideos, setSortedVideos] = useState<AdminVideo[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
   // Обновляем список при изменении пропса
-  useState(() => {
+  useEffect(() => {
     setSortedVideos([...videos].sort((a, b) => a.orderIndex - b.orderIndex));
-  });
+  }, [videos]);
 
   const handleDragStart = (index: number) => {
     setDraggedIndex(index);

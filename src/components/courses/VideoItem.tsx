@@ -1,13 +1,10 @@
-// components/courses/VideoItem.tsx
+// components/courses/VideoItem.tsx (обновленная версия с централизованными типами)
 import Link from "next/link";
+import { formatDuration } from "@/lib/utils";
+import type { Video } from "@/types/course";
 
 interface VideoItemProps {
-  video: {
-    id: string;
-    title: string;
-    isFree: boolean;
-    duration: number; // в секундах
-  };
+  video: Video;
   index: number;
   isAccessible: boolean; // может ли пользователь смотреть это видео
   courseId: string;
@@ -19,12 +16,6 @@ export default function VideoItem({
   isAccessible,
   courseId,
 }: Readonly<VideoItemProps>) {
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const content = (
     <div className="flex items-center gap-3">
       {/* Номер видео */}
@@ -37,7 +28,6 @@ export default function VideoItem({
       >
         {index + 1}
       </div>
-
       {/* Информация о видео */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
@@ -49,7 +39,6 @@ export default function VideoItem({
           >
             {video.title}
           </h4>
-
           {/* Бейдж "FREE" */}
           {video.isFree && (
             <span
@@ -63,16 +52,14 @@ export default function VideoItem({
             </span>
           )}
         </div>
-
         {/* Длительность */}
         <div className="flex items-center gap-2">
           <p
             className="text-sm"
             style={{ color: "var(--color-text-secondary)" }}
           >
-            {formatDuration(video.duration)}
+            {formatDuration(video.duration, "compact")}
           </p>
-
           {/* Замок для недоступных видео */}
           {!isAccessible && (
             <span

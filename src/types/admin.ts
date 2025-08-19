@@ -1,22 +1,25 @@
-// Так как у вас уже есть типы, возможно они уже определены
-// Проверьте существующие типы перед добавлением этих
+// types/admin.ts - Типы для админки
+import { UserStats } from "./user";
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN";
-  phone: string | null;
-  telegram: string | null;
-  preferredContact: "email" | "telegram" | "phone";
-  createdAt: string;
-  coursesCount: number;
-  activeRequests: number;
+export interface AdminStats {
+  users: UserStats;
+  courses: {
+    total: number;
+    free: number;
+    paid: number;
+  };
+  requests: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
 }
 
-export interface UserStats {
-  totalUsers: number;
-  activeUsers: number;
-  admins: number;
-  withActiveRequests: number;
+export interface FileInfo {
+  name: string;
+  size: number;
+  type: string;
+  path: string;
+  createdAt: string;
 }

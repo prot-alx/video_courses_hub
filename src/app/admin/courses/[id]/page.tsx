@@ -1,19 +1,15 @@
-// app/admin/courses/[id]/page.tsx
+// app/admin/courses/[id]/page.tsx (обновленная версия с централизованными типами)
 "use client";
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import type { Course, UpdateCourseInput } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number | null;
-  isFree: boolean;
+// Расширяем базовый Course для админских полей
+interface AdminCourse extends Course {
   isActive: boolean;
-  thumbnail: string | null;
 }
 
 export default function EditCoursePage({
@@ -24,7 +20,7 @@ export default function EditCoursePage({
   const resolvedParams = use(params);
   const router = useRouter();
 
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<AdminCourse | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -69,7 +65,7 @@ export default function EditCoursePage({
 
   useEffect(() => {
     fetchCourse();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const handleThumbnailUpload = async (
@@ -136,7 +132,7 @@ export default function EditCoursePage({
     }
 
     try {
-      const updateData = {
+      const updateData: UpdateCourseInput & { isActive: boolean } = {
         title: formData.title.trim(),
         description: formData.description.trim() || null,
         price: formData.isFree ? null : Number(formData.price),

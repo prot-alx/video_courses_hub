@@ -1,4 +1,4 @@
-// app/admin/page.tsx (обновленная версия)
+// app/admin/page.tsx (обновленная версия с SortableCourseTable)
 "use client";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
@@ -7,25 +7,24 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatsGrid from "@/components/admin/StatsGrid";
-import CourseTable from "@/components/admin/CourseTable";
+import SortableCourseTable from "@/components/admin/SortableCourseTable"; // ← ИЗМЕНЕНО: используем SortableCourseTable
+import type { Course, ApiResponse } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  price: number | null;
-  isFree: boolean;
+// Расширяем базовый Course для админских полей
+interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;
   createdAt: string;
+  orderIndex: number; // ← ДОБАВЛЕНО: orderIndex
 }
 
-interface ApiCourse extends Course {
+// Расширение для API ответа с дополнительными метриками
+interface ApiCourse extends AdminCourse {
   usersWithAccess: number;
   pendingRequests: number;
 }
 
-interface Stats {
+interface AdminStats {
   totalCourses: number;
   activeCourses: number;
   freeCourses: number;
@@ -34,8 +33,8 @@ interface Stats {
 
 export default function AdminPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [stats, setStats] = useState<Stats>({
+  const [courses, setCourses] = useState<AdminCourse[]>([]);
+  const [stats, setStats] = useState<AdminStats>({
     totalCourses: 0,
     activeCourses: 0,
     freeCourses: 0,
@@ -48,35 +47,34 @@ export default function AdminPage() {
     try {
       setIsLoading(true);
       const response = await fetch("/api/admin/courses");
-      const data = await response.json();
+      const data: ApiResponse<ApiCourse[]> = await response.json();
 
-      if (data.success) {
-        // Преобразуем данные API в формат, ожидаемый CourseTable
-        const processedCourses: Course[] = data.data.map(
-          (apiCourse: ApiCourse) => ({
-            id: apiCourse.id,
-            title: apiCourse.title,
-            description: apiCourse.description || "", // null -> пустая строка
-            price: apiCourse.price,
-            isFree: apiCourse.isFree,
-            isActive: apiCourse.isActive,
-            videosCount: apiCourse.videosCount,
-            createdAt: new Date(apiCourse.createdAt)
-              .toISOString()
-              .split("T")[0], // Форматируем дату
-          })
-        );
+      if (data.success && data.data) {
+        // Преобразуем данные API в формат, ожидаемый SortableCourseTable
+        const processedCourses: AdminCourse[] = data.data.map((apiCourse) => ({
+          id: apiCourse.id,
+          title: apiCourse.title,
+          description: apiCourse.description || "", // null -> пустая строка
+          price: apiCourse.price,
+          isFree: apiCourse.isFree,
+          hasAccess: apiCourse.hasAccess,
+          videosCount: apiCourse.videosCount,
+          freeVideosCount: apiCourse.freeVideosCount,
+          videos: apiCourse.videos,
+          thumbnail: apiCourse.thumbnail,
+          isActive: apiCourse.isActive,
+          orderIndex: apiCourse.orderIndex, // ← ДОБАВЛЕНО: orderIndex
+          createdAt: new Date(apiCourse.createdAt).toISOString().split("T")[0], // Форматируем дату
+        }));
 
         setCourses(processedCourses);
 
         // Вычисляем статистику из полученных данных
         const totalCourses = data.data.length;
-        const activeCourses = data.data.filter(
-          (c: ApiCourse) => c.isActive
-        ).length;
-        const freeCourses = data.data.filter((c: ApiCourse) => c.isFree).length;
+        const activeCourses = data.data.filter((c) => c.isActive).length;
+        const freeCourses = data.data.filter((c) => c.isFree).length;
         const pendingRequests = data.data.reduce(
-          (sum: number, c: ApiCourse) => sum + (c.pendingRequests || 0),
+          (sum, c) => sum + (c.pendingRequests || 0),
           0
         );
 
@@ -123,7 +121,10 @@ export default function AdminPage() {
         method: "DELETE",
       });
 
-      const data = await response.json();
+      const data: ApiResponse<{
+        deletedFiles: number;
+        failedFiles: number;
+      }> = await response.json();
 
       if (data.success) {
         const message = data.data
@@ -191,18 +192,6 @@ export default function AdminPage() {
     );
   }
 
-  // Навигация (добавлен пункт "Файлы")
-  const navItems = [
-    { href: "/admin", label: "Курсы", isActive: true },
-    {
-      href: "/admin/requests",
-      label: "Заявки",
-      badge: stats.pendingRequests > 0 ? stats.pendingRequests : undefined,
-    },
-    { href: "/admin/users", label: "Пользователи" },
-    { href: "/admin/files", label: "Файлы" }, // ← Новый пункт
-  ];
-
   return (
     <div
       className="min-h-screen"
@@ -211,7 +200,7 @@ export default function AdminPage() {
       <AdminHeader onSignOut={handleSignOut} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <AdminNavigation items={navItems} />
+        <AdminNavigation />
 
         {error && (
           <div className="mb-6 p-4 rounded-lg border border-red-300 bg-red-50">
@@ -229,7 +218,7 @@ export default function AdminPage() {
 
         <StatsGrid stats={stats} isLoading={isLoading} />
 
-        <CourseTable
+        <SortableCourseTable
           courses={courses}
           onDelete={handleDeleteCourse}
           isLoading={isLoading}

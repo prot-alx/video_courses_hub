@@ -1,6 +1,13 @@
+// app/api/admin/requests/route.ts (обновленная версия с типизацией)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { RequestStatusType } from "@/types";
+import type { Prisma } from "@prisma/client";
+
+interface RequestWhereClause {
+  status?: RequestStatusType;
+}
 
 // GET /api/admin/requests - получить все заявки для админа
 export async function GET(request: NextRequest) {
@@ -17,20 +24,27 @@ export async function GET(request: NextRequest) {
 
     // Параметры фильтрации
     const { searchParams } = new URL(request.url);
-    const statusFilter = searchParams.get("status"); // new, approved, rejected, cancelled
+    const statusFilter = searchParams.get("status");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: any = {};
+    const whereClause: RequestWhereClause = {};
+
+    const validStatuses: RequestStatusType[] = [
+      "new",
+      "approved",
+      "rejected",
+      "cancelled",
+    ];
+
     if (
       statusFilter &&
-      ["new", "approved", "rejected", "cancelled"].includes(statusFilter)
+      validStatuses.includes(statusFilter as RequestStatusType)
     ) {
-      whereClause.status = statusFilter;
+      whereClause.status = statusFilter as RequestStatusType;
     }
 
     const requests = await prisma.courseRequest.findMany({
-      where: whereClause,
+      where: whereClause as Prisma.CourseRequestWhereInput,
       include: {
         user: {
           select: {
@@ -39,7 +53,7 @@ export async function GET(request: NextRequest) {
             email: true,
             phone: true,
             telegram: true,
-            preferredContact: true, // ← Добавили это поле
+            preferredContact: true,
           },
         },
         course: {
@@ -56,10 +70,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
-        { status: "asc" }, // new первые
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ status: "asc" }, { createdAt: "desc" }],
       take: limit,
     });
 

@@ -1,6 +1,6 @@
 interface VideoInfoProps {
   title: string;
-  duration: number; // в секундах
+  duration: number;
   isFree: boolean;
   createdAt?: string;
 }

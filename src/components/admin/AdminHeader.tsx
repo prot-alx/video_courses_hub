@@ -34,7 +34,7 @@ export default function AdminHeader({
         <div className="flex items-center gap-4">
           {showBackToSite && (
             <Link href={siteUrl} className="btn-discord btn-discord-secondary">
-              На сайт
+              На главную
             </Link>
           )}
 

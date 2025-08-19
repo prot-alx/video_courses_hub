@@ -1,6 +1,5 @@
 // components/admin/FileManager.tsx
 "use client";
-
 import { useState, useEffect } from "react";
 
 interface FileStats {

@@ -1,7 +1,7 @@
-// components/admin/VideoUploadForm.tsx
+// components/admin/VideoUploadForm.tsx (обновленная версия с типизацией)
 "use client";
-
 import { useState, useEffect } from "react";
+import type { ApiResponse } from "@/types";
 
 interface VideoUploadFormProps {
   courseId: string;
@@ -13,7 +13,17 @@ interface UploadedFile {
   originalName: string;
   size: number;
   type: string;
-  duration?: number | null; // Добавляем поле длительности
+  duration?: number | null;
+}
+
+// Типизация для видео из API
+interface AdminVideoData {
+  id: string;
+  title: string;
+  orderIndex: number;
+  courseId: string;
+  filename: string;
+  duration: number | null;
 }
 
 export default function VideoUploadForm({
@@ -36,12 +46,12 @@ export default function VideoUploadForm({
     const fetchNextOrderIndex = async () => {
       try {
         const response = await fetch(`/api/admin/videos?courseId=${courseId}`);
-        const result = await response.json();
+        const result: ApiResponse<AdminVideoData[]> = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data) {
           const maxOrder = result.data.reduce(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (max: number, video: any) => Math.max(max, video.orderIndex),
+            (max: number, video: AdminVideoData) =>
+              Math.max(max, video.orderIndex),
             -1
           );
           const nextIndex = maxOrder + 1;
@@ -86,11 +96,11 @@ export default function VideoUploadForm({
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      const result = await response.json();
+      const result: ApiResponse<UploadedFile> = await response.json();
 
-      if (result.success) {
+      if (result.success && result.data) {
         // Добавляем длительность к данным файла
-        const fileWithDuration = {
+        const fileWithDuration: UploadedFile = {
           ...result.data,
           duration: duration, // Используем длительность из браузера
         };
@@ -170,7 +180,7 @@ export default function VideoUploadForm({
         }),
       });
 
-      const result = await response.json();
+      const result: ApiResponse<AdminVideoData> = await response.json();
 
       if (result.success) {
         // Сбрасываем форму

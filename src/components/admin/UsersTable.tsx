@@ -1,4 +1,4 @@
-import { User } from "@/types/admin";
+import { User } from "@/types";
 import UserTableRow from "./UserTableRow";
 
 interface UsersTableProps {

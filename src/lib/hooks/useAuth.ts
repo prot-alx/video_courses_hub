@@ -1,3 +1,4 @@
+// lib/hooks/useAuth.ts (обновленная версия с централизованными типами)
 import { useSession } from "next-auth/react";
 
 export function useAuth() {

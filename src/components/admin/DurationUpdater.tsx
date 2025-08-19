@@ -1,31 +1,45 @@
-// components/admin/DurationUpdater.tsx
+// components/admin/DurationUpdater.tsx (обновленная версия с типизацией)
 "use client";
-
 import { useState, useEffect } from "react";
+import type { ApiResponse } from "@/types";
 
 interface DurationStats {
   videosWithoutDuration: number;
   totalVideos: number;
 }
 
+// Типизация для видео из API админки
+interface AdminVideoData {
+  id: string;
+  title: string;
+  duration: number | null;
+  filename: string;
+  courseId: string;
+}
+
+// Типизация для результатов пересчёта
+interface RecalculateResult {
+  success: boolean;
+  coursesUpdated: number;
+  videosProcessed: number;
+  errors?: string[];
+}
+
 export default function DurationUpdater() {
   const [stats, setStats] = useState<DurationStats | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [results, setResults] = useState<RecalculateResult | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [results, setResults] = useState<any[] | null>(null);
-  console.log(results);
   const fetchStats = async () => {
     try {
       // Получаем статистику видео без длительности
       const response = await fetch("/api/admin/videos");
-      const data = await response.json();
+      const data: ApiResponse<AdminVideoData[]> = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data) {
         const totalVideos = data.data.length;
         const videosWithoutDuration = data.data.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (video: any) => !video.duration || video.duration === 0
+          (video) => !video.duration || video.duration === 0
         ).length;
 
         setStats({
@@ -47,9 +61,10 @@ export default function DurationUpdater() {
         method: "POST",
       });
 
-      const data = await response.json();
+      const data: ApiResponse<RecalculateResult> = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data) {
+        setResults(data.data);
         alert("Длительность курсов пересчитана!");
         fetchStats(); // Обновляем статистику
       } else {
@@ -149,6 +164,34 @@ export default function DurationUpdater() {
         >
           {updating ? "🔄 Пересчет..." : "🚀 Пересчитать длительность курсов"}
         </button>
+
+        {/* Показываем результаты пересчёта */}
+        {results && (
+          <div
+            className="mt-4 p-3 rounded border"
+            style={{
+              background: "var(--color-success-bg, #f0fff4)",
+              borderColor: "var(--color-success, #10b981)",
+            }}
+          >
+            <h5
+              className="font-medium mb-2"
+              style={{ color: "var(--color-success, #10b981)" }}
+            >
+              ✅ Результаты пересчёта:
+            </h5>
+            <ul
+              className="text-sm space-y-1"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              <li>• Курсов обновлено: {results.coursesUpdated}</li>
+              <li>• Видео обработано: {results.videosProcessed}</li>
+              {results.errors && results.errors.length > 0 && (
+                <li>• Ошибок: {results.errors.length}</li>
+              )}
+            </ul>
+          </div>
+        )}
       </div>
 
       <div

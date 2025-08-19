@@ -26,8 +26,8 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            displayName: true, // Добавляем новое поле
-            description: true, // Добавляем описание
+            displayName: true,
+            description: true,
             isFree: true,
             duration: true,
             orderIndex: true,
@@ -85,11 +85,11 @@ export async function GET(
       freeVideosCount,
       videos: course.videos.map((video) => ({
         id: video.id,
-        title: video.displayName || video.title, // Приоритет displayName
+        title: video.displayName || video.title,
         isFree: video.isFree,
         duration: video.duration,
         orderIndex: video.orderIndex,
-        hasAccess: isAdmin || video.isFree || hasAccess, // Админу доступны все видео
+        hasAccess: isAdmin || video.isFree || hasAccess,
       })),
     };
 

@@ -1,6 +1,5 @@
 // course-request/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
 import { prisma } from "@/lib/prisma";
 import { CourseRequestSchema } from "@/lib/validations";
 import { auth } from "@/lib/auth";

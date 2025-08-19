@@ -1,8 +1,15 @@
-// app/api/courses/route.ts
+// app/api/courses/route.ts (обновленная версия с типизацией)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { GetCoursesSchema } from "@/lib/validations";
+import type { CourseFilterType } from "@/types";
+import type { Prisma } from "@prisma/client";
+
+interface CourseWhereClause {
+  isActive: boolean;
+  isFree?: boolean;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,20 +21,29 @@ export async function GET(request: NextRequest) {
     const typeParam = searchParams.get("type") || "all";
     const validatedParams = GetCoursesSchema.parse({ type: typeParam });
 
-    // Фильтры для типов курсов
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: any = {
-      isActive: true, // Показываем только активные курсы
+    // Типизированные фильтры для типов курсов
+    const whereClause: CourseWhereClause = {
+      isActive: true,
     };
 
-    if (validatedParams.type === "free") {
-      whereClause.isFree = true;
-    } else if (validatedParams.type === "paid") {
-      whereClause.isFree = false;
+    // Используем наш централизованный тип CourseFilterType
+    const filterType = validatedParams.type as CourseFilterType;
+
+    switch (filterType) {
+      case "free":
+        whereClause.isFree = true;
+        break;
+      case "paid":
+        whereClause.isFree = false;
+        break;
+      case "all":
+      default:
+        // Не добавляем фильтр по isFree
+        break;
     }
 
     const courses = await prisma.course.findMany({
-      where: whereClause,
+      where: whereClause as Prisma.CourseWhereInput,
       select: {
         id: true,
         title: true,
@@ -35,7 +51,7 @@ export async function GET(request: NextRequest) {
         price: true,
         isFree: true,
         thumbnail: true,
-        totalDuration: true, // ← ДОБАВЛЯЕМ это поле
+        totalDuration: true,
         videos: {
           select: {
             id: true,
@@ -55,11 +71,11 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        createdAt: "desc",
+        orderIndex: "asc",
       },
     });
 
-    // Создаем Map для быстрого поиска доступа пользователя
+    // Создаем Set для быстрого поиска доступа пользователя
     const userAccessMap = new Set(
       courses.flatMap((course) =>
         Array.isArray(course.userAccess)
@@ -84,11 +100,12 @@ export async function GET(request: NextRequest) {
         description: course.description,
         price: course.price,
         isFree: course.isFree,
-        hasAccess, // Админу всегда true
+        hasAccess,
         videosCount: course._count.videos,
         freeVideosCount,
-        totalDuration: course.totalDuration, // ← Возвращаем точное время
+        totalDuration: course.totalDuration,
         thumbnail: course.thumbnail,
+        videos: [],
       };
     });
 

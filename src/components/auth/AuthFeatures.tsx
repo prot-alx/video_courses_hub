@@ -7,7 +7,9 @@ interface AuthFeaturesProps {
   features?: Feature[];
 }
 
-export default function AuthFeatures({ features }: Readonly<AuthFeaturesProps>) {
+export default function AuthFeatures({
+  features,
+}: Readonly<AuthFeaturesProps>) {
   const defaultFeatures: Feature[] = [
     {
       icon: "✅",

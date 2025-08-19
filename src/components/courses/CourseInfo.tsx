@@ -1,18 +1,20 @@
+// components/courses/CourseInfo.tsx (обновленная версия с централизованными типами)
 import PurchaseButton from "./PurchaseButton";
+import type { Course } from "@/types";
+
+// Расширяем базовый Course для отображения информации
+interface CourseInfoData extends Course {
+  totalDuration: number; // в секундах
+}
+
+// Тип для статуса заявки в UI
+type RequestUIStatus = "none" | "pending" | "approved" | "rejected";
 
 interface CourseInfoProps {
-  course: {
-    id: string;
-    title: string;
-    description: string;
-    price: number | null;
-    isFree: boolean;
-    videosCount: number;
-    totalDuration: number; // в секундах
-  };
+  course: CourseInfoData;
   hasAccess: boolean;
   isAuthenticated: boolean;
-  requestStatus?: "none" | "pending" | "approved" | "rejected";
+  requestStatus?: RequestUIStatus;
   isLoading?: boolean;
   onPurchase: (courseId: string) => void;
   onCancelRequest: (courseId: string) => void;
@@ -52,7 +54,6 @@ export default function CourseInfo({
             >
               {course.title}
             </h1>
-
             <div className="flex items-center gap-4 mb-6">
               {/* Цена/тип курса */}
               {course.isFree ? (
@@ -76,7 +77,6 @@ export default function CourseInfo({
                   {course.price}₽
                 </span>
               )}
-
               {/* Метаинформация */}
               <span
                 className="text-sm"
@@ -88,15 +88,13 @@ export default function CourseInfo({
             </div>
           </div>
         </div>
-
         {/* Описание */}
         <p
           className="text-base leading-relaxed mb-6"
           style={{ color: "var(--color-text-secondary)" }}
         >
-          {course.description}
+          {course.description || "Описание курса скоро появится."}
         </p>
-
         {/* Кнопка покупки */}
         <PurchaseButton
           courseId={course.id}

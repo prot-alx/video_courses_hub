@@ -1,21 +1,16 @@
+// components/courses/CourseGrid.tsx (обновленная версия с централизованными типами)
 import CourseCard from "./CourseCard";
+import type { Course } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  price: number | null;
-  isFree: boolean;
-  videosCount: number;
+interface CourseGridData extends Course {
   totalDuration: number;
-  thumbnail: string | null; // Добавлено поле для превьюшки
 }
 
 interface CourseGridProps {
-  courses: Course[];
+  courses: CourseGridData[];
   isLoading?: boolean;
   isAuthenticated?: boolean;
-  userCourseAccess?: string[]; // массив ID курсов к которым есть доступ
+  userCourseAccess?: string[];
   onPurchaseClick?: (courseId: string) => void;
 }
 

@@ -1,3 +1,4 @@
+// app/admin/users/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
@@ -6,41 +7,9 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import UserStatsCards from "@/components/admin/UserStatsCards";
 import UsersTable from "@/components/admin/UsersTable";
+import type { User, UserStats, ApiResponse } from "@/types";
 
-interface User {
-  id: string;
-  name: string | null;
-  email: string;
-  role: "USER" | "ADMIN";
-  phone: string | null;
-  telegram: string | null;
-  preferredContact: "email" | "phone" | "telegram";
-  createdAt: string;
-  coursesAccess: number;
-  activeRequests: number;
-}
-
-interface TableUser {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN";
-  phone: string | null;
-  telegram: string | null;
-  preferredContact: "email" | "telegram" | "phone";
-  createdAt: string;
-  coursesCount: number;
-  activeRequests: number;
-}
-
-interface UserStats {
-  totalUsers: number;
-  activeUsers: number;
-  admins: number;
-  withActiveRequests: number;
-}
-
-function calculateStats(users: TableUser[]): UserStats {
+function calculateStats(users: User[]): UserStats {
   return {
     totalUsers: users.length,
     activeUsers: users.filter((u) => u.role === "USER").length,
@@ -51,7 +20,7 @@ function calculateStats(users: TableUser[]): UserStats {
 
 export default function AdminUsersPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
-  const [users, setUsers] = useState<TableUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -66,27 +35,25 @@ export default function AdminUsersPage() {
     try {
       setIsLoading(true);
       const response = await fetch("/api/admin/users");
-      const data = await response.json();
+      const data: ApiResponse<User[]> = await response.json();
 
-      if (data.success) {
-        // Преобразуем данные API в формат для таблицы
-        const transformedUsers: TableUser[] = data.data.map(
-          (apiUser: User) => ({
-            id: apiUser.id,
-            name: apiUser.name || "Без имени",
-            email: apiUser.email,
-            role: apiUser.role,
-            phone: apiUser.phone,
-            telegram: apiUser.telegram,
-            preferredContact: apiUser.preferredContact,
-            createdAt: apiUser.createdAt,
-            coursesCount: apiUser.coursesAccess, // Переименовываем поле
-            activeRequests: apiUser.activeRequests,
-          })
-        );
+      if (data.success && data.data) {
+        // Нормализуем данные пользователей
+        const normalizedUsers: User[] = data.data.map((apiUser) => ({
+          id: apiUser.id,
+          name: apiUser.name || "Без имени",
+          email: apiUser.email,
+          role: apiUser.role,
+          phone: apiUser.phone,
+          telegram: apiUser.telegram,
+          preferredContact: apiUser.preferredContact,
+          createdAt: apiUser.createdAt,
+          coursesCount: apiUser.coursesCount,
+          activeRequests: apiUser.activeRequests,
+        }));
 
-        setUsers(transformedUsers);
-        setStats(calculateStats(transformedUsers));
+        setUsers(normalizedUsers);
+        setStats(calculateStats(normalizedUsers));
         setError(null);
       } else {
         setError(data.error || "Ошибка загрузки пользователей");
@@ -102,8 +69,9 @@ export default function AdminUsersPage() {
   const fetchPendingRequests = async () => {
     try {
       const response = await fetch("/api/admin/requests?status=new");
-      const data = await response.json();
-      if (data.success) {
+      const data: ApiResponse<{ stats: { new: number } }> =
+        await response.json();
+      if (data.success && data.data) {
         setPendingRequestsCount(data.data.stats.new || 0);
       }
     } catch (err) {
@@ -162,18 +130,6 @@ export default function AdminUsersPage() {
     );
   }
 
-  // Навигация
-  const navItems = [
-    { href: "/admin", label: "Курсы" },
-    {
-      href: "/admin/requests",
-      label: "Заявки",
-      badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined,
-    },
-    { href: "/admin/users", label: "Пользователи", isActive: true },
-    { href: "/admin/files", label: "Файлы" },
-  ];
-
   return (
     <div
       className="min-h-screen"
@@ -186,7 +142,7 @@ export default function AdminUsersPage() {
       />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <AdminNavigation items={navItems} />
+        <AdminNavigation />
 
         {/* Error State */}
         {error && (

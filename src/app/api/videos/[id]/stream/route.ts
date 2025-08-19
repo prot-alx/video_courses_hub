@@ -1,14 +1,65 @@
-// app/api/videos/[id]/stream/route.ts
+// app/api/videos/[id]/stream/route.ts (обновленная версия с типизацией)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createReadStream, existsSync, statSync } from "fs";
 import { join } from "path";
+import { Readable } from "stream";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// Типизированный интерфейс для параметров
+interface VideoStreamParams {
+  params: Promise<{ id: string }>;
+}
+
+// Исправленная функция с правильной типизацией
+function nodeStreamToWebStream(
+  nodeStream: Readable // Используем Readable вместо NodeJS.ReadableStream
+): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    start(controller) {
+      let isClosed = false;
+
+      const cleanup = () => {
+        if (!isClosed) {
+          isClosed = true;
+          nodeStream.destroy(); // Теперь destroy() доступен
+        }
+      };
+
+      nodeStream.on("data", (chunk: Buffer) => {
+        if (!isClosed && controller.desiredSize !== null) {
+          try {
+            controller.enqueue(new Uint8Array(chunk));
+          } catch (err) {
+            console.log(err);
+            cleanup();
+          }
+        }
+      });
+
+      nodeStream.on("end", () => {
+        if (!isClosed) {
+          controller.close();
+          cleanup();
+        }
+      });
+
+      nodeStream.on("error", (error) => {
+        if (!isClosed) {
+          controller.error(error);
+          cleanup();
+        }
+      });
+
+      nodeStream.on("close", cleanup);
+    },
+
+    cancel() {
+      nodeStream.destroy();
+    },
+  });
+}
+export async function GET(request: NextRequest, { params }: VideoStreamParams) {
   try {
     const session = await auth();
     const isAdmin = session?.user?.role === "ADMIN";
@@ -71,10 +122,11 @@ export async function GET(
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunksize = end - start + 1;
-      const stream = createReadStream(videoPath, { start, end });
-      
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return new NextResponse(stream as any, {
+
+      const nodeStream = createReadStream(videoPath, { start, end });
+      const webStream = nodeStreamToWebStream(nodeStream);
+
+      return new NextResponse(webStream, {
         status: 206,
         headers: {
           "Content-Range": `bytes ${start}-${end}/${fileSize}`,
@@ -86,9 +138,10 @@ export async function GET(
       });
     } else {
       // Обычная отдача файла
-      const stream = createReadStream(videoPath);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return new NextResponse(stream as any, {
+      const nodeStream = createReadStream(videoPath);
+      const webStream = nodeStreamToWebStream(nodeStream);
+
+      return new NextResponse(webStream, {
         headers: {
           "Content-Length": fileSize.toString(),
           "Content-Type": "video/mp4",

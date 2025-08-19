@@ -1,28 +1,24 @@
-// app/admin/courses/[id]/videos/page.tsx (обновленная версия)
+// app/admin/courses/[id]/videos/page.tsx (обновленная версия с формой редактирования)
 "use client";
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import VideoUploadForm from "@/components/admin/VideoUploadForm";
-import VideoEditModal from "@/components/admin/VideoEditModal";
+import VideoEditForm from "@/components/admin/VideoEditForm";
 import SortableVideoList from "@/components/admin/SortableVideoList";
+import type { Video } from "@/types";
 
-interface Video {
-  id: string;
-  title: string;
+// Специфические для админки типы, которых нет в централизованных
+interface AdminVideo extends Video {
   displayName: string;
-  description: string | null;
   filename: string;
-  orderIndex: number;
-  isFree: boolean;
-  duration: number | null;
   createdAt: string;
 }
 
-interface Course {
+interface AdminCourse {
   id: string;
   title: string;
-  videos: Video[];
+  videos: AdminVideo[];
 }
 
 interface DiskInfo {
@@ -38,12 +34,12 @@ export default function ManageVideosPage({
   params: Promise<{ id: string }>;
 }>) {
   const resolvedParams = use(params);
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<AdminCourse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [diskInfo, setDiskInfo] = useState<DiskInfo | null>(null);
   const [deletingVideo, setDeletingVideo] = useState<string | null>(null);
-  const [editingVideo, setEditingVideo] = useState<Video | null>(null);
+  const [editingVideo, setEditingVideo] = useState<AdminVideo | null>(null);
 
   const fetchCourse = async () => {
     try {
@@ -115,10 +111,19 @@ export default function ManageVideosPage({
     fetchDiskInfo();
   };
 
+  const handleVideoSaved = () => {
+    setEditingVideo(null);
+    fetchCourse();
+  };
+
+  const handleCancelEdit = () => {
+    setEditingVideo(null);
+  };
+
   useEffect(() => {
     fetchCourse();
     fetchDiskInfo();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const formatDuration = (seconds: number | null) => {
@@ -210,13 +215,24 @@ export default function ManageVideosPage({
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {/* Upload Form */}
-        <div className="mb-6">
-          <VideoUploadForm
-            courseId={resolvedParams.id}
-            onVideoAdded={handleVideoAdded}
+        {/* Edit Form - показываем только при редактировании */}
+        {editingVideo && (
+          <VideoEditForm
+            video={editingVideo}
+            onSave={handleVideoSaved}
+            onCancel={handleCancelEdit}
           />
-        </div>
+        )}
+
+        {/* Upload Form - скрываем при редактировании */}
+        {!editingVideo && (
+          <div className="mb-6">
+            <VideoUploadForm
+              courseId={resolvedParams.id}
+              onVideoAdded={handleVideoAdded}
+            />
+          </div>
+        )}
 
         {/* Videos List */}
         <div
@@ -266,13 +282,6 @@ export default function ManageVideosPage({
             />
           )}
         </div>
-
-        {/* Video Edit Modal */}
-        <VideoEditModal
-          video={editingVideo}
-          onClose={() => setEditingVideo(null)}
-          onSave={handleVideoAdded}
-        />
       </main>
     </div>
   );

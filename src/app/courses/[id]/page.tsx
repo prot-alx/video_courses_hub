@@ -1,4 +1,4 @@
-// app/courses/[id]/page.tsx (обновленная версия)
+// app/courses/[id]/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
@@ -6,43 +6,12 @@ import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useCourseRequest } from "@/lib/hooks/useApi";
 import { formatDuration, formatCourseDuration } from "@/lib/utils";
+import VideoPlayer from "@/components/videos/VideoPlayer";
+import type { Course, Video } from "@/types/course";
+import { RequestStatus } from "@/types";
 
 interface Params {
   id: string;
-}
-
-interface Video {
-  id: string;
-  title: string;
-  isFree: boolean;
-  duration: number | null;
-  orderIndex: number;
-  hasAccess: boolean;
-}
-
-interface Course {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number | null;
-  isFree: boolean;
-  hasAccess: boolean;
-  videosCount: number;
-  freeVideosCount: number;
-  videos: Video[];
-  thumbnail: string | null;
-}
-
-interface RequestStatus {
-  hasAccess: boolean;
-  status: string;
-  canRequest?: boolean;
-  canCancel?: boolean;
-  requestId?: string;
-  createdAt?: string;
-  processedAt?: string;
-  grantedAt?: string;
-  lastCancelled?: string;
 }
 
 export default function CoursePage({
@@ -64,6 +33,12 @@ export default function CoursePage({
     null
   );
 
+  // Новое состояние для выбранного видео
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [selectedVideoDetails, setSelectedVideoDetails] =
+    useState<Video | null>(null);
+  const [loadingVideoDetails, setLoadingVideoDetails] = useState(false);
+
   const fetchCourse = async () => {
     try {
       setLoading(true);
@@ -73,6 +48,21 @@ export default function CoursePage({
       if (data.success) {
         setCourse(data.data);
         setError(null);
+
+        // Автоматически выбираем первое доступное видео
+        const sortedVideos = [...data.data.videos].sort(
+          (a, b) => a.orderIndex - b.orderIndex
+        );
+        const firstAccessible = sortedVideos.find((video: Video) => {
+          if (data.data.isFree || data.data.hasAccess || user?.role === "ADMIN")
+            return true;
+          return video.isFree;
+        });
+
+        if (firstAccessible) {
+          setSelectedVideo(firstAccessible);
+          fetchVideoDetails(firstAccessible.id);
+        }
       } else {
         setError(data.error || "Курс не найден");
       }
@@ -81,6 +71,25 @@ export default function CoursePage({
       console.error("Ошибка загрузки курса:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Функция для загрузки детальной информации о видео
+  const fetchVideoDetails = async (videoId: string) => {
+    try {
+      setLoadingVideoDetails(true);
+      const response = await fetch(`/api/videos/${videoId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setSelectedVideoDetails(data.data);
+      } else {
+        console.error("Ошибка загрузки деталей видео:", data.error);
+      }
+    } catch (err) {
+      console.error("Ошибка загрузки деталей видео:", err);
+    } finally {
+      setLoadingVideoDetails(false);
     }
   };
 
@@ -99,14 +108,14 @@ export default function CoursePage({
 
   useEffect(() => {
     fetchCourse();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   useEffect(() => {
     if (course && isAuthenticated) {
       fetchRequestStatus();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, isAuthenticated]);
 
   const handlePurchaseRequest = async () => {
@@ -145,26 +154,42 @@ export default function CoursePage({
     }
   };
 
+  // Проверка доступа к видео
+  const getVideoAccess = (video: Video): boolean => {
+    if (!course) return false;
+
+    const isAdmin = user?.role === "ADMIN";
+    if (isAdmin) return true;
+
+    if (course.isFree || course.hasAccess) return true;
+    return video.isFree;
+  };
+
+  // Обработчик выбора видео
+  const handleVideoSelect = (video: Video) => {
+    if (getVideoAccess(video)) {
+      setSelectedVideo(video);
+      setSelectedVideoDetails(null); // Сбрасываем предыдущие детали
+      fetchVideoDetails(video.id); // Загружаем новые детали
+    }
+  };
+
   // Функция для получения URL превьюшки
   const getThumbnailUrl = (thumbnail: string | null): string | null => {
     if (!thumbnail) return null;
 
-    // Если уже полный путь
     if (thumbnail.startsWith("/uploads/")) {
       return `/api${thumbnail}`;
     }
 
-    // Если только имя файла
     return `/api/uploads/thumbnails/${thumbnail}`;
   };
 
   const renderActionButton = () => {
     if (!course) return null;
 
-    // Проверяем, является ли пользователь админом
     const isAdmin = user?.role === "ADMIN";
 
-    // Для админа всегда показываем кнопку доступа
     if (isAdmin) {
       return (
         <button className="btn-discord btn-discord-success">
@@ -173,16 +198,10 @@ export default function CoursePage({
       );
     }
 
-    // Бесплатный курс
     if (course.isFree) {
-      return (
-        <button className="btn-discord btn-discord-primary">
-          Смотреть бесплатно
-        </button>
-      );
+      return null;
     }
 
-    // Не авторизован
     if (!isAuthenticated) {
       return (
         <Link href="/auth/signin" className="btn-discord btn-discord-primary">
@@ -191,7 +210,6 @@ export default function CoursePage({
       );
     }
 
-    // Есть доступ
     if (course.hasAccess) {
       return (
         <button className="btn-discord btn-discord-success">
@@ -200,7 +218,6 @@ export default function CoursePage({
       );
     }
 
-    // Обработка заявок для обычных пользователей
     if (requestStatus) {
       switch (requestStatus.status) {
         case "new":
@@ -242,7 +259,6 @@ export default function CoursePage({
       }
     }
 
-    // По умолчанию для обычных пользователей
     return (
       <button
         onClick={handlePurchaseRequest}
@@ -289,6 +305,9 @@ export default function CoursePage({
   }
 
   const thumbnailUrl = getThumbnailUrl(course.thumbnail);
+  const sortedVideos = [...course.videos].sort(
+    (a, b) => a.orderIndex - b.orderIndex
+  );
 
   return (
     <div
@@ -318,19 +337,95 @@ export default function CoursePage({
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Course Info */}
+          {/* Левая колонка - плеер и информация о курсе */}
           <div className="lg:col-span-2">
-            <div
-              className="p-6 rounded-lg border mb-6"
-              style={{
-                background: "var(--color-primary-300)",
-                borderColor: "var(--color-primary-400)",
-              }}
-            >
-              {/* Course Thumbnail */}
-              {thumbnailUrl && (
-                <div className="mb-6">
-                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+            {/* Видео плеер */}
+            {selectedVideo ? (
+              <div className="mb-6">
+                <VideoPlayer
+                  key={selectedVideo.id}
+                  videoId={selectedVideo.id}
+                  hasAccess={getVideoAccess(selectedVideo)}
+                  title={selectedVideo.title}
+                  className="mb-4"
+                />
+
+                {/* Информация о выбранном видео */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <h2
+                      className="text-xl font-bold"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      {selectedVideo.title}
+                    </h2>
+                    {selectedVideo.isFree && (
+                      <span
+                        className="px-2 py-1 text-xs rounded-full font-medium"
+                        style={{
+                          background: "var(--color-success)",
+                          color: "var(--color-text-primary)",
+                        }}
+                      >
+                        FREE
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
+                    {formatDuration(selectedVideo.duration, "compact")}
+                  </span>
+                </div>
+
+                {/* Описание видео */}
+                <div
+                  className="p-4 rounded-lg border mb-6"
+                  style={{
+                    background: "var(--color-primary-300)",
+                    borderColor: "var(--color-primary-400)",
+                  }}
+                >
+                  <h3
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    Описание
+                  </h3>
+
+                  {loadingVideoDetails ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                      <span
+                        className="text-sm"
+                        style={{ color: "var(--color-text-secondary)" }}
+                      >
+                        Загрузка описания...
+                      </span>
+                    </div>
+                  ) : selectedVideoDetails?.description ? (
+                    <div
+                      className="text-sm leading-relaxed whitespace-pre-wrap"
+                      style={{ color: "var(--color-text-secondary)" }}
+                    >
+                      {selectedVideoDetails.description}
+                    </div>
+                  ) : (
+                    <p
+                      className="text-sm italic"
+                      style={{ color: "var(--color-text-secondary)" }}
+                    >
+                      Описание пока не добавлено.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Превьюшка курса, если нет выбранного видео */
+              <div className="mb-6">
+                {thumbnailUrl ? (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4">
                     <Image
                       src={thumbnailUrl}
                       alt={course.title}
@@ -342,9 +437,30 @@ export default function CoursePage({
                       }}
                     />
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div
+                    className="w-full aspect-video rounded-lg flex items-center justify-center mb-4"
+                    style={{ background: "var(--color-primary-400)" }}
+                  >
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">🎬</div>
+                      <p style={{ color: "var(--color-text-secondary)" }}>
+                        Выберите видео для просмотра
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
+            {/* Информация о курсе */}
+            <div
+              className="p-6 rounded-lg border"
+              style={{
+                background: "var(--color-primary-300)",
+                borderColor: "var(--color-primary-400)",
+              }}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h1
@@ -397,7 +513,7 @@ export default function CoursePage({
             </div>
           </div>
 
-          {/* Video List */}
+          {/* Правая колонка - список видео */}
           <div className="lg:col-span-1">
             <div
               className="p-6 rounded-lg border"
@@ -414,62 +530,73 @@ export default function CoursePage({
               </h3>
 
               <div className="space-y-3">
-                {course.videos.map((video, index) => (
-                  <Link
-                    key={video.id}
-                    href={video.hasAccess ? `/videos/${video.id}` : "#"}
-                    className={`channel-item block ${
-                      !video.hasAccess ? "opacity-60 cursor-not-allowed" : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center text-sm font-medium"
-                        style={{ background: "var(--color-primary-400)" }}
-                      >
-                        {index + 1}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4
-                            className="font-medium truncate"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            {video.title}
-                          </h4>
-                          {video.isFree && (
-                            <span
-                              className="text-xs px-2 py-1 rounded-full ml-2"
-                              style={{
-                                background: "var(--color-success)",
-                                color: "var(--color-text-primary)",
-                              }}
-                            >
-                              FREE
-                            </span>
-                          )}
-                          {!video.hasAccess && !video.isFree && (
-                            <span
-                              className="text-xs px-2 py-1 rounded-full ml-2"
-                              style={{
-                                background: "var(--color-primary-400)",
-                                color: "var(--color-text-secondary)",
-                              }}
-                            >
-                              🔒
-                            </span>
-                          )}
-                        </div>
-                        <p
-                          className="text-sm"
-                          style={{ color: "var(--color-text-secondary)" }}
+                {sortedVideos.map((video, index) => {
+                  const hasAccess = getVideoAccess(video);
+                  const isSelected = selectedVideo?.id === video.id;
+
+                  return (
+                    <button
+                      key={video.id}
+                      onClick={() => handleVideoSelect(video)}
+                      disabled={!hasAccess}
+                      className={`channel-item block w-full text-left ${
+                        !hasAccess ? "opacity-60 cursor-not-allowed" : ""
+                      } ${isSelected ? "ring-2 ring-blue-500" : ""}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center text-sm font-medium"
+                          style={{
+                            background: isSelected
+                              ? "var(--color-accent)"
+                              : "var(--color-primary-400)",
+                            color: "var(--color-text-primary)",
+                          }}
                         >
-                          {formatDuration(video.duration, "compact")}
-                        </p>
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <h4
+                              className="font-medium truncate"
+                              style={{ color: "var(--color-text-primary)" }}
+                            >
+                              {video.title}
+                            </h4>
+                            {video.isFree && (
+                              <span
+                                className="text-xs px-2 py-1 rounded-full ml-2"
+                                style={{
+                                  background: "var(--color-success)",
+                                  color: "var(--color-text-primary)",
+                                }}
+                              >
+                                FREE
+                              </span>
+                            )}
+                            {!hasAccess && !video.isFree && (
+                              <span
+                                className="text-xs px-2 py-1 rounded-full ml-2"
+                                style={{
+                                  background: "var(--color-primary-400)",
+                                  color: "var(--color-text-secondary)",
+                                }}
+                              >
+                                🔒
+                              </span>
+                            )}
+                          </div>
+                          <p
+                            className="text-sm"
+                            style={{ color: "var(--color-text-secondary)" }}
+                          >
+                            {formatDuration(video.duration, "compact")}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

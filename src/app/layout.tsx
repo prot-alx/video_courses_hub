@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "../styles/globals.css";
 import SessionProvider from "@/components/auth/SessionProvider";
 import AdminContactButton from "@/components/layout/AdminContactButton";
+import "../styles/globals.css";
 
 export const metadata: Metadata = {
   title: "VideoCourses Platform",

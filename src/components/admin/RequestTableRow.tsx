@@ -1,28 +1,10 @@
+// components/admin/RequestTableRow.tsx (обновленная версия с централизованными типами)
 import StatusBadge from "./StatusBadge";
 import RequestActions from "./RequestActions";
-
-interface Request {
-  id: string;
-  user: {
-    name: string;
-    email: string;
-    phone?: string | null;
-    telegram?: string | null;
-    preferredContact: "email" | "phone" | "telegram";
-  };
-  course: { 
-    id: string;           // ← Добавили courseId
-    title: string; 
-    price: number; 
-  };
-  status: "new" | "approved" | "rejected" | "cancelled";
-  contactMethod: "email" | "phone" | "telegram";
-  createdAt: string;
-  processedAt?: string;
-}
+import type { CourseRequest } from "@/types";
 
 interface RequestTableRowProps {
-  request: Request;
+  request: CourseRequest;
   onApprove: (requestId: string) => void;
   onReject: (requestId: string) => void;
   isLoading?: boolean;
@@ -44,7 +26,7 @@ function handleContactClick(contactType: string, contactValue: string) {
   }
 }
 
-function getPreferredContactElement(request: Request) {
+function getPreferredContactElement(request: CourseRequest) {
   const { user } = request;
 
   switch (user.preferredContact) {

@@ -15,7 +15,7 @@ export default function SignInPage() {
       // NextAuth v5 signIn
       const result = await signIn("google", {
         callbackUrl: "/",
-        redirect: false, // Контролируем редирект вручную
+        redirect: false,
       });
 
       if (result?.error) {

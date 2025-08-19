@@ -64,14 +64,6 @@ export default function AdminFilesPage() {
     );
   }
 
-  // Навигация (files страница активна)
-  const navItems = [
-    { href: "/admin", label: "Курсы" },
-    { href: "/admin/requests", label: "Заявки" },
-    { href: "/admin/users", label: "Пользователи" },
-    { href: "/admin/files", label: "Файлы", isActive: true },
-  ];
-
   return (
     <div
       className="min-h-screen"
@@ -80,7 +72,7 @@ export default function AdminFilesPage() {
       <AdminHeader onSignOut={handleSignOut} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <AdminNavigation items={navItems} />
+        <AdminNavigation />
 
         {/* Заголовок страницы */}
         <div className="mb-8">

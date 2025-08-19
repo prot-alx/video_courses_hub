@@ -1,18 +1,16 @@
+// components/admin/CourseTableRow.tsx (обновленная версия с централизованными типами)
 import CourseActions from "./CourseActions";
+import type { Course } from "@/types";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  price: number | null;
-  isFree: boolean;
+// Расширяем базовый Course для админских полей
+interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;
   createdAt: string;
 }
 
 interface CourseTableRowProps {
-  course: Course;
+  course: AdminCourse;
   onDelete: (courseId: string) => void;
   isLoading?: boolean;
 }
@@ -26,7 +24,8 @@ export default function CourseTableRow({
     return new Date(dateString).toLocaleDateString("ru");
   };
 
-  const truncateText = (text: string, maxLength: number = 50) => {
+  const truncateText = (text: string | null, maxLength: number = 50) => {
+    if (!text) return "Без описания";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
 

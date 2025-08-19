@@ -1,3 +1,4 @@
+// app/admin/requests/page.tsx (обновленная версия с централизованными типами)
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,53 +8,11 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatusFilter from "@/components/admin/StatusFilter";
 import RequestTable from "@/components/admin/RequestTable";
+import type { CourseRequest, RequestStatusType, ApiResponse } from "@/types";
 
-interface User {
-  name: string | null;
-  email: string;
-  phone?: string | null;
-  telegram?: string | null;
-  preferredContact: "email" | "phone" | "telegram";
-}
-
-interface Course {
-  id: string; // ← Добавили id
-  title: string;
-  price: number | null;
-}
-
-interface ApiRequest {
-  id: string;
-  user: User;
-  course: Course;
-  status: "new" | "approved" | "rejected" | "cancelled";
-  contactMethod: "email" | "phone" | "telegram";
-  createdAt: string;
-  processedAt: string | null;
-}
-
-interface TableRequest {
-  id: string;
-  user: {
-    name: string;
-    email: string;
-    phone?: string | null;
-    telegram?: string | null;
-    preferredContact: "email" | "phone" | "telegram";
-  };
-  course: {
-    id: string; // ← Добавили id
-    title: string;
-    price: number;
-  };
-  status: "new" | "approved" | "rejected" | "cancelled";
-  contactMethod: "email" | "phone" | "telegram";
-  createdAt: string;
-  processedAt?: string;
-}
-
-interface RequestsData {
-  requests: ApiRequest[];
+// Тип для API ответа с заявками
+interface RequestsApiResponse {
+  requests: CourseRequest[];
   stats: {
     total: number;
     new: number;
@@ -63,19 +22,28 @@ interface RequestsData {
   };
 }
 
+// Тип для фильтра статусов
+type FilterType = "all" | "new" | "approved" | "rejected";
+
+// Тип для статистики в компоненте
+interface RequestStats {
+  all: number;
+  new: number;
+  approved: number;
+  rejected: number;
+}
+
 export default function AdminRequestsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
-  const [filter, setFilter] = useState<"all" | "new" | "approved" | "rejected">(
-    "all"
-  );
-  const [requests, setRequests] = useState<TableRequest[]>([]);
-  const [stats, setStats] = useState({
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [requests, setRequests] = useState<CourseRequest[]>([]);
+  const [stats, setStats] = useState<RequestStats>({
     all: 0,
     new: 0,
     approved: 0,
     rejected: 0,
   });
-  
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -90,12 +58,13 @@ export default function AdminRequestsPage() {
           : "/api/admin/requests";
 
       const response = await fetch(url);
-      const data = await response.json();
+      const data: ApiResponse<RequestsApiResponse> = await response.json();
 
-      if (data.success) {
-        const requestsData: RequestsData = data.data;
+      if (data.success && data.data) {
+        const requestsData = data.data;
 
-        const transformedRequests: TableRequest[] = requestsData.requests.map(
+        // Трансформируем данные, убеждаясь, что они соответствуют нашим типам
+        const transformedRequests: CourseRequest[] = requestsData.requests.map(
           (apiRequest) => ({
             id: apiRequest.id,
             user: {
@@ -113,7 +82,7 @@ export default function AdminRequestsPage() {
             status: apiRequest.status,
             contactMethod: apiRequest.contactMethod,
             createdAt: apiRequest.createdAt,
-            processedAt: apiRequest.processedAt || undefined,
+            processedAt: apiRequest.processedAt,
           })
         );
 
@@ -152,10 +121,12 @@ export default function AdminRequestsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "approved" }),
+        body: JSON.stringify({
+          status: "approved" satisfies RequestStatusType,
+        }),
       });
 
-      const data = await response.json();
+      const data: ApiResponse<unknown> = await response.json();
 
       if (data.success) {
         alert("Заявка одобрена! Пользователю выдан доступ к курсу.");
@@ -181,10 +152,12 @@ export default function AdminRequestsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "rejected" }),
+        body: JSON.stringify({
+          status: "rejected" satisfies RequestStatusType,
+        }),
       });
 
-      const data = await response.json();
+      const data: ApiResponse<unknown> = await response.json();
 
       if (data.success) {
         alert("Заявка отклонена.");
@@ -215,7 +188,7 @@ export default function AdminRequestsPage() {
       new: "новых",
       approved: "одобренных",
       rejected: "отклоненных",
-    };
+    } as const;
     return `Нет ${filterLabels[filter]} заявок`;
   };
 
@@ -247,19 +220,6 @@ export default function AdminRequestsPage() {
     );
   }
 
-  // Навигация
-  const navItems = [
-    { href: "/admin", label: "Курсы" },
-    {
-      href: "/admin/requests",
-      label: "Заявки",
-      isActive: true,
-      badge: stats.new > 0 ? stats.new : undefined,
-    },
-    { href: "/admin/users", label: "Пользователи" },
-    { href: "/admin/files", label: "Файлы" },
-  ];
-
   return (
     <div
       className="min-h-screen"
@@ -268,7 +228,7 @@ export default function AdminRequestsPage() {
       <AdminHeader title="Заявки на покупку" onSignOut={handleSignOut} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <AdminNavigation items={navItems} />
+        <AdminNavigation />
 
         {/* Error State */}
         {error && (
