@@ -103,6 +103,7 @@ export default function SortableVideoList({
   };
 
   const formatFileSize = (filename: string) => {
+    console.log(filename);
     // Примерная оценка, в реальности нужно получать размер файла
     return "~50-100MB";
   };

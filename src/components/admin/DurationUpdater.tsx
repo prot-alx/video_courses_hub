@@ -11,8 +11,10 @@ interface DurationStats {
 export default function DurationUpdater() {
   const [stats, setStats] = useState<DurationStats | null>(null);
   const [updating, setUpdating] = useState(false);
-  const [results, setResults] = useState<any[] | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [results, setResults] = useState<any[] | null>(null);
+  console.log(results);
   const fetchStats = async () => {
     try {
       // Получаем статистику видео без длительности
@@ -22,6 +24,7 @@ export default function DurationUpdater() {
       if (data.success) {
         const totalVideos = data.data.length;
         const videosWithoutDuration = data.data.filter(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (video: any) => !video.duration || video.duration === 0
         ).length;
 

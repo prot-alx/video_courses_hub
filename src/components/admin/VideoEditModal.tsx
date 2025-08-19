@@ -103,7 +103,7 @@ export default function VideoEditModal({
 
         <div className="space-y-4">
           <div>
-            <label className="input-discord w-full" min="0" />
+            <label className="input-discord w-full" />
           </div>
 
           <div className="flex items-center gap-2">

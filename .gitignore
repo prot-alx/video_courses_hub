@@ -44,3 +44,5 @@ next-env.d.ts
 .env
 prisma/migrations/*
 !prisma/migrations/.gitkeep/uploads/
+
+ecosystem.config.js

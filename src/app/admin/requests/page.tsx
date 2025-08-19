@@ -75,6 +75,8 @@ export default function AdminRequestsPage() {
     approved: 0,
     rejected: 0,
   });
+  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export default function AdminRequestsPage() {
               preferredContact: apiRequest.user.preferredContact,
             },
             course: {
-              id: apiRequest.course.id, // ← Добавить courseId
+              id: apiRequest.course.id,
               title: apiRequest.course.title,
               price: apiRequest.course.price || 0,
             },

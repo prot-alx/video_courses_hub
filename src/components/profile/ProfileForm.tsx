@@ -135,6 +135,7 @@ export default function ProfileForm({
             <select
               value={formData.preferredContact}
               onChange={(e) =>
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 handleFieldChange("preferredContact", e.target.value as any)
               }
               disabled={!isEditing}
@@ -144,7 +145,7 @@ export default function ProfileForm({
                   ? "var(--color-primary-100)"
                   : "var(--color-primary-400)",
                 borderColor: "var(--color-primary-400)",
-                color: isEditing 
+                color: isEditing
                   ? "var(--color-primary-400)"
                   : "var(--color-text-secondary)",
               }}

@@ -3,13 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ReorderVideosSchema } from "@/lib/validations";
-import z from "zod";
+import { ZodError } from "zod";
 
 // PUT /api/admin/videos/reorder - изменить порядок видео
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-
     if (!session?.user?.id || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "Доступ запрещен" },
@@ -45,9 +44,12 @@ export async function PUT(request: NextRequest) {
       message: "Порядок видео обновлен",
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        { success: false, error: error.errors[0].message },
+        {
+          success: false,
+          error: error.issues[0]?.message || "Неверные данные",
+        },
         { status: 400 }
       );
     }

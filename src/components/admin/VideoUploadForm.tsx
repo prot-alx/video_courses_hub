@@ -40,6 +40,7 @@ export default function VideoUploadForm({
 
         if (result.success) {
           const maxOrder = result.data.reduce(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (max: number, video: any) => Math.max(max, video.orderIndex),
             -1
           );

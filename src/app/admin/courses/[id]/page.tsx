@@ -1,3 +1,4 @@
+// app/admin/courses/[id]/page.tsx
 "use client";
 
 import { useState, useEffect, use } from "react";
@@ -68,6 +69,7 @@ export default function EditCoursePage({
 
   useEffect(() => {
     fetchCourse();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const handleThumbnailUpload = async (

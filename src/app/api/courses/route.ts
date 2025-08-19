@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const validatedParams = GetCoursesSchema.parse({ type: typeParam });
 
     // Фильтры для типов курсов
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const whereClause: any = {
       isActive: true, // Показываем только активные курсы
     };

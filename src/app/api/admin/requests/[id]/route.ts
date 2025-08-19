@@ -6,7 +6,7 @@ import { ProcessRequestSchema } from "@/lib/validations";
 // PATCH /api/admin/requests/[id] - обработать заявку (одобрить/отклонить)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -19,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const requestId = params.id;
+    const { id: requestId } = await params;
     const body = await request.json();
 
     // Валидация данных
@@ -137,7 +137,7 @@ export async function PATCH(
 // GET /api/admin/requests/[id] - получить детали заявки
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -150,7 +150,7 @@ export async function GET(
       );
     }
 
-    const requestId = params.id;
+    const { id: requestId } = await params;
 
     const courseRequest = await prisma.courseRequest.findUnique({
       where: { id: requestId },

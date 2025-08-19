@@ -70,8 +70,6 @@ function getPreferredContactElement(user: User) {
 
 export default function UserTableRow({
   user,
-  onGrantAccess,
-  onRevokeAccess,
 }: Readonly<UserTableRowProps>) {
   return (
     <tr

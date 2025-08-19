@@ -72,7 +72,8 @@ export async function GET(
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunksize = end - start + 1;
       const stream = createReadStream(videoPath, { start, end });
-
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return new NextResponse(stream as any, {
         status: 206,
         headers: {
@@ -86,6 +87,7 @@ export async function GET(
     } else {
       // Обычная отдача файла
       const stream = createReadStream(videoPath);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return new NextResponse(stream as any, {
         headers: {
           "Content-Length": fileSize.toString(),

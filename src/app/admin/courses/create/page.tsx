@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -224,18 +225,23 @@ export default function CreateCoursePage() {
               {/* Предпросмотр */}
               {formData.thumbnail && (
                 <div className="mt-3">
-                  <img
-                    src={`/api/uploads/thumbnails/${formData.thumbnail
-                      .split("/")
-                      .pop()}`}
-                    alt="Превью курса"
-                    className="w-full max-w-sm h-32 object-cover rounded border"
+                  <div
+                    className="relative w-full max-w-sm h-32 rounded border overflow-hidden"
                     style={{ borderColor: "var(--color-primary-400)" }}
-                    onError={(e) => {
-                      console.log("Ошибка загрузки изображения");
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
+                  >
+                    <Image
+                      src={`/api/uploads/thumbnails/${formData.thumbnail
+                        .split("/")
+                        .pop()}`}
+                      alt="Превью курса"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 400px) 100vw, 400px"
+                      onError={() => {
+                        console.log("Ошибка загрузки изображения");
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -380,10 +386,7 @@ export default function CreateCoursePage() {
           >
             💡 Что дальше?
           </h3>
-          <p
-            className="text-sm"
-            style={{ color: "var(--color-primary-400)" }}
-          >
+          <p className="text-sm" style={{ color: "var(--color-primary-400)" }}>
             После создания курса вы сможете добавить к нему видео, управлять
             доступом пользователей и редактировать информацию.
           </p>

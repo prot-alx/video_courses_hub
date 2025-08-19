@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CreateVideoSchema, UpdateVideoSchema } from "@/lib/validations";
-import { writeFile, mkdir, unlink } from "fs/promises";
+import { unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 import { updateCourseDuration } from "@/lib/helpers/courseDuration";

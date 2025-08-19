@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     const statusFilter = searchParams.get("status"); // new, approved, rejected, cancelled
     const limit = parseInt(searchParams.get("limit") || "50");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const whereClause: any = {};
     if (
       statusFilter &&

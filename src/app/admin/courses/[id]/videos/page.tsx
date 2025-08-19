@@ -118,6 +118,7 @@ export default function ManageVideosPage({
   useEffect(() => {
     fetchCourse();
     fetchDiskInfo();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const formatDuration = (seconds: number | null) => {
@@ -125,11 +126,6 @@ export default function ManageVideosPage({
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return hours > 0 ? `${hours}ч ${minutes}м` : `${minutes}м`;
-  };
-
-  const formatFileSize = (filename: string) => {
-    // Примерная оценка, в реальности нужно получать размер файла
-    return "~50-100MB";
   };
 
   if (loading) {

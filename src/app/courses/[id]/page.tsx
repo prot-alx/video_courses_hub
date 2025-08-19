@@ -99,12 +99,14 @@ export default function CoursePage({
 
   useEffect(() => {
     fetchCourse();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   useEffect(() => {
     if (course && isAuthenticated) {
       fetchRequestStatus();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, isAuthenticated]);
 
   const handlePurchaseRequest = async () => {

@@ -55,6 +55,7 @@ export default function VideoPage({
 
   useEffect(() => {
     fetchVideo();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedParams.id]);
 
   const formatDurationLocal = (seconds: number | null) => {

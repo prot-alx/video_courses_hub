@@ -14,7 +14,6 @@ export default function VideoPlayer({
   videoId,
   hasAccess,
   poster,
-  title,
   className = "",
 }: Readonly<VideoPlayerProps>) {
   const [loading, setLoading] = useState(true);

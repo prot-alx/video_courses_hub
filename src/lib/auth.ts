@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
@@ -20,6 +21,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ user, account, profile }) {
       // Сохраняем пользователя в БД при первом входе
+      console.log(user);
       if (account?.provider === "google" && profile?.email) {
         try {
           await prisma.user.upsert({

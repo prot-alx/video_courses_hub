@@ -139,6 +139,7 @@ export async function GET() {
       });
     } catch (diskError) {
       // Fallback для Windows или если команда не работает
+      console.log(diskError);
       return NextResponse.json({
         success: true,
         data: {
