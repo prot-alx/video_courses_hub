@@ -1,4 +1,3 @@
-// app/admin/users/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";

@@ -1,4 +1,3 @@
-// Simple ping endpoint for monitoring tools
 import { NextResponse } from "next/server";
 
 export async function GET() {

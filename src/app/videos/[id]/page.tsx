@@ -1,4 +1,3 @@
-// app/videos/[id]/page.tsx (обновленная версия с централизованными типами)
 "use client";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";

@@ -1,6 +1,4 @@
-// components/admin/AdminNavigation.tsx (обновленная версия)
 "use client";
-
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -83,23 +81,48 @@ export default function AdminNavigation({
   const navItems = items || autoNavItems;
 
   return (
-    <nav className="flex gap-4 mb-8">
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={`btn-discord relative ${
-            item.isActive ? "btn-discord-primary" : "btn-discord-secondary"
-          }`}
-        >
-          {item.label}
-          {item.badge && item.badge > 0 && (
-            <span className="notification-badge absolute -top-2 -right-2">
-              {item.badge}
-            </span>
-          )}
-        </Link>
-      ))}
+    <nav className="mb-8">
+      {/* Десктопная версия */}
+      <div className="hidden md:flex gap-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`btn-discord relative ${
+              item.isActive ? "btn-discord-primary" : "btn-discord-secondary"
+            }`}
+          >
+            {item.label}
+            {item.badge && item.badge > 0 && (
+              <span className="notification-badge absolute -top-2 -right-2">
+                {item.badge}
+              </span>
+            )}
+          </Link>
+        ))}
+      </div>
+
+      {/* Мобильная версия - горизонтальный скролл */}
+      <div className="md:hidden overflow-x-auto scrollbar-hide">
+        <div className="flex gap-3 pb-2 min-w-max">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`btn-discord relative whitespace-nowrap text-sm px-3 py-2 ${
+                item.isActive ? "btn-discord-primary" : "btn-discord-secondary"
+              }`}
+            >
+              {item.label}
+              {item.badge && item.badge > 0 && (
+                <span className="notification-badge absolute -top-1 -right-1 text-xs min-w-[16px] h-4 leading-4">
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
     </nav>
   );
 }

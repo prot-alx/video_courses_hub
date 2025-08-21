@@ -1,4 +1,3 @@
-// app/api/videos/[id]/stream/route.ts (обновленная версия с типизацией)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -13,7 +12,7 @@ interface VideoStreamParams {
 
 // Исправленная функция с правильной типизацией
 function nodeStreamToWebStream(
-  nodeStream: Readable // Используем Readable вместо NodeJS.ReadableStream
+  nodeStream: Readable
 ): ReadableStream<Uint8Array> {
   return new ReadableStream({
     start(controller) {
@@ -22,7 +21,7 @@ function nodeStreamToWebStream(
       const cleanup = () => {
         if (!isClosed) {
           isClosed = true;
-          nodeStream.destroy(); // Теперь destroy() доступен
+          nodeStream.destroy();
         }
       };
 

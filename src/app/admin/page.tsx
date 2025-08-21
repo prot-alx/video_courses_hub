@@ -1,4 +1,3 @@
-// app/admin/page.tsx (обновленная версия с SortableCourseTable)
 "use client";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
@@ -8,18 +7,16 @@ import { useToastContext } from "@/components/providers/ToastProvider";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatsGrid from "@/components/admin/StatsGrid";
-import SortableCourseTable from "@/components/admin/SortableCourseTable"; // ← ИЗМЕНЕНО: используем SortableCourseTable
+import SortableCourseTable from "@/components/admin/SortableCourseTable";
 import type { Course, ApiResponse } from "@/types";
 
-// Расширяем базовый Course для админских полей
 interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;
   createdAt: string;
-  orderIndex: number; // ← ДОБАВЛЕНО: orderIndex
+  orderIndex: number;
 }
 
-// Расширение для API ответа с дополнительными метриками
 interface ApiCourse extends AdminCourse {
   usersWithAccess: number;
   pendingRequests: number;
@@ -52,11 +49,10 @@ export default function AdminPage() {
       const data: ApiResponse<ApiCourse[]> = await response.json();
 
       if (data.success && data.data) {
-        // Преобразуем данные API в формат, ожидаемый SortableCourseTable
         const processedCourses: AdminCourse[] = data.data.map((apiCourse) => ({
           id: apiCourse.id,
           title: apiCourse.title,
-          description: apiCourse.description || "", // null -> пустая строка
+          description: apiCourse.description || "",
           price: apiCourse.price,
           isFree: apiCourse.isFree,
           hasAccess: apiCourse.hasAccess,
@@ -65,13 +61,12 @@ export default function AdminPage() {
           videos: apiCourse.videos,
           thumbnail: apiCourse.thumbnail,
           isActive: apiCourse.isActive,
-          orderIndex: apiCourse.orderIndex, // ← ДОБАВЛЕНО: orderIndex
+          orderIndex: apiCourse.orderIndex,
           createdAt: new Date(apiCourse.createdAt).toISOString().split("T")[0], // Форматируем дату
         }));
 
         setCourses(processedCourses);
 
-        // Вычисляем статистику из полученных данных
         const totalCourses = data.data.length;
         const activeCourses = data.data.filter((c) => c.isActive).length;
         const freeCourses = data.data.filter((c) => c.isFree).length;
@@ -139,7 +134,6 @@ export default function AdminPage() {
           : undefined;
         toast.success("Курс удален!", message);
 
-        // Обновляем список курсов
         await fetchCourses();
       } else {
         toast.error(
@@ -153,7 +147,6 @@ export default function AdminPage() {
     }
   };
 
-  // Проверка доступа
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

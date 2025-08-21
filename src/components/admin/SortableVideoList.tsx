@@ -1,6 +1,4 @@
-// components/admin/SortableVideoList.tsx (обновленная версия с централизованными типами)
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useToastContext } from "@/components/providers/ToastProvider";

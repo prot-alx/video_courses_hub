@@ -1,4 +1,3 @@
-// components/admin/FileManager.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
@@ -135,7 +134,7 @@ export default function FileManager() {
             <div className="flex items-center justify-between mb-2">
               <h3
                 className="font-medium"
-                style={{ color: "var(--color-text-primary)" }}
+                style={{ color: "var(--color-primary-400)" }}
               >
                 🎥 Видеофайлы
               </h3>
@@ -155,7 +154,7 @@ export default function FileManager() {
             </div>
             <div
               className="text-sm space-y-1"
-              style={{ color: "var(--color-text-secondary)" }}
+              style={{ color: "var(--color-primary-400)" }}
             >
               <div>Всего файлов: {stats.videos.total}</div>
               <div>
@@ -180,7 +179,7 @@ export default function FileManager() {
             <div className="flex items-center justify-between mb-2">
               <h3
                 className="font-medium"
-                style={{ color: "var(--color-text-primary)" }}
+                style={{ color: "var(--color-primary-400)" }}
               >
                 🖼️ Превью курсов
               </h3>
@@ -200,7 +199,7 @@ export default function FileManager() {
             </div>
             <div
               className="text-sm space-y-1"
-              style={{ color: "var(--color-text-secondary)" }}
+              style={{ color: "var(--color-primary-400)" }}
             >
               <div>Всего файлов: {stats.thumbnails.total}</div>
               <div>

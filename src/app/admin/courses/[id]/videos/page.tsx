@@ -1,6 +1,4 @@
-// app/admin/courses/[id]/videos/page.tsx (обновленная версия с формой редактирования)
 "use client";
-
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useToastContext } from "@/components/providers/ToastProvider";
@@ -9,7 +7,6 @@ import VideoEditForm from "@/components/admin/VideoEditForm";
 import SortableVideoList from "@/components/admin/SortableVideoList";
 import type { Video } from "@/types";
 
-// Специфические для админки типы, которых нет в централизованных
 interface AdminVideo extends Video {
   displayName: string;
   filename: string;

@@ -6,7 +6,6 @@ interface UserStatsCardsProps {
   isLoading?: boolean;
 }
 
-// Создаем отдельную сетку, так как ваш StatsGrid требует интерфейс Stats для курсов
 export default function UserStatsCards({
   stats,
   isLoading = false,

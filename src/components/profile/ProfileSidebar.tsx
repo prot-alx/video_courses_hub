@@ -1,4 +1,3 @@
-// components/profile/ProfileSidebar.tsx
 import UserStats from "./UserStats";
 
 interface ProfileSidebarProps {

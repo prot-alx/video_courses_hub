@@ -1,11 +1,9 @@
-// app/page.tsx - новая посадочная страница для образовательной школы
 "use client";
 import { useAuth } from "@/lib/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
-// Компонент для отображения ключевых преимуществ
 const FeatureCard = ({
   icon,
   title,

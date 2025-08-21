@@ -1,4 +1,3 @@
-// components/admin/VideoUploadForm.tsx (обновленная версия с типизацией)
 "use client";
 import { useState, useEffect } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";

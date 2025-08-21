@@ -1,4 +1,3 @@
-// components/admin/CourseTable.tsx (обновленная версия с централизованными типами)
 import Link from "next/link";
 import CourseTableRow from "./CourseTableRow";
 import type { Course } from "@/types";

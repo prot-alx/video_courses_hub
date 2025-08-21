@@ -1,4 +1,3 @@
-// components/admin/RequestTableRow.tsx (обновленная версия с централизованными типами)
 import StatusBadge from "./StatusBadge";
 import RequestActions from "./RequestActions";
 import type { CourseRequest } from "@/types";

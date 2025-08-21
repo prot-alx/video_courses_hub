@@ -1,4 +1,3 @@
-// app/api/admin/courses/route.ts (обновленная версия с orderIndex)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -48,7 +47,7 @@ export async function GET() {
         },
       },
       orderBy: {
-        orderIndex: "asc", // ← ИЗМЕНЕНО: сортируем по orderIndex вместо createdAt
+        orderIndex: "asc",
       },
     });
 
@@ -61,7 +60,7 @@ export async function GET() {
       isActive: course.isActive,
       thumbnail: course.thumbnail,
       totalDuration: course.totalDuration,
-      orderIndex: course.orderIndex, // ← ДОБАВЛЕНО: включаем orderIndex в ответ
+      orderIndex: course.orderIndex,
       createdAt: course.createdAt,
       videosCount: course._count.videos,
       usersWithAccess: course._count.userAccess,
@@ -116,7 +115,7 @@ export async function POST(request: NextRequest) {
         isFree: validatedData.isFree,
         isActive: validatedData.isActive,
         thumbnail: validatedData.thumbnail || null,
-        orderIndex: nextOrderIndex, // ← ДОБАВЛЕНО: устанавливаем orderIndex
+        orderIndex: nextOrderIndex,
       },
     });
 

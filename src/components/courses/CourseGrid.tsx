@@ -1,4 +1,3 @@
-// components/courses/CourseGrid.tsx (обновленная версия с централизованными типами)
 import CourseCard from "./CourseCard";
 import type { Course } from "@/types";
 

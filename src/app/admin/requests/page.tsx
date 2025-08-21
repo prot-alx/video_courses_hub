@@ -1,6 +1,4 @@
-// app/admin/requests/page.tsx (обновленная версия с централизованными типами)
 "use client";
-
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -11,7 +9,6 @@ import StatusFilter from "@/components/admin/StatusFilter";
 import RequestTable from "@/components/admin/RequestTable";
 import type { CourseRequest, RequestStatusType, ApiResponse } from "@/types";
 
-// Тип для API ответа с заявками
 interface RequestsApiResponse {
   requests: CourseRequest[];
   stats: {
@@ -23,10 +20,8 @@ interface RequestsApiResponse {
   };
 }
 
-// Тип для фильтра статусов
 type FilterType = "all" | "new" | "approved" | "rejected";
 
-// Тип для статистики в компоненте
 interface RequestStats {
   all: number;
   new: number;

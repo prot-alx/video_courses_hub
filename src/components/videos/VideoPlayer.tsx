@@ -1,4 +1,3 @@
-// components/videos/VideoPlayer.tsx (обновленная версия)
 "use client";
 import { useState, useRef } from "react";
 

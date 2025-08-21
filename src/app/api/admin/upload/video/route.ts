@@ -1,4 +1,3 @@
-// app/api/admin/upload/video/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
@@ -103,34 +102,71 @@ export async function GET() {
       );
     }
 
-    try {
-      // Получаем информацию о свободном месте (Linux/Mac)
-      const output = execSync("df -h .", { encoding: "utf8" });
-      const lines = output.trim().split("\n");
-      const data = lines[1].split(/\s+/);
+    let diskInfo = {
+      total: "N/A",
+      used: "N/A", 
+      available: "N/A",
+      usePercentage: "N/A",
+    };
 
-      const diskInfo = {
-        total: data[1],
-        used: data[2],
-        available: data[3],
-        usePercentage: data[4],
-      };
+    try {
+      const isWindows = process.platform === "win32";
+      
+      if (isWindows) {
+        // Для Windows используем wmic команду
+        const driveLetter = process.cwd().charAt(0);
+        const output = execSync(
+          `wmic logicaldisk where caption="${driveLetter}:" get size,freespace,caption /format:csv`,
+          { encoding: "utf8" }
+        );
+        
+        const lines = output.trim().split("\n").filter(line => line.includes(driveLetter));
+        if (lines.length > 0) {
+          const data = lines[0].split(",");
+          const freeSpace = parseInt(data[2]);
+          const totalSpace = parseInt(data[3]);
+          const usedSpace = totalSpace - freeSpace;
+          const usePercentage = Math.round((usedSpace / totalSpace) * 100);
+
+          const formatBytes = (bytes: number) => {
+            if (bytes === 0) return "0 B";
+            const k = 1024;
+            const sizes = ["B", "KB", "MB", "GB", "TB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+          };
+
+          diskInfo = {
+            total: formatBytes(totalSpace),
+            used: formatBytes(usedSpace),
+            available: formatBytes(freeSpace),
+            usePercentage: `${usePercentage}%`,
+          };
+        }
+      } else {
+        // Для Linux/Mac используем df команду
+        const output = execSync("df -h .", { encoding: "utf8" });
+        const lines = output.trim().split("\n");
+        if (lines.length > 1) {
+          const data = lines[1].split(/\s+/);
+          diskInfo = {
+            total: data[1],
+            used: data[2],
+            available: data[3],
+            usePercentage: data[4],
+          };
+        }
+      }
 
       return NextResponse.json({
         success: true,
         data: diskInfo,
       });
     } catch (diskError) {
-      // Fallback для Windows или если команда не работает
-      console.log(diskError);
+      console.error("Ошибка получения информации о диске:", diskError);
       return NextResponse.json({
         success: true,
-        data: {
-          total: "N/A",
-          used: "N/A",
-          available: "N/A",
-          usePercentage: "N/A",
-        },
+        data: diskInfo,
       });
     }
   } catch (error) {

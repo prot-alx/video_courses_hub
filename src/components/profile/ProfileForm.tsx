@@ -1,4 +1,3 @@
-// components/profile/ProfileForm.tsx (обновленная версия с типизацией)
 "use client";
 import { useState } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";

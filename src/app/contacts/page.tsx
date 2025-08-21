@@ -1,4 +1,3 @@
-// app/contacts/page.tsx - страница "Контакты"
 "use client";
 import { useState } from "react";
 import Header from "@/components/layout/Header";

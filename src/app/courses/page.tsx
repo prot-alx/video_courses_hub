@@ -1,4 +1,3 @@
-// app/courses/page.tsx - список всех курсов (бывшая главная)
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";

@@ -1,4 +1,3 @@
-// components/admin/CourseTableRow.tsx (обновленная версия с централизованными типами)
 import CourseActions from "./CourseActions";
 import type { Course } from "@/types";
 

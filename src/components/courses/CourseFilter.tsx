@@ -1,4 +1,3 @@
-// components/courses/CourseFilter.tsx (обновленная версия с централизованными типами)
 import type { CourseFilterType } from "@/types";
 
 interface CourseFilterProps {

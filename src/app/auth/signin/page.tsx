@@ -14,7 +14,6 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // NextAuth v5 signIn
       const result = await signIn("google", {
         callbackUrl: "/",
         redirect: false,
@@ -27,7 +26,6 @@ export default function SignInPage() {
           "Попробуйте снова или обратитесь в поддержку"
         );
       } else if (result?.url) {
-        // Успешный вход - перенаправляем
         window.location.href = result.url;
       }
     } catch (error) {

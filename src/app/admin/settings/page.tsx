@@ -1,4 +1,3 @@
-// app/admin/settings/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";

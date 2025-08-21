@@ -1,4 +1,3 @@
-// components/courses/VideoList.tsx (обновленная версия с централизованными типами)
 import VideoItem from "./VideoItem";
 import type { Video } from "@/types/course";
 

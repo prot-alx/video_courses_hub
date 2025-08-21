@@ -1,4 +1,3 @@
-// components/courses/VideoItem.tsx (обновленная версия с централизованными типами)
 import Link from "next/link";
 import { formatDuration } from "@/lib/utils";
 import type { Video } from "@/types/course";

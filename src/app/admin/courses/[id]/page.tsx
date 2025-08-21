@@ -1,6 +1,4 @@
-// app/admin/courses/[id]/page.tsx (обновленная версия с централизованными типами)
 "use client";
-
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,7 +6,6 @@ import Image from "next/image";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import type { Course, UpdateCourseInput } from "@/types";
 
-// Расширяем базовый Course для админских полей
 interface AdminCourse extends Course {
   isActive: boolean;
 }

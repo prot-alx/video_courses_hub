@@ -1,4 +1,3 @@
-// components/courses/CourseInfo.tsx (обновленная версия с централизованными типами)
 import PurchaseButton from "./PurchaseButton";
 import type { Course } from "@/types";
 
