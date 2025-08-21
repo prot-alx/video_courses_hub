@@ -25,6 +25,7 @@
 *.pem
 .claude/
 .claude/*
+mkcert.exe
 
 # debug
 npm-debug.log*
