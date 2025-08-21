@@ -1,10 +1,20 @@
 // Upload with real progress tracking
 export type UploadProgressCallback = (progress: number) => void;
 
+export interface UploadResponse {
+  success: boolean;
+  data: {
+    filename: string;
+    originalName: string;
+    size: number;
+    type: string;
+  };
+  error?: string;
+}
+
 export interface UploadResult {
   success: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
+  data?: UploadResponse;
   error?: string;
 }
 

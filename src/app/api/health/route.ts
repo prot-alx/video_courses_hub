@@ -28,7 +28,6 @@ interface HealthCheck {
 }
 
 export async function GET() {
-  const startTime = Date.now();
   const healthCheck: HealthCheck = {
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -61,12 +60,6 @@ export async function GET() {
 
   // 2. Disk Space Check
   try {
-    const fs = await import("fs");
-    const path = await import("path");
-
-    const uploadsPath = path.join(process.cwd(), "uploads");
-    const stats = fs.statSync(uploadsPath);
-
     // На Windows используем другой подход
     if (process.platform === "win32") {
       healthCheck.checks.diskSpace = {
