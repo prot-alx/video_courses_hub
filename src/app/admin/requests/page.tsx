@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatusFilter from "@/components/admin/StatusFilter";
@@ -35,6 +36,7 @@ interface RequestStats {
 
 export default function AdminRequestsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
+  const toast = useToastContext();
   const [filter, setFilter] = useState<FilterType>("all");
   const [requests, setRequests] = useState<CourseRequest[]>([]);
   const [stats, setStats] = useState<RequestStats>({
@@ -129,13 +131,16 @@ export default function AdminRequestsPage() {
       const data: ApiResponse<unknown> = await response.json();
 
       if (data.success) {
-        alert("Заявка одобрена! Пользователю выдан доступ к курсу.");
+        toast.success("Заявка одобрена!", "Пользователю выдан доступ к курсу");
         await fetchRequests(filter); // Обновляем список
       } else {
-        alert(data.error || "Ошибка при одобрении заявки");
+        toast.error(
+          "Ошибка одобрения",
+          data.error || "Ошибка при одобрении заявки"
+        );
       }
     } catch (error) {
-      alert("Ошибка сети при одобрении заявки");
+      toast.error("Сетевая ошибка", "Ошибка сети при одобрении заявки");
       console.error("Ошибка одобрения заявки:", error);
     } finally {
       setProcessingId(null);
@@ -160,13 +165,16 @@ export default function AdminRequestsPage() {
       const data: ApiResponse<unknown> = await response.json();
 
       if (data.success) {
-        alert("Заявка отклонена.");
+        toast.success("Заявка отклонена");
         await fetchRequests(filter); // Обновляем список
       } else {
-        alert(data.error || "Ошибка при отклонении заявки");
+        toast.error(
+          "Ошибка отклонения",
+          data.error || "Ошибка при отклонении заявки"
+        );
       }
     } catch (error) {
-      alert("Ошибка сети при отклонении заявки");
+      toast.error("Сетевая ошибка", "Ошибка сети при отклонении заявки");
       console.error("Ошибка отклонения заявки:", error);
     } finally {
       setProcessingId(null);

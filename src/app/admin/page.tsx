@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatsGrid from "@/components/admin/StatsGrid";
@@ -33,6 +34,7 @@ interface AdminStats {
 
 export default function AdminPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
+  const toast = useToastContext();
   const [courses, setCourses] = useState<AdminCourse[]>([]);
   const [stats, setStats] = useState<AdminStats>({
     totalCourses: 0,
@@ -87,10 +89,14 @@ export default function AdminPage() {
 
         setError(null);
       } else {
-        setError(data.error || "Ошибка загрузки курсов");
+        const errorMsg = data.error || "Ошибка загрузки курсов";
+        setError(errorMsg);
+        toast.error("Ошибка", errorMsg);
       }
     } catch (err) {
-      setError("Ошибка сети при загрузке курсов");
+      const errorMsg = "Ошибка сети при загрузке курсов";
+      setError(errorMsg);
+      toast.error("Сетевая ошибка", errorMsg);
       console.error("Ошибка загрузки курсов:", err);
     } finally {
       setIsLoading(false);
@@ -101,6 +107,7 @@ export default function AdminPage() {
     if (isAuthenticated && isAdmin) {
       fetchCourses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isAdmin]);
 
   const handleSignOut = async () => {
@@ -128,17 +135,20 @@ export default function AdminPage() {
 
       if (data.success) {
         const message = data.data
-          ? `Курс удален!\nУдалено файлов: ${data.data.deletedFiles}\nОшибок удаления: ${data.data.failedFiles}`
-          : "Курс удален!";
-        alert(message);
+          ? `Удалено файлов: ${data.data.deletedFiles}, ошибок: ${data.data.failedFiles}`
+          : undefined;
+        toast.success("Курс удален!", message);
 
         // Обновляем список курсов
         await fetchCourses();
       } else {
-        alert(data.error || "Ошибка при удалении курса");
+        toast.error(
+          "Ошибка удаления",
+          data.error || "Ошибка при удалении курса"
+        );
       }
     } catch (error) {
-      alert("Ошибка сети при удалении курса");
+      toast.error("Сетевая ошибка", "Ошибка сети при удалении курса");
       console.error("Ошибка удаления курса:", error);
     }
   };

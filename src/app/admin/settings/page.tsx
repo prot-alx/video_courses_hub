@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import Link from "next/link";
@@ -15,6 +16,7 @@ interface AdminSettings {
 
 export default function AdminSettingsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
+  const toast = useToastContext();
   const [settings, setSettings] = useState<AdminSettings>({
     supportTelegram: "",
     supportPhone: "",
@@ -70,7 +72,7 @@ export default function AdminSettingsPage() {
       const result = await response.json();
 
       if (result.success) {
-        alert("Настройки сохранены!");
+        toast.success("Настройки сохранены!", "Контактные данные обновлены");
       } else {
         setError(result.error || "Ошибка сохранения настроек");
       }
@@ -260,12 +262,6 @@ export default function AdminSettingsPage() {
                 >
                   {saving ? "Сохранение..." : "Сохранить настройки"}
                 </button>
-                <Link
-                  href="/admin"
-                  className="btn-discord btn-discord-secondary"
-                >
-                  Отмена
-                </Link>
               </div>
             </form>
           )}

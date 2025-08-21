@@ -1,6 +1,7 @@
 // components/admin/DurationUpdater.tsx (обновленная версия с типизацией)
 "use client";
 import { useState, useEffect } from "react";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import type { ApiResponse } from "@/types";
 
 interface DurationStats {
@@ -26,6 +27,7 @@ interface RecalculateResult {
 }
 
 export default function DurationUpdater() {
+  const toast = useToastContext();
   const [stats, setStats] = useState<DurationStats | null>(null);
   const [updating, setUpdating] = useState(false);
   const [results, setResults] = useState<RecalculateResult | null>(null);
@@ -65,14 +67,20 @@ export default function DurationUpdater() {
 
       if (data.success && data.data) {
         setResults(data.data);
-        alert("Длительность курсов пересчитана!");
+        toast.success(
+          "Длительность обновлена!",
+          `Обработано ${data.data.videosProcessed} видео, обновлено ${data.data.coursesUpdated} курсов`
+        );
         fetchStats(); // Обновляем статистику
       } else {
-        alert(data.error || "Ошибка обновления длительности");
+        toast.error(
+          "Ошибка обновления",
+          data.error || "Ошибка обновления длительности"
+        );
       }
     } catch (error) {
       console.error("Ошибка обновления длительности:", error);
-      alert("Ошибка обновления длительности");
+      toast.error("Сетевая ошибка", "Ошибка обновления длительности");
     } finally {
       setUpdating(false);
     }

@@ -2,7 +2,6 @@
 import CourseActions from "./CourseActions";
 import type { Course } from "@/types";
 
-// Расширяем базовый Course для админских полей
 interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;

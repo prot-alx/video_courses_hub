@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import AuthLayout from "@/components/auth/AuthLayout";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import AuthFeatures from "@/components/auth/AuthFeatures";
 import AuthFooter from "@/components/auth/AuthFooter";
 
 export default function SignInPage() {
+  const toast = useToastContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
@@ -20,14 +22,20 @@ export default function SignInPage() {
 
       if (result?.error) {
         console.error("Sign in error:", result.error);
-        alert("Ошибка входа. Попробуйте снова.");
+        toast.error(
+          "Ошибка входа",
+          "Попробуйте снова или обратитесь в поддержку"
+        );
       } else if (result?.url) {
         // Успешный вход - перенаправляем
         window.location.href = result.url;
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      alert("Ошибка входа. Попробуйте снова.");
+      toast.error(
+        "Ошибка авторизации",
+        "Попробуйте снова или обратитесь в поддержку"
+      );
     } finally {
       setIsLoading(false);
     }

@@ -3,9 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToastContext } from "@/components/providers/ToastProvider";
 
 export default function CreateCoursePage() {
   const router = useRouter();
+  const toast = useToastContext();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -40,13 +42,16 @@ export default function CreateCoursePage() {
       if (result.success) {
         // Сохраняем только имя файла
         setFormData((prev) => ({ ...prev, thumbnail: result.data.filename }));
-        alert("Превью загружено успешно!");
+        toast.success("Превью загружено!", "Миниатюра курса успешно загружена");
       } else {
-        alert(result.error || "Ошибка загрузки превью");
+        toast.error(
+          "Ошибка загрузки",
+          result.error || "Ошибка загрузки превью"
+        );
       }
     } catch (error) {
       console.error("Ошибка загрузки:", error);
-      alert("Ошибка загрузки превью");
+      toast.error("Сетевая ошибка", "Ошибка загрузки превью");
     } finally {
       setIsUploading(false);
     }
@@ -93,7 +98,10 @@ export default function CreateCoursePage() {
       const result = await response.json();
 
       if (result.success) {
-        alert(`Курс "${result.data.title}" успешно создан!`);
+        toast.success(
+          "Курс создан!",
+          `Курс "${result.data.title}" успешно создан`
+        );
         router.push("/admin"); // Перенаправляем в админку
       } else {
         setError(result.error || "Ошибка создания курса");

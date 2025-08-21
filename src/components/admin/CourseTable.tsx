@@ -3,7 +3,6 @@ import Link from "next/link";
 import CourseTableRow from "./CourseTableRow";
 import type { Course } from "@/types";
 
-// Расширяем базовый Course для админских полей
 interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;

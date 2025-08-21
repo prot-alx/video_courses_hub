@@ -1,6 +1,7 @@
 // components/profile/ProfileForm.tsx (обновленная версия с типизацией)
 "use client";
 import { useState } from "react";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import ContactField from "./ContactField";
 import type { ProfileData, PreferredContact } from "@/types";
 
@@ -15,6 +16,7 @@ export default function ProfileForm({
   isLoading = false,
   onSave,
 }: Readonly<ProfileFormProps>) {
+  const toast = useToastContext();
   const [formData, setFormData] = useState<ProfileData>(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -44,7 +46,7 @@ export default function ProfileForm({
 
     // Простая валидация
     if (!formData.name.trim()) {
-      alert("Введите имя");
+      toast.warning("Пустое имя", "Введите имя");
       return;
     }
 

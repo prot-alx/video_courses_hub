@@ -1,6 +1,7 @@
 // components/admin/FileManager.tsx
 "use client";
 import { useState, useEffect } from "react";
+import { useToastContext } from "@/components/providers/ToastProvider";
 
 interface FileStats {
   videos: {
@@ -16,6 +17,7 @@ interface FileStats {
 }
 
 export default function FileManager() {
+  const toast = useToastContext();
   const [stats, setStats] = useState<FileStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [cleaning, setCleaning] = useState(false);
@@ -61,21 +63,18 @@ export default function FileManager() {
         const totalDeleted = videos.deleted + thumbnails.deleted;
         const totalFailed = videos.failed + thumbnails.failed;
 
-        alert(
-          `Очистка завершена!\n` +
-            `Удалено файлов: ${totalDeleted}\n` +
-            `Ошибок: ${totalFailed}\n\n` +
-            `Видео: удалено ${videos.deleted}, ошибок ${videos.failed}\n` +
-            `Превью: удалено ${thumbnails.deleted}, ошибок ${thumbnails.failed}`
+        toast.success(
+          "Очистка завершена!",
+          `Удалено файлов: ${totalDeleted}, ошибок: ${totalFailed}. Видео: удалено ${videos.deleted}, ошибок ${videos.failed}. Превью: удалено ${thumbnails.deleted}, ошибок ${thumbnails.failed}`
         );
 
         fetchStats(); // Обновляем статистику
       } else {
-        alert(data.error || "Ошибка очистки файлов");
+        toast.error("Ошибка очистки", data.error || "Ошибка очистки файлов");
       }
     } catch (error) {
       console.error("Ошибка очистки файлов:", error);
-      alert("Ошибка очистки файлов");
+      toast.error("Сетевая ошибка", "Ошибка очистки файлов");
     } finally {
       setCleaning(false);
     }
@@ -224,7 +223,7 @@ export default function FileManager() {
               }
               className="btn-discord btn-discord-primary"
             >
-              {cleaning ? "🔄 Очистка..." : "🧹 Очистить все"}
+              {cleaning ? "🔄 Очистка..." : "🧹 Очистить неиспользуемое"}
             </button>
             <button
               onClick={fetchStats}

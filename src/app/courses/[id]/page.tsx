@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import { useCourseRequest } from "@/lib/hooks/useApi";
 import { formatDuration, formatCourseDuration } from "@/lib/utils";
 import VideoPlayer from "@/components/videos/VideoPlayer";
@@ -19,6 +20,7 @@ export default function CoursePage({
 }: Readonly<{ params: Promise<Params> }>) {
   const resolvedParams = use(params);
   const { isAuthenticated, user } = useAuth();
+  const toast = useToastContext();
   const {
     createRequest,
     cancelRequest,
@@ -125,15 +127,22 @@ export default function CoursePage({
       const response = await createRequest(course.id, "email");
       if (response.success) {
         await fetchRequestStatus();
-        alert(
-          "Заявка отправлена! Администратор рассмотрит её в течение 24 часов. Если есть вопросы - напишите в Telegram через кнопку внизу экрана."
+        toast.success(
+          "Заявка отправлена!",
+          "Администратор рассмотрит её в течение 24 часов. Если есть вопросы - напишите в Telegram через кнопку внизу экрана."
         );
       } else {
-        alert(response.error || "Ошибка отправки заявки");
+        toast.error(
+          "Ошибка отправки",
+          response.error || "Ошибка отправки заявки"
+        );
       }
     } catch (err) {
       console.log(err);
-      alert("Ошибка отправки заявки! Подробности в консоли.");
+      toast.error(
+        "Ошибка отправки",
+        "Ошибка отправки заявки! Подробности в консоли."
+      );
     }
   };
 
@@ -144,13 +153,16 @@ export default function CoursePage({
       const response = await cancelRequest(course.id);
       if (response.success) {
         await fetchRequestStatus();
-        alert("Заявка отменена");
+        toast.success("Заявка отменена");
       } else {
-        alert(response.error || "Ошибка отмены заявки");
+        toast.error("Ошибка отмены", response.error || "Ошибка отмены заявки");
       }
     } catch (err) {
       console.log(err);
-      alert("Ошибка отмены заявки. Подробности в консоли.");
+      toast.error(
+        "Ошибка отмены",
+        "Ошибка отмены заявки. Подробности в консоли."
+      );
     }
   };
 

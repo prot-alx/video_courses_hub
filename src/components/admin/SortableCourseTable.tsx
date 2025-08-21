@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import CourseActions from "./CourseActions";
 import type { Course } from "@/types";
 
@@ -11,7 +12,7 @@ interface AdminCourse extends Course {
   isActive: boolean;
   videosCount: number;
   createdAt: string;
-  orderIndex: number; // Добавляем orderIndex
+  orderIndex: number;
 }
 
 interface SortableCourseTableProps {
@@ -25,6 +26,7 @@ export default function SortableCourseTable({
   onDelete,
   isLoading = false,
 }: Readonly<SortableCourseTableProps>) {
+  const toast = useToastContext();
   const [sortedCourses, setSortedCourses] = useState<AdminCourse[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -79,13 +81,16 @@ export default function SortableCourseTable({
       const result = await response.json();
 
       if (result.success) {
-        alert("Порядок курсов сохранен!");
+        toast.success("Порядок сохранён!", "Порядок курсов успешно обновлён");
       } else {
-        alert(result.error || "Ошибка сохранения порядка");
+        toast.error(
+          "Ошибка сортировки",
+          result.error || "Ошибка сохранения порядка"
+        );
       }
     } catch (error) {
       console.error("Ошибка сохранения порядка:", error);
-      alert("Ошибка сохранения порядка");
+      toast.error("Сетевая ошибка", "Ошибка сохранения порядка");
     } finally {
       setSaving(false);
     }

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import type { ApiResponse } from "@/types";
 
 interface AdminVideo {
@@ -25,6 +26,7 @@ export default function VideoEditForm({
   onSave,
   onCancel,
 }: Readonly<VideoEditFormProps>) {
+  const toast = useToastContext();
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     displayName: video.displayName || video.title,
@@ -34,7 +36,7 @@ export default function VideoEditForm({
 
   const handleSave = async () => {
     if (!formData.displayName.trim()) {
-      alert("Название видео обязательно");
+      toast.warning("Пустое название", "Название видео обязательно");
       return;
     }
 
@@ -57,14 +59,17 @@ export default function VideoEditForm({
       const result: ApiResponse<AdminVideo> = await response.json();
 
       if (result.success) {
-        alert("Видео успешно обновлено!");
+        toast.success("Видео обновлено!", "Изменения успешно сохранены");
         onSave();
       } else {
-        alert(result.error || "Ошибка обновления видео");
+        toast.error(
+          "Ошибка обновления",
+          result.error || "Ошибка обновления видео"
+        );
       }
     } catch (error) {
       console.error("Ошибка обновления видео:", error);
-      alert("Ошибка обновления видео");
+      toast.error("Сетевая ошибка", "Ошибка обновления видео");
     } finally {
       setSaving(false);
     }

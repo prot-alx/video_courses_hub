@@ -81,7 +81,7 @@ export const RevokeAccessSchema = GrantAccessSchema;
 
 // Схемы для запросов курсов (обновлено с централизованным типом)
 export const GetCoursesSchema = z.object({
-  type: z.enum(["all", "free", "paid"]).optional().default("all"),
+  type: z.enum(["all", "free", "paid", "featured"]).optional().default("all"),
 });
 
 export const PaginationSchema = z.object({

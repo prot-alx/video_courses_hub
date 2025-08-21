@@ -68,9 +68,7 @@ function getPreferredContactElement(user: User) {
   }
 }
 
-export default function UserTableRow({
-  user,
-}: Readonly<UserTableRowProps>) {
+export default function UserTableRow({ user }: Readonly<UserTableRowProps>) {
   return (
     <tr
       className="border-b hover:bg-primary-400 transition-colors"

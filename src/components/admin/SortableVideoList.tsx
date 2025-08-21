@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import type { Video } from "@/types";
 
 // Расширяем базовый Video для админских полей
@@ -25,6 +26,7 @@ export default function SortableVideoList({
   onDelete,
   deletingVideo,
 }: Readonly<SortableVideoListProps>) {
+  const toast = useToastContext();
   const [sortedVideos, setSortedVideos] = useState<AdminVideo[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -79,13 +81,16 @@ export default function SortableVideoList({
       const result = await response.json();
 
       if (result.success) {
-        alert("Порядок видео сохранен!");
+        toast.success("Порядок сохранён!", "Порядок видео в курсе обновлён");
       } else {
-        alert(result.error || "Ошибка сохранения порядка");
+        toast.error(
+          "Ошибка сортировки",
+          result.error || "Ошибка сохранения порядка"
+        );
       }
     } catch (error) {
       console.error("Ошибка сохранения порядка:", error);
-      alert("Ошибка сохранения порядка");
+      toast.error("Сетевая ошибка", "Ошибка сохранения порядка");
     } finally {
       setSaving(false);
     }

@@ -5,20 +5,17 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 import { execSync } from "child_process";
+import { rateLimit, rateLimitConfigs } from "@/lib/rateLimit";
+import { validateVideoFile } from "@/lib/fileValidation";
 
-// Максимальный размер файла: 500MB
-const MAX_FILE_SIZE = 500 * 1024 * 1024;
-
-// Разрешенные форматы видео
-const ALLOWED_VIDEO_TYPES = [
-  "video/mp4",
-  "video/webm",
-  "video/quicktime", // .mov
-  "video/x-msvideo", // .avi
-];
+const uploadRateLimit = rateLimit(rateLimitConfigs.upload);
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check
+    const rateLimitResponse = await uploadRateLimit(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const session = await auth();
 
     if (!session?.user || session.user.role !== "ADMIN") {
@@ -38,27 +35,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Проверяем тип файла
-    if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+    // Комплексная валидация файла (тип, размер, сигнатура)
+    const validationResult = await validateVideoFile(file);
+    if (!validationResult.isValid) {
       return NextResponse.json(
         {
           success: false,
-          error: `Неподдерживаемый формат видео. Разрешены: ${ALLOWED_VIDEO_TYPES.join(
-            ", "
-          )}`,
-        },
-        { status: 400 }
-      );
-    }
-
-    // Проверяем размер файла
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Файл слишком большой. Максимальный размер: ${
-            MAX_FILE_SIZE / 1024 / 1024
-          }MB`,
+          error: validationResult.error || "Недопустимый видеофайл",
         },
         { status: 400 }
       );

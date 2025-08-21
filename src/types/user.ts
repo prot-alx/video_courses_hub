@@ -22,7 +22,7 @@ export interface User extends BaseUser {
   phone: string | null;
   telegram: string | null;
   preferredContact: PreferredContact;
-  googleId?: string; // Делаем опциональным для админки
+  googleId?: string;
   coursesCount: number;
   activeRequests: number;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SessionProvider from "@/components/auth/SessionProvider";
 import AdminContactButton from "@/components/layout/AdminContactButton";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
@@ -24,8 +25,10 @@ export default function RootLayout({
         }}
       >
         <SessionProvider>
-          {children}
-          <AdminContactButton />
+          <ToastProvider>
+            {children}
+            <AdminContactButton />
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>

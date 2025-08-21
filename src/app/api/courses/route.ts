@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
 
     // Валидация параметров
     const typeParam = searchParams.get("type") || "all";
+    const limitParam = searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
     const validatedParams = GetCoursesSchema.parse({ type: typeParam });
 
     // Типизированные фильтры для типов курсов
@@ -34,6 +36,10 @@ export async function GET(request: NextRequest) {
         whereClause.isFree = true;
         break;
       case "paid":
+        whereClause.isFree = false;
+        break;
+      case "featured":
+        // Для featured показываем только курсы с ценой > 0 (премиум курсы)
         whereClause.isFree = false;
         break;
       case "all":
@@ -73,6 +79,7 @@ export async function GET(request: NextRequest) {
       orderBy: {
         orderIndex: "asc",
       },
+      ...(limit && { take: limit }),
     });
 
     // Создаем Set для быстрого поиска доступа пользователя

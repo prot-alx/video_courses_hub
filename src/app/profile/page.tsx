@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
@@ -11,6 +12,7 @@ import type { ProfileData } from "@/types/profile";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const toast = useToastContext();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -23,6 +25,7 @@ export default function ProfilePage() {
       // Перенаправляем на главную если не авторизован
       window.location.href = "/";
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, authLoading]);
 
   const fetchProfile = async () => {
@@ -40,7 +43,7 @@ export default function ProfilePage() {
       });
     } catch (error) {
       console.error("Ошибка загрузки профиля:", error);
-      alert("Ошибка загрузки данных профиля");
+      toast.error("Ошибка загрузки", "Ошибка загрузки данных профиля");
     } finally {
       setIsPageLoading(false);
     }
@@ -70,10 +73,10 @@ export default function ProfilePage() {
         preferredContact: updatedData.user.preferredContact,
       });
 
-      alert("Профиль успешно обновлен!");
+      toast.success("Профиль обновлён!", "Изменения успешно сохранены");
     } catch (error) {
       console.error("Ошибка сохранения:", error);
-      alert("Ошибка при сохранении профиля");
+      toast.error("Ошибка сохранения", "Ошибка при сохранении профиля");
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import UserStatsCards from "@/components/admin/UserStatsCards";
@@ -20,6 +21,7 @@ function calculateStats(users: User[]): UserStats {
 
 export default function AdminUsersPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
+  const toast = useToastContext();
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
@@ -28,7 +30,7 @@ export default function AdminUsersPage() {
     withActiveRequests: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);  
+  const [error, setError] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
@@ -94,13 +96,19 @@ export default function AdminUsersPage() {
   const handleGrantAccess = async (userId: string) => {
     // TODO: Реализовать модальное окно для выбора курса
     console.log(`Grant access to user ${userId}`);
-    alert("Функция выдачи доступа будет реализована в следующих итерациях");
+    toast.info(
+      "Функция в разработке",
+      "Функция выдачи доступа будет реализована в следующих итерациях"
+    );
   };
 
   const handleRevokeAccess = async (userId: string) => {
     // TODO: Реализовать модальное окно для отзыва доступа
     console.log(`Revoke access from user ${userId}`);
-    alert("Функция отзыва доступа будет реализована в следующих итерациях");
+    toast.info(
+      "Функция в разработке",
+      "Функция отзыва доступа будет реализована в следующих итерациях"
+    );
   };
 
   // Проверка доступа

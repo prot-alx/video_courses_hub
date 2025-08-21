@@ -20,7 +20,6 @@ export default function VideoPlayer({
   const [error, setError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Обработчик клика для паузы/плея
   const handleVideoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (videoRef.current) {

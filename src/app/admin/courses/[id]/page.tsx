@@ -5,6 +5,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import type { Course, UpdateCourseInput } from "@/types";
 
 // Расширяем базовый Course для админских полей
@@ -19,6 +20,7 @@ export default function EditCoursePage({
 }>) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const toast = useToastContext();
 
   const [course, setCourse] = useState<AdminCourse | null>(null);
   const [formData, setFormData] = useState({
@@ -89,13 +91,16 @@ export default function EditCoursePage({
       if (result.success) {
         // Сохраняем только имя файла
         setFormData((prev) => ({ ...prev, thumbnail: result.data.filename }));
-        alert("Превью обновлено успешно!");
+        toast.success("Превью обновлено!", "Миниатюра курса успешно загружена");
       } else {
-        alert(result.error || "Ошибка загрузки превью");
+        toast.error(
+          "Ошибка загрузки",
+          result.error || "Ошибка загрузки превью"
+        );
       }
     } catch (error) {
       console.error("Ошибка загрузки:", error);
-      alert("Ошибка загрузки превью");
+      toast.error("Сетевая ошибка", "Ошибка загрузки превью");
     } finally {
       setIsUploading(false);
     }
@@ -152,7 +157,10 @@ export default function EditCoursePage({
       const result = await response.json();
 
       if (result.success) {
-        alert(`Курс "${result.data.title}" успешно обновлен!`);
+        toast.success(
+          "Курс обновлён!",
+          `Курс "${result.data.title}" успешно обновлён`
+        );
         router.push("/admin");
       } else {
         setError(result.error || "Ошибка обновления курса");

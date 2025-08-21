@@ -1,6 +1,9 @@
 // components/admin/VideoUploadForm.tsx (обновленная версия с типизацией)
 "use client";
 import { useState, useEffect } from "react";
+import { useToastContext } from "@/components/providers/ToastProvider";
+import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
+import { validateVideoFile } from "@/lib/fileValidation";
 import type { ApiResponse } from "@/types";
 
 interface VideoUploadFormProps {
@@ -30,6 +33,7 @@ export default function VideoUploadForm({
   courseId,
   onVideoAdded,
 }: Readonly<VideoUploadFormProps>) {
+  const toast = useToastContext();
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
@@ -71,44 +75,40 @@ export default function VideoUploadForm({
     setUploadProgress(0);
 
     try {
+      // Клиентская валидация файла
+      const validationResult = await validateVideoFile(file);
+      if (!validationResult.isValid) {
+        toast.error(
+          "Недопустимый файл",
+          validationResult.error || "Файл не прошёл проверку"
+        );
+        return;
+      }
+
       // Определяем длительность видео в браузере
       const duration = await getVideoDurationFromFile(file);
 
-      const formData = new FormData();
-      formData.append("video", file);
+      // Загружаем с реальным прогрессом
+      const result = await uploadFileWithProgress(
+        "/api/admin/upload/video",
+        file,
+        "video",
+        (progress) => {
+          setUploadProgress(progress);
+        }
+      );
 
-      // Симуляция прогресса (в реальности нужен xhr для точного прогресса)
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
-      const response = await fetch("/api/admin/upload/video", {
-        method: "POST",
-        body: formData,
-      });
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      const result: ApiResponse<UploadedFile> = await response.json();
-
-      if (result.success && result.data) {
+      if (result.success && result.data.success) {
         // Добавляем длительность к данным файла
         const fileWithDuration: UploadedFile = {
-          ...result.data,
+          ...result.data.data,
           duration: duration, // Используем длительность из браузера
         };
 
         setUploadedFile(fileWithDuration);
 
         // Создаем читаемое название из оригинального имени файла
-        const cleanTitle = result.data.originalName
+        const cleanTitle = result.data.data.originalName
           .replace(/\.[^/.]+$/, "") // Убираем расширение
           .replace(/[_-]/g, " ") // Заменяем _ и - на пробелы
           .replace(/([a-z])([A-Z])/g, "$1 $2") // Разделяем camelCase
@@ -118,12 +118,17 @@ export default function VideoUploadForm({
           ...prev,
           displayName: cleanTitle,
         }));
+
+        toast.success("Файл загружен!", "Видеофайл успешно загружен на сервер");
       } else {
-        alert(result.error || "Ошибка загрузки файла");
+        toast.error(
+          "Ошибка загрузки",
+          result.error || result.data?.error || "Ошибка загрузки файла"
+        );
       }
     } catch (error) {
       console.error("Ошибка загрузки:", error);
-      alert("Ошибка загрузки файла");
+      toast.error("Ошибка загрузки", "Ошибка загрузки файла");
     } finally {
       setUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);
@@ -158,7 +163,7 @@ export default function VideoUploadForm({
 
   const handleCreateVideo = async () => {
     if (!uploadedFile || !videoMetadata.displayName.trim()) {
-      alert("Заполните все обязательные поля");
+      toast.warning("Не все поля заполнены", "Заполните все обязательные поля");
       return;
     }
 
@@ -193,14 +198,14 @@ export default function VideoUploadForm({
         });
         setNextOrderIndex((prev) => prev + 1);
 
-        alert("Видео успешно добавлено!");
+        toast.success("Видео добавлено!", "Видео успешно добавлено в курс");
         onVideoAdded?.();
       } else {
-        alert(result.error || "Ошибка создания видео");
+        toast.error("Ошибка создания", result.error || "Ошибка создания видео");
       }
     } catch (error) {
       console.error("Ошибка создания видео:", error);
-      alert("Ошибка создания видео");
+      toast.error("Ошибка создания", "Ошибка создания видео");
     }
   };
 

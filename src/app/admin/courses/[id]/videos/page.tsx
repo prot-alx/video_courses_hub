@@ -3,6 +3,7 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useToastContext } from "@/components/providers/ToastProvider";
 import VideoUploadForm from "@/components/admin/VideoUploadForm";
 import VideoEditForm from "@/components/admin/VideoEditForm";
 import SortableVideoList from "@/components/admin/SortableVideoList";
@@ -34,6 +35,7 @@ export default function ManageVideosPage({
   params: Promise<{ id: string }>;
 }>) {
   const resolvedParams = use(params);
+  const toast = useToastContext();
   const [course, setCourse] = useState<AdminCourse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,15 +94,18 @@ export default function ManageVideosPage({
       const result = await response.json();
 
       if (result.success) {
-        alert("Видео успешно удалено");
+        toast.success(
+          "Видео удалено!",
+          "Видео и связанные файлы успешно удалены"
+        );
         fetchCourse(); // Обновляем список видео
         fetchDiskInfo(); // Обновляем информацию о диске
       } else {
-        alert(result.error || "Ошибка удаления видео");
+        toast.error("Ошибка удаления", result.error || "Ошибка удаления видео");
       }
     } catch (err) {
       console.error("Ошибка удаления видео:", err);
-      alert("Ошибка удаления видео");
+      toast.error("Сетевая ошибка", "Ошибка удаления видео");
     } finally {
       setDeletingVideo(null);
     }

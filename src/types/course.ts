@@ -1,5 +1,5 @@
 // types/course.ts - Обновленные типы курсов
-export type CourseFilterType = "all" | "free" | "paid";
+export type CourseFilterType = "all" | "free" | "paid" | "featured";
 
 export interface Video {
   id: string;

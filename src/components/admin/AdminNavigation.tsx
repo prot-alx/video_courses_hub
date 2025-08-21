@@ -14,7 +14,7 @@ interface NavItem {
 }
 
 interface AdminNavigationProps {
-  items?: NavItem[]; // Делаем опциональным для обратной совместимости
+  items?: NavItem[];
 }
 
 export default function AdminNavigation({
