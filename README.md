@@ -47,8 +47,8 @@ video-courses-mvp/
 ├── uploads/               # Загруженные файлы
 │   ├── videos/           # Видеофайлы
 │   └── thumbnails/       # Постеры
-├── editor.ddns.net+2.pem      # SSL сертификат
-├── editor.ddns.net+2-key.pem  # Приватный ключ
+├── your-domain.com+2.pem      # SSL сертификат
+├── your-domain.com+2-key.pem  # Приватный ключ
 ├── server.mjs                  # HTTPS сервер
 └── docker-compose.yml         # PostgreSQL контейнер
 ```
