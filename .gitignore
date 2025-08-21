@@ -26,6 +26,7 @@
 .claude/
 .claude/*
 mkcert.exe
+server.mjs
 
 # debug
 npm-debug.log*
