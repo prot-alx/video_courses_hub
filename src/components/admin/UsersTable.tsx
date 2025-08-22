@@ -1,8 +1,8 @@
-import { User } from "@/types";
+import { AdminUserView } from "@/types";
 import UserTableRow from "./UserTableRow";
 
 interface UsersTableProps {
-  users: User[];
+  users: AdminUserView[];
   onGrantAccess: (userId: string) => void;
   onRevokeAccess: (userId: string) => void;
 }

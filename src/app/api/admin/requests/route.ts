@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import type { RequestStatusType } from "@/types";
+import type { RequestStatus } from "@/types";
 import type { Prisma } from "@prisma/client";
 
 interface RequestWhereClause {
-  status?: RequestStatusType;
+  status?: RequestStatus;
 }
 
 // GET /api/admin/requests - получить все заявки для админа
@@ -28,18 +28,15 @@ export async function GET(request: NextRequest) {
 
     const whereClause: RequestWhereClause = {};
 
-    const validStatuses: RequestStatusType[] = [
+    const validStatuses: RequestStatus[] = [
       "new",
       "approved",
       "rejected",
       "cancelled",
     ];
 
-    if (
-      statusFilter &&
-      validStatuses.includes(statusFilter as RequestStatusType)
-    ) {
-      whereClause.status = statusFilter as RequestStatusType;
+    if (statusFilter && validStatuses.includes(statusFilter as RequestStatus)) {
+      whereClause.status = statusFilter as RequestStatus;
     }
 
     const requests = await prisma.courseRequest.findMany({

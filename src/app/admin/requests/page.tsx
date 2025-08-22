@@ -7,7 +7,7 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatusFilter from "@/components/admin/StatusFilter";
 import RequestTable from "@/components/admin/RequestTable";
-import type { CourseRequest, RequestStatusType, ApiResponse } from "@/types";
+import type { CourseRequest, RequestStatus, ApiResponse } from "@/types";
 
 interface RequestsApiResponse {
   requests: CourseRequest[];
@@ -119,7 +119,7 @@ export default function AdminRequestsPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status: "approved" satisfies RequestStatusType,
+          status: "approved" satisfies RequestStatus,
         }),
       });
 
@@ -153,7 +153,7 @@ export default function AdminRequestsPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status: "rejected" satisfies RequestStatusType,
+          status: "rejected" satisfies RequestStatus,
         }),
       });
 

@@ -1,9 +1,5 @@
 // types/request.ts - Типы для заявок
-import { PreferredContact } from "./user";
-
-// types/request.ts - Типы для заявок
-export type RequestStatusType = "new" | "approved" | "rejected" | "cancelled";
-export type ContactMethod = "email" | "phone" | "telegram";
+import { RequestStatus, ContactMethod, PreferredContact } from "./common";
 
 export interface RequestUser {
   name: string;
@@ -23,15 +19,15 @@ export interface CourseRequest {
   id: string;
   user: RequestUser;
   course: RequestCourse;
-  status: RequestStatusType;
+  status: RequestStatus;
   contactMethod: ContactMethod;
   createdAt: string;
   processedAt?: string;
 }
 
-export interface RequestStatus {
+export interface UserRequestStatus {
   hasAccess: boolean;
-  status: RequestStatusType;
+  status: RequestStatus;
   canRequest?: boolean;
   canCancel?: boolean;
   requestId?: string;

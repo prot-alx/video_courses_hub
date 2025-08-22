@@ -1,8 +1,8 @@
-import { User } from "@/types";
+import { AdminUserView } from "@/types";
 import UserRoleBadge from "./UserRowBagde";
 
 interface UserTableRowProps {
-  user: User;
+  user: AdminUserView;
   onGrantAccess: (userId: string) => void;
   onRevokeAccess: (userId: string) => void;
 }
@@ -31,7 +31,7 @@ function handleContactClick(contactType: string, contactValue: string) {
   }
 }
 
-function getPreferredContactElement(user: User) {
+function getPreferredContactElement(user: AdminUserView) {
   switch (user.preferredContact) {
     case "email":
       return (

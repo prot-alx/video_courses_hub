@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import ContactField from "./ContactField";
-import type { ProfileData, PreferredContact } from "@/types";
+import type { UserProfile, PreferredContact } from "@/types";
 
 interface ProfileFormProps {
-  initialData: ProfileData;
+  initialData: UserProfile;
   isLoading?: boolean;
-  onSave: (data: ProfileData) => void;
+  onSave: (data: UserProfile) => void;
 }
 
 export default function ProfileForm({
@@ -16,11 +16,11 @@ export default function ProfileForm({
   onSave,
 }: Readonly<ProfileFormProps>) {
   const toast = useToastContext();
-  const [formData, setFormData] = useState<ProfileData>(initialData);
+  const [formData, setFormData] = useState<UserProfile>(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleFieldChange = (field: keyof ProfileData, value: string) => {
+  const handleFieldChange = (field: keyof UserProfile, value: string) => {
     // Валидация telegram username
     if (field === "telegram" && value && !value.startsWith("@")) {
       value = "@" + value.replace(/^@+/, ""); // Убираем лишние @ и добавляем один
@@ -120,7 +120,7 @@ export default function ProfileForm({
           {/* Телефон */}
           <ContactField
             label="Телефон"
-            value={formData.phone}
+            value={formData.phone || ""}
             onChange={(value) => handleFieldChange("phone", value)}
             disabled={!isEditing}
             type="tel"
@@ -130,7 +130,7 @@ export default function ProfileForm({
           {/* Telegram */}
           <ContactField
             label="Telegram"
-            value={formData.telegram}
+            value={formData.telegram || ""}
             onChange={(value) => handleFieldChange("telegram", value)}
             disabled={!isEditing}
             placeholder="@username"

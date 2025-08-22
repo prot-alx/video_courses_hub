@@ -7,26 +7,28 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import UserStatsCards from "@/components/admin/UserStatsCards";
 import UsersTable from "@/components/admin/UsersTable";
-import type { User, UserStats, ApiResponse } from "@/types";
+import type { AdminUserView, UserStats, ApiResponse } from "@/types";
 
-function calculateStats(users: User[]): UserStats {
+function calculateStats(users: AdminUserView[]): UserStats {
   return {
     totalUsers: users.length,
     activeUsers: users.filter((u) => u.role === "USER").length,
     admins: users.filter((u) => u.role === "ADMIN").length,
-    withActiveRequests: users.filter((u) => u.activeRequests > 0).length,
+    withActiveRequests: 0, // TODO: Implement proper activeRequests counting
+    newUsersThisWeek: 0, // TODO: Calculate based on createdAt
   };
 }
 
 export default function AdminUsersPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
   const toast = useToastContext();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<AdminUserView[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
     activeUsers: 0,
     admins: 0,
     withActiveRequests: 0,
+    newUsersThisWeek: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,21 +39,25 @@ export default function AdminUsersPage() {
     try {
       setIsLoading(true);
       const response = await fetch("/api/admin/users");
-      const data: ApiResponse<User[]> = await response.json();
+      const data: ApiResponse<AdminUserView[]> = await response.json();
 
       if (data.success && data.data) {
         // Нормализуем данные пользователей
-        const normalizedUsers: User[] = data.data.map((apiUser) => ({
+        const normalizedUsers: AdminUserView[] = data.data.map((apiUser) => ({
           id: apiUser.id,
           name: apiUser.name || "Без имени",
           email: apiUser.email,
+          image: apiUser.image || null,
           role: apiUser.role,
           phone: apiUser.phone,
           telegram: apiUser.telegram,
           preferredContact: apiUser.preferredContact,
+          googleId: apiUser.googleId,
           createdAt: apiUser.createdAt,
-          coursesCount: apiUser.coursesCount,
-          activeRequests: apiUser.activeRequests,
+          updatedAt: apiUser.updatedAt,
+          coursesCount: apiUser.coursesCount || 0,
+          activeRequests: apiUser.activeRequests || 0,
+          lastLoginAt: apiUser.lastLoginAt || null,
         }));
 
         setUsers(normalizedUsers);

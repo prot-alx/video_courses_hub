@@ -11,7 +11,13 @@ import DurationUpdater from "@/components/admin/DurationUpdater";
 
 export default function AdminFilesPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
-  const { diskInfo, loading: diskLoading, error: diskError, refresh, warning } = useDiskSpace();
+  const {
+    diskInfo,
+    loading: diskLoading,
+    error: diskError,
+    refresh,
+    warning,
+  } = useDiskSpace();
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/" });
@@ -141,7 +147,7 @@ export default function AdminFilesPage() {
                       : "⚠️ Мало места на диске, рекомендуется очистка"}
                   </div>
                 )}
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
                     <div className="text-sm text-gray-600 mb-1">Всего</div>
@@ -153,7 +159,9 @@ export default function AdminFilesPage() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm text-gray-600 mb-1">Использовано</div>
+                    <div className="text-sm text-gray-600 mb-1">
+                      Использовано
+                    </div>
                     <div
                       className="text-lg font-semibold"
                       style={{ color: "var(--color-text-primary)" }}
@@ -182,7 +190,9 @@ export default function AdminFilesPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-gray-500">Загрузка данных о диске...</div>
+              <div className="text-sm text-gray-500">
+                Загрузка данных о диске...
+              </div>
             )}
           </div>
 

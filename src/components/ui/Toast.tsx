@@ -13,10 +13,10 @@ export interface Toast {
 
 interface ToastItemProps {
   toast: Toast;
-  onClose: (id: string) => void;
+  onDismiss: (id: string) => void;
 }
 
-function ToastItem({ toast, onClose }: Readonly<ToastItemProps>) {
+function ToastItem({ toast, onDismiss }: Readonly<ToastItemProps>) {
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
@@ -28,12 +28,12 @@ function ToastItem({ toast, onClose }: Readonly<ToastItemProps>) {
     }, toast.duration || 5000);
 
     return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
     setIsLeaving(true);
-    setTimeout(() => onClose(toast.id), 300);
+    setTimeout(() => onDismiss(toast.id), 300);
   };
 
   const getIcon = () => {
@@ -103,6 +103,16 @@ interface ToastContainerProps {
   onRemoveToast: (id: string) => void;
 }
 
+// Default export для совместимости
+interface ToastProps {
+  toast: Toast;
+  onDismiss: (id: string) => void;
+}
+
+export default function Toast({ toast, onDismiss }: Readonly<ToastProps>) {
+  return <ToastItem toast={toast} onDismiss={onDismiss} />;
+}
+
 export function ToastContainer({
   toasts,
   onRemoveToast,
@@ -112,7 +122,7 @@ export function ToastContainer({
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
       {toasts.map((toast) => (
-        <ToastItem key={toast.id} toast={toast} onClose={onRemoveToast} />
+        <ToastItem key={toast.id} toast={toast} onDismiss={onRemoveToast} />
       ))}
     </div>
   );

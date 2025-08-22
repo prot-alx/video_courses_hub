@@ -104,14 +104,14 @@ export async function GET() {
 
     let diskInfo = {
       total: "N/A",
-      used: "N/A", 
+      used: "N/A",
       available: "N/A",
       usePercentage: "N/A",
     };
 
     try {
       const isWindows = process.platform === "win32";
-      
+
       if (isWindows) {
         // Для Windows используем wmic команду
         const driveLetter = process.cwd().charAt(0);
@@ -119,8 +119,11 @@ export async function GET() {
           `wmic logicaldisk where caption="${driveLetter}:" get size,freespace,caption /format:csv`,
           { encoding: "utf8" }
         );
-        
-        const lines = output.trim().split("\n").filter(line => line.includes(driveLetter));
+
+        const lines = output
+          .trim()
+          .split("\n")
+          .filter((line) => line.includes(driveLetter));
         if (lines.length > 0) {
           const data = lines[0].split(",");
           const freeSpace = parseInt(data[2]);
@@ -133,7 +136,9 @@ export async function GET() {
             const k = 1024;
             const sizes = ["B", "KB", "MB", "GB", "TB"];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+            return (
+              parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
+            );
           };
 
           diskInfo = {

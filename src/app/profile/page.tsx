@@ -24,7 +24,7 @@ export default function ProfilePage() {
       // Перенаправляем на главную если не авторизован
       window.location.href = "/";
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, authLoading]);
 
   const fetchProfile = async () => {
