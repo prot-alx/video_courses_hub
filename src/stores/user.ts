@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Базовый интерфейс пользователя для store
 interface StoreUser {
   id: string;
   email: string;

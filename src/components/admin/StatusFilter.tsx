@@ -1,12 +1,14 @@
+import { FilterType } from "@/types";
+
 interface FilterOption {
-  key: "all" | "new" | "approved" | "rejected";
+  key: FilterType;
   label: string;
   count?: number;
 }
 
 interface StatusFilterProps {
-  activeFilter: "all" | "new" | "approved" | "rejected";
-  onFilterChange: (filter: "all" | "new" | "approved" | "rejected") => void;
+  activeFilter: FilterType;
+  onFilterChange: (filter: FilterType) => void;
   counts?: {
     all: number;
     new: number;

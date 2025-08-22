@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { formatDuration } from "@/lib/utils";
-import type { Video } from "@/types/course";
+import { formatDuration } from "@/lib/utils/duration";
+import type { Video } from "@/types";
 
 interface VideoItemProps {
   video: Video;

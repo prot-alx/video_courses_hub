@@ -116,7 +116,7 @@ export const useCoursesStore = create<CoursesStore>()(
         if (currentCourse && video.id) {
           const updatedCourse = {
             ...currentCourse,
-            videosCount: currentCourse.videosCount + 1,
+            videosCount: (currentCourse.videosCount || 0) + 1,
             videos: newVideos,
           };
           set({ currentCourse: updatedCourse });
@@ -132,7 +132,7 @@ export const useCoursesStore = create<CoursesStore>()(
 
         // Update current course videos if applicable
         const currentCourse = get().currentCourse;
-        if (currentCourse) {
+        if (currentCourse && currentCourse.videos) {
           const updatedCourseVideos = currentCourse.videos.map((video) =>
             video.id === videoId ? { ...video, ...updates } : video
           );
@@ -152,14 +152,14 @@ export const useCoursesStore = create<CoursesStore>()(
 
         // Update current course
         const currentCourse = get().currentCourse;
-        if (currentCourse) {
+        if (currentCourse && currentCourse.videos) {
           const filteredCourseVideos = currentCourse.videos.filter(
             (video) => video.id !== videoId
           );
           set({
             currentCourse: {
               ...currentCourse,
-              videosCount: Math.max(0, currentCourse.videosCount - 1),
+              videosCount: Math.max(0, (currentCourse.videosCount || 0) - 1),
               videos: filteredCourseVideos,
             },
           });

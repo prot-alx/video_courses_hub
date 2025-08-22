@@ -8,24 +8,10 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatsGrid from "@/components/admin/StatsGrid";
 import SortableCourseTable from "@/components/admin/SortableCourseTable";
-import type { Course, ApiResponse } from "@/types";
-
-interface AdminCourse extends Course {
-  isActive: boolean;
-  videosCount: number;
-  createdAt: string;
-  orderIndex: number;
-}
+import type { AdminCourse, AdminStats, ApiResponse } from "@/types";
 
 interface ApiCourse extends AdminCourse {
   usersWithAccess: number;
-  pendingRequests: number;
-}
-
-interface AdminStats {
-  totalCourses: number;
-  activeCourses: number;
-  freeCourses: number;
   pendingRequests: number;
 }
 
@@ -55,13 +41,11 @@ export default function AdminPage() {
           description: apiCourse.description || "",
           price: apiCourse.price,
           isFree: apiCourse.isFree,
-          hasAccess: apiCourse.hasAccess,
           videosCount: apiCourse.videosCount,
-          freeVideosCount: apiCourse.freeVideosCount,
-          videos: apiCourse.videos,
           thumbnail: apiCourse.thumbnail,
           isActive: apiCourse.isActive,
           orderIndex: apiCourse.orderIndex,
+          totalDuration: apiCourse.totalDuration || 0,
           createdAt: new Date(apiCourse.createdAt).toISOString().split("T")[0], // Форматируем дату
         }));
 

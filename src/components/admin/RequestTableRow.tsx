@@ -131,7 +131,7 @@ export default function RequestTableRow({
             className="text-sm"
             style={{ color: "var(--color-text-secondary)" }}
           >
-            {request.course.price.toLocaleString()}₽
+            {request.course.price ? `${request.course.price.toLocaleString()}₽` : "Бесплатно"}
           </div>
         </div>
       </td>

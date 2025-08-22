@@ -2,15 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCoursesStore } from "@/stores/courses";
 import { useToast } from "@/stores/notifications";
-
-interface CourseFormData {
-  title: string;
-  description: string;
-  price: string;
-  isFree: boolean;
-  isActive: boolean;
-  thumbnail: string;
-}
+import { CourseFormData } from "@/types";
 
 interface UseCourseCreationReturn {
   formData: CourseFormData;

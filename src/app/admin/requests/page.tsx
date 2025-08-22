@@ -7,27 +7,14 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import StatusFilter from "@/components/admin/StatusFilter";
 import RequestTable from "@/components/admin/RequestTable";
-import type { CourseRequest, RequestStatus, ApiResponse } from "@/types";
-
-interface RequestsApiResponse {
-  requests: CourseRequest[];
-  stats: {
-    total: number;
-    new: number;
-    approved: number;
-    rejected: number;
-    cancelled: number;
-  };
-}
-
-type FilterType = "all" | "new" | "approved" | "rejected";
-
-interface RequestStats {
-  all: number;
-  new: number;
-  approved: number;
-  rejected: number;
-}
+import {
+  ApiResponse,
+  CourseRequest,
+  FilterType,
+  RequestsApiResponse,
+  RequestStats,
+  RequestStatus,
+} from "@/types";
 
 export default function AdminRequestsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
@@ -64,6 +51,8 @@ export default function AdminRequestsPage() {
         const transformedRequests: CourseRequest[] = requestsData.requests.map(
           (apiRequest) => ({
             id: apiRequest.id,
+            userId: apiRequest.userId,
+            courseId: apiRequest.courseId,
             user: {
               name: apiRequest.user.name || "Без имени",
               email: apiRequest.user.email,

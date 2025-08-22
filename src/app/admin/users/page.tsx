@@ -47,17 +47,14 @@ export default function AdminUsersPage() {
           id: apiUser.id,
           name: apiUser.name || "Без имени",
           email: apiUser.email,
-          image: apiUser.image || null,
           role: apiUser.role,
           phone: apiUser.phone,
           telegram: apiUser.telegram,
           preferredContact: apiUser.preferredContact,
-          googleId: apiUser.googleId,
           createdAt: apiUser.createdAt,
-          updatedAt: apiUser.updatedAt,
-          coursesCount: apiUser.coursesCount || 0,
-          activeRequests: apiUser.activeRequests || 0,
-          lastLoginAt: apiUser.lastLoginAt || null,
+          coursesCount: 0, // TODO: вычислять реально
+          pendingRequestsCount: 0, // TODO: вычислять реально
+          lastActivity: undefined,
         }));
 
         setUsers(normalizedUsers);

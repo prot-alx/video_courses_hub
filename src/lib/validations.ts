@@ -1,4 +1,3 @@
-// lib/validations.ts (обновленная версия - только схемы Zod)
 import { z } from "zod";
 
 // Схемы для курсов

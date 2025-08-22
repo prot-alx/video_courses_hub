@@ -1,7 +1,7 @@
 import Image from "next/image";
 import VideoPlayer from "@/components/videos/VideoPlayer";
-import { formatDuration } from "@/lib/utils";
-import type { Course, Video } from "@/types/course";
+import { formatDuration } from "@/lib/utils/duration";
+import type { Course, Video } from "@/types";
 
 interface CourseVideoSectionProps {
   course: Course;

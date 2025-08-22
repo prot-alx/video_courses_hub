@@ -1,4 +1,3 @@
-// lib/hooks/useApi.ts (обновленная версия с централизованными типами)
 import { useState } from "react";
 import {
   ApiResponse,

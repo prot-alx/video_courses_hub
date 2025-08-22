@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useToastContext } from "@/components/providers/ToastProvider";
-import type { Course } from "@/types/course";
-import type { RequestStatus } from "@/types";
+import type { Course, RequestStatus } from "@/types";
 
 interface CourseAccessManagerProps {
   course: Course;

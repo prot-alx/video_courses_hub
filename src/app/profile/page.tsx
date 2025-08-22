@@ -7,7 +7,7 @@ import ProfileForm from "@/components/profile/ProfileForm";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import NotificationTip from "@/components/profile/NotificationTip";
 import { signOut } from "next-auth/react";
-import type { ProfileData } from "@/types/profile";
+import { ProfileData } from "@/types";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();

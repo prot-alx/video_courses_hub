@@ -1,5 +1,5 @@
-import { formatDuration } from "@/lib/utils";
-import type { Video } from "@/types/course";
+import { formatDuration } from "@/lib/utils/duration";
+import { Video } from "@/types";
 
 interface CourseVideoListProps {
   videos: Video[];

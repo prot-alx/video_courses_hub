@@ -1,11 +1,4 @@
-interface CourseFormData {
-  title: string;
-  description: string;
-  price: string;
-  isFree: boolean;
-  isActive: boolean;
-  thumbnail: string;
-}
+import { CourseFormData } from "@/types";
 
 interface CourseBasicInfoFormProps {
   formData: CourseFormData;

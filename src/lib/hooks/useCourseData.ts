@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useCourseRequest } from "@/lib/hooks/useApi";
-import type { Course, Video } from "@/types/course";
-import type { RequestStatus } from "@/types";
+import type { Course, Video, RequestStatus } from "@/types";
 
 interface UseCourseDataProps {
   courseId: string;
@@ -68,7 +67,7 @@ export function useCourseData({
         setError(null);
 
         // Автоматически выбираем первое доступное видео
-        const sortedVideos = [...data.data.videos].sort(
+        const sortedVideos = [...(data.data.videos || [])].sort(
           (a, b) => a.orderIndex - b.orderIndex
         );
         const firstAccessible = sortedVideos.find((video: Video) => {
@@ -188,7 +187,7 @@ export function useCourseData({
   };
 
   const getSortedVideos = (): Video[] => {
-    if (!course) return [];
+    if (!course?.videos) return [];
     return [...course.videos].sort((a, b) => a.orderIndex - b.orderIndex);
   };
 

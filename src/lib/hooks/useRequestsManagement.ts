@@ -1,26 +1,13 @@
 import { useState, useEffect } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
-import type { CourseRequest, RequestStatus, ApiResponse } from "@/types";
-
-interface RequestsApiResponse {
-  requests: CourseRequest[];
-  stats: {
-    total: number;
-    new: number;
-    approved: number;
-    rejected: number;
-    cancelled: number;
-  };
-}
-
-type FilterType = "all" | "new" | "approved" | "rejected";
-
-interface RequestStats {
-  all: number;
-  new: number;
-  approved: number;
-  rejected: number;
-}
+import type {
+  CourseRequest,
+  RequestStatus,
+  ApiResponse,
+  RequestsApiResponse,
+  RequestStats,
+  FilterType,
+} from "@/types";
 
 interface UseRequestsManagementProps {
   isAuthenticated: boolean;
@@ -83,6 +70,8 @@ export function useRequestsManagement({
         const transformedRequests: CourseRequest[] = requestsData.requests.map(
           (apiRequest) => ({
             id: apiRequest.id,
+            userId: apiRequest.userId,
+            courseId: apiRequest.courseId,
             user: {
               name: apiRequest.user.name || "Без имени",
               email: apiRequest.user.email,

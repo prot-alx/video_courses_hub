@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import type { RequestStatus } from "@/types";
 import type { Prisma } from "@prisma/client";
+import { RequestStatus } from "@/types";
 
 interface RequestWhereClause {
   status?: RequestStatus;

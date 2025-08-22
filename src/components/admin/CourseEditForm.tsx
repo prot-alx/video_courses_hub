@@ -1,15 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useThumbnailUpload } from "@/lib/hooks/useThumbnailUpload";
-
-interface CourseFormData {
-  title: string;
-  description: string;
-  price: string;
-  isFree: boolean;
-  isActive: boolean;
-  thumbnail: string;
-}
+import { CourseFormData } from "@/types";
 
 interface CourseEditFormProps {
   formData: CourseFormData;

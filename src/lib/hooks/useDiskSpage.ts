@@ -1,4 +1,3 @@
-// lib/hooks/useDiskSpace.ts
 import { useState, useEffect } from "react";
 
 interface DiskInfo {

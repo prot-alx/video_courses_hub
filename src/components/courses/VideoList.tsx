@@ -1,5 +1,5 @@
 import VideoItem from "./VideoItem";
-import type { Video } from "@/types/course";
+import type { Video } from "@/types";
 
 interface VideoListProps {
   videos: Video[];

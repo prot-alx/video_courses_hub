@@ -3,8 +3,8 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 import VideoPlayer from "@/components/videos/VideoPlayer";
-import { formatDuration } from "@/lib/utils";
-import type { VideoDetails } from "@/types/course";
+import { VideoDetails } from "@/types";
+import { formatDuration } from "@/lib/utils/duration";
 
 interface Params {
   id: string;

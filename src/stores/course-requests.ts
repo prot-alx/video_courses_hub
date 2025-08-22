@@ -1,27 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ApiResponse, RequestStatus } from "@/types";
-
-export interface CourseRequest {
-  id: string;
-  userId: string;
-  courseId: string;
-  status: RequestStatus;
-  createdAt: string;
-  processedAt?: string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-    phone?: string | null;
-    telegram?: string | null;
-  };
-  course: {
-    id: string;
-    title: string;
-    price: number | null;
-  };
-}
+import type { ApiResponse, CourseRequest } from "@/types";
 
 interface CourseRequestsStore {
   // State

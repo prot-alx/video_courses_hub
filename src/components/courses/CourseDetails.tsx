@@ -1,7 +1,6 @@
-import { formatCourseDuration } from "@/lib/utils";
+import { formatCourseDuration } from "@/lib/utils/duration";
 import CourseAccessManager from "./CourseAccessManager";
-import type { Course } from "@/types/course";
-import type { RequestStatus } from "@/types";
+import type { Course, RequestStatus } from "@/types";
 
 interface CourseDetailsProps {
   course: Course;
@@ -60,8 +59,8 @@ export default function CourseDetails({
               className="text-sm"
               style={{ color: "var(--color-text-secondary)" }}
             >
-              {course.videos.length} видео •{" "}
-              {formatCourseDuration(course.videos, "short")}
+              {course.videos?.length || 0} видео •{" "}
+              {formatCourseDuration(course.videos || [], "short")}
             </span>
           </div>
         </div>

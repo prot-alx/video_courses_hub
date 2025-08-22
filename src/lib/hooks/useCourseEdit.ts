@@ -1,19 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToastContext } from "@/components/providers/ToastProvider";
-import type { Course, UpdateCourseInput } from "@/types";
+import type { Course, CourseFormData, UpdateCourseInput } from "@/types";
 
 interface AdminCourse extends Course {
   isActive: boolean;
-}
-
-interface CourseFormData {
-  title: string;
-  description: string;
-  price: string;
-  isFree: boolean;
-  isActive: boolean;
-  thumbnail: string;
 }
 
 interface UseCourseEditProps {

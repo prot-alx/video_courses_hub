@@ -122,7 +122,7 @@ export default function UserTableRow({ user }: Readonly<UserTableRowProps>) {
         {user.coursesCount}
       </td>
       <td className="py-3 px-4 text-center">
-        {user.activeRequests > 0 ? (
+        {user.pendingRequestsCount > 0 ? (
           <span
             className="px-2 py-1 text-xs rounded-full font-medium"
             style={{
@@ -130,7 +130,7 @@ export default function UserTableRow({ user }: Readonly<UserTableRowProps>) {
               color: "var(--color-primary-300)",
             }}
           >
-            {user.activeRequests}
+            {user.pendingRequestsCount}
           </span>
         ) : (
           <span style={{ color: "var(--color-text-secondary)" }}>-</span>
