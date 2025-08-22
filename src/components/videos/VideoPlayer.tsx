@@ -17,6 +17,7 @@ export default function VideoPlayer({
 }: Readonly<VideoPlayerProps>) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [buffering, setBuffering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleVideoClick = (e: React.MouseEvent) => {
@@ -107,7 +108,7 @@ export default function VideoPlayer({
       className={`aspect-video rounded-lg overflow-hidden relative ${className}`}
       style={{ background: "var(--color-primary-400)" }}
     >
-      {loading && (
+      {(loading || buffering) && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-2"></div>
@@ -115,7 +116,7 @@ export default function VideoPlayer({
               className="text-sm"
               style={{ color: "var(--color-text-secondary)" }}
             >
-              Загрузка видео...
+              {loading ? "Загрузка видео..." : "Буферизация..."}
             </p>
           </div>
         </div>
@@ -125,7 +126,7 @@ export default function VideoPlayer({
         controls
         className="w-full h-full"
         poster={poster}
-        preload="metadata"
+        preload="none"
         controlsList="nodownload noremoteplaycast" // ← Убрали nofullscreen, разрешаем фулскрин
         disablePictureInPicture // ← Отключаем картинка-в-картинке
         onContextMenu={handleContextMenu} // ← Блокируем только правый клик
@@ -133,7 +134,10 @@ export default function VideoPlayer({
         onClick={handleVideoClick} // ← Добавляем клик для паузы/плея
         onDoubleClick={handleVideoDoubleClick} // ← Добавляем двойной клик для фулскрина
         onLoadStart={() => setLoading(true)}
-        onCanPlay={() => setLoading(false)}
+        onLoadedData={() => setLoading(false)}
+        onWaiting={() => setBuffering(true)}
+        onCanPlay={() => setBuffering(false)}
+        onPlaying={() => setBuffering(false)}
         onError={() => {
           setLoading(false);
           setError(true);

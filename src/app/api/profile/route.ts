@@ -23,6 +23,19 @@ export async function GET() {
         preferredContact: true,
         role: true,
         createdAt: true,
+        reviews: {
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -34,11 +47,15 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      user: {
-        ...user,
-        phone: user.phone || "",
-        telegram: user.telegram || "",
-        name: user.name || "",
+      success: true,
+      data: {
+        user: {
+          ...user,
+          phone: user.phone || "",
+          telegram: user.telegram || "",
+          name: user.name || "",
+        },
+        reviews: user.reviews, // Все отзывы пользователя
       },
     });
   } catch (error) {

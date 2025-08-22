@@ -1,6 +1,7 @@
 "use client";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import Link from "next/link";
 
 export default function AboutPage() {
@@ -225,6 +226,11 @@ export default function AboutPage() {
               </ul>
             </div>
           </div>
+        </section>
+
+        {/* Отзывы */}
+        <section className="mb-12">
+          <ReviewsSection />
         </section>
 
         {/* CTA */}

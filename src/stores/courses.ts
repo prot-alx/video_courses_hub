@@ -37,7 +37,7 @@ interface CoursesStore {
   getVideoById: (id: string) => Video | undefined;
 
   // Async actions
-  fetchCourses: (filter?: CourseFilterType) => Promise<void>;
+  fetchCourses: () => Promise<void>;
   fetchCourse: (id: string) => Promise<void>;
   fetchVideos: (courseId: string) => Promise<void>;
 }
@@ -212,17 +212,16 @@ export const useCoursesStore = create<CoursesStore>()(
       },
 
       // Async actions
-      fetchCourses: async (filter = "all") => {
+      fetchCourses: async () => {
         set({ isLoading: true, error: null });
 
         try {
-          const response = await fetch(`/api/courses?type=${filter}`);
+          const response = await fetch(`/api/courses?type=all`);
           const result = await response.json();
 
           if (result.success) {
             set({
               courses: result.data,
-              filter,
               isLoading: false,
             });
           } else {

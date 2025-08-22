@@ -34,11 +34,11 @@ export default function ProfilePage() {
 
       const data = await response.json();
       setProfileData({
-        name: data.user.name,
-        email: data.user.email,
-        phone: data.user.phone,
-        telegram: data.user.telegram,
-        preferredContact: data.user.preferredContact,
+        name: data.data.user.name,
+        email: data.data.user.email,
+        phone: data.data.user.phone,
+        telegram: data.data.user.telegram,
+        preferredContact: data.data.user.preferredContact,
       });
     } catch (error) {
       console.error("Ошибка загрузки профиля:", error);

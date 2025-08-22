@@ -25,6 +25,12 @@ enum RequestStatus {
   cancelled
 }
 
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
 model AdminSettings {
   id              String @id @default("main") // Фиксированный ID
   supportTelegram String?
@@ -52,6 +58,7 @@ model User {
   courseRequests    CourseRequest[]
   processedRequests CourseRequest[]    @relation("ProcessedBy")
   grantedAccess     UserCourseAccess[] @relation("GrantedBy")
+  reviews           Review[]
   
   @@map("users")
 }
@@ -127,6 +134,22 @@ model CourseRequest {
 
   @@unique([userId, courseId]) // ← ИЗМЕНЕНО: убрали status из constraint
   @@map("course_requests")
+}
+
+model Review {
+  id        String       @id @default(cuid())
+  userId    String
+  rating    Int          // 1-5 звезд
+  comment   String?      // текст отзыва (опционально)
+  status    ReviewStatus @default(pending)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  
+  // Relations
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Убираем ограничение на один отзыв на пользователя
+  @@map("reviews")
 }
 
 model SimpleLog {

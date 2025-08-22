@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import type { Course } from "@/types";
 
 interface CourseCardData extends Course {
@@ -95,7 +95,7 @@ export default function CourseCard({
         style={{ background: "var(--color-primary-400)" }}
       >
         {shouldShowImage ? (
-          <Image
+          <OptimizedImage
             src={thumbnailUrl}
             alt={course.title}
             fill
@@ -107,6 +107,11 @@ export default function CourseCard({
                 `Ошибка загрузки превьюшки для курса: ${course.title}`
               );
             }}
+            fallback={
+              <span style={{ color: "var(--color-text-secondary)" }}>
+                🎥 Превью курса
+              </span>
+            }
           />
         ) : (
           <span style={{ color: "var(--color-text-secondary)" }}>

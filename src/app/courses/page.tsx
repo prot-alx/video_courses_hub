@@ -1,52 +1,38 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useCoursesStore } from "@/stores/courses";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CourseGrid from "@/components/courses/CourseGrid";
 import CourseFilter from "@/components/courses/CourseFilter";
-import type { Course, ApiResponse, CourseFilterType } from "@/types";
-
-// Расширяем базовый Course для страницы курсов
-interface CoursePageCourse extends Course {
-  totalDuration: number;
-}
+import type { CourseFilterType } from "@/types";
 
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const [courses, setCourses] = useState<CoursePageCourse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<CourseFilterType>("all");
-
-  const fetchCourses = async (filterType: CourseFilterType = "all") => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/courses?type=${filterType}`);
-      const data: ApiResponse<CoursePageCourse[]> = await response.json();
-
-      if (data.success && data.data) {
-        console.log("Данные курсов:", data.data);
-        setCourses(data.data);
-        setError(null);
-      } else {
-        setError(data.error || "Ошибка загрузки курсов");
-      }
-    } catch (err) {
-      setError("Ошибка сети при загрузке курсов");
-      console.error("Ошибка загрузки курсов:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { 
+    courses, 
+    isLoading, 
+    error, 
+    filter, 
+    fetchCourses, 
+    setFilter, 
+    getFilteredCourses 
+  } = useCoursesStore();
 
   useEffect(() => {
-    fetchCourses(filter);
-  }, [filter]);
+    // Загружаем курсы только если их еще нет
+    if (courses.length === 0) {
+      fetchCourses();
+    }
+  }, [courses.length, fetchCourses]);
 
   const handleFilterChange = (newFilter: CourseFilterType) => {
     setFilter(newFilter);
   };
+
+  // Получаем отфильтрованные курсы
+  const filteredCourses = getFilteredCourses();
 
   if (authLoading) {
     return (
@@ -97,7 +83,7 @@ export default function CoursesPage() {
             <div className="flex justify-between items-center">
               <p style={{ color: "var(--color-danger, #f00)" }}>❌ {error}</p>
               <button
-                onClick={() => fetchCourses(filter)}
+                onClick={fetchCourses}
                 className="text-sm underline hover:opacity-80"
                 style={{ color: "var(--color-danger, #f00)" }}
               >
@@ -108,7 +94,7 @@ export default function CoursesPage() {
         )}
 
         {/* Loading State */}
-        {loading && (
+        {isLoading && (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
             <span
@@ -121,7 +107,7 @@ export default function CoursesPage() {
         )}
 
         {/* Empty State */}
-        {!loading && !error && courses.length === 0 && (
+        {!isLoading && !error && filteredCourses.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📚</div>
             <h3
@@ -141,12 +127,12 @@ export default function CoursesPage() {
         )}
 
         {/* Courses Grid */}
-        {!loading && !error && courses.length > 0 && (
+        {!isLoading && !error && filteredCourses.length > 0 && (
           <CourseGrid
-            courses={courses}
-            isLoading={loading}
+            courses={filteredCourses}
+            isLoading={isLoading}
             isAuthenticated={isAuthenticated}
-            userCourseAccess={courses
+            userCourseAccess={filteredCourses
               .filter((c) => c.hasAccess)
               .map((c) => c.id)}
             onPurchaseClick={(courseId) => {
