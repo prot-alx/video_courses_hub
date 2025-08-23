@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useToastContext } from "@/components/providers/ToastProvider";
 import ContactField from "./ContactField";
 import type { UserProfile, PreferredContact } from "@/types";
 
@@ -15,7 +14,6 @@ export default function ProfileForm({
   isLoading = false,
   onSave,
 }: Readonly<ProfileFormProps>) {
-  const toast = useToastContext();
   const [formData, setFormData] = useState<UserProfile>(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);

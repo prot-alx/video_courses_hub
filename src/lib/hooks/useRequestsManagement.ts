@@ -74,6 +74,7 @@ export function useRequestsManagement({
             courseId: apiRequest.courseId,
             user: {
               name: apiRequest.user.name || "Без имени",
+              displayName: apiRequest.user.displayName,
               email: apiRequest.user.email,
               phone: apiRequest.user.phone,
               telegram: apiRequest.user.telegram,

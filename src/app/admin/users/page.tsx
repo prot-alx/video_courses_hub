@@ -46,6 +46,7 @@ export default function AdminUsersPage() {
         const normalizedUsers: AdminUserView[] = data.data.map((apiUser) => ({
           id: apiUser.id,
           name: apiUser.name || "Без имени",
+          displayName: apiUser.displayName,
           email: apiUser.email,
           role: apiUser.role,
           phone: apiUser.phone,
