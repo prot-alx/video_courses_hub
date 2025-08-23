@@ -49,23 +49,70 @@ export default function CourseCard({
   };
 
   const getActionButton = () => {
-    if (course.isFree || hasAccess) {
+    if (course.isFree) {
       return (
         <Link
           href={`/courses/${course.id}`}
-          className="btn-discord btn-discord-primary w-full block text-center"
+          className="btn-discord btn-discord-success w-full block text-center"
         >
-          {course.isFree ? "Смотреть бесплатно" : "Открыть курс"}
+          🆓 Смотреть бесплатно
+        </Link>
+      );
+    }
+
+    if (hasAccess) {
+      return (
+        <Link
+          href={`/courses/${course.id}`}
+          className="btn-discord btn-discord-success w-full block text-center"
+        >
+          🎥 Смотреть курс
         </Link>
       );
     }
 
     if (!isAuthenticated) {
       return (
-        <button className="btn-discord btn-discord-secondary w-full" disabled>
-          Войдите для покупки
-        </button>
+        <Link
+          href="/auth/signin"
+          className="btn-discord btn-discord-secondary w-full block text-center"
+        >
+          🔐 Войти для покупки
+        </Link>
       );
+    }
+
+    // Проверяем статус заявки
+    if (course.requestStatus) {
+      switch (course.requestStatus) {
+        case "new":
+          return (
+            <Link
+              href={`/courses/${course.id}`}
+              className="btn-discord btn-discord-warning w-full block text-center"
+            >
+              ⏳ Заявка на рассмотрении
+            </Link>
+          );
+        case "approved":
+          return (
+            <Link
+              href={`/courses/${course.id}`}
+              className="btn-discord btn-discord-success w-full block text-center"
+            >
+              🎥 Смотреть курс
+            </Link>
+          );
+        case "rejected":
+          return (
+            <button
+              onClick={handleActionClick}
+              className="btn-discord btn-discord-primary w-full"
+            >
+              💰 Запросить повторно
+            </button>
+          );
+      }
     }
 
     return (
@@ -73,7 +120,7 @@ export default function CourseCard({
         onClick={handleActionClick}
         className="btn-discord btn-discord-primary w-full"
       >
-        Открыть курс
+        💰 Запросить доступ
       </button>
     );
   };
@@ -122,12 +169,23 @@ export default function CourseCard({
 
       {/* Заголовок и бейдж */}
       <div className="flex items-center justify-between mb-2">
-        <h3
-          className="font-semibold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          {course.title}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3
+            className="font-semibold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {course.title}
+          </h3>
+          {/* Иконка доступа */}
+          {!course.isFree && (
+            <span
+              title={hasAccess ? "У вас есть доступ к курсу" : "Курс требует покупки"}
+              className="text-base"
+            >
+{hasAccess ? "🔓" : "🔐"}
+            </span>
+          )}
+        </div>
         <span
           className={`px-2 py-1 text-xs rounded-full font-medium ${
             course.isFree

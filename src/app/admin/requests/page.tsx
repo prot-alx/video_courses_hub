@@ -27,21 +27,34 @@ export default function AdminRequestsPage() {
     approved: 0,
     rejected: 0,
   });
+  const [pagination, setPagination] = useState<{
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRequests = async (statusFilter?: string) => {
+  const fetchRequests = async (statusFilter?: string, page = 1) => {
     try {
       setIsLoading(true);
-      const url =
-        statusFilter && statusFilter !== "all"
-          ? `/api/admin/requests?status=${statusFilter}`
-          : "/api/admin/requests";
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+      });
 
-      const response = await fetch(url);
+      if (statusFilter && statusFilter !== "all") {
+        params.set('status', statusFilter);
+      }
+
+      const response = await fetch(`/api/admin/requests?${params}`);
       const data: ApiResponse<RequestsApiResponse> = await response.json();
 
       if (data.success && data.data) {
@@ -80,6 +93,8 @@ export default function AdminRequestsPage() {
           approved: requestsData.stats.approved,
           rejected: requestsData.stats.rejected,
         });
+        setPagination(requestsData.pagination);
+        setCurrentPage(page);
         setError(null);
       } else {
         setError(data.error || "Ошибка загрузки заявок");
@@ -94,9 +109,10 @@ export default function AdminRequestsPage() {
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
-      fetchRequests();
+      setCurrentPage(1);
+      fetchRequests(filter, 1);
     }
-  }, [isAuthenticated, isAdmin]); // Убрали filter из зависимостей
+  }, [isAuthenticated, isAdmin, filter]);
 
   const handleApprove = async (requestId: string) => {
     if (processingId) return;
@@ -117,7 +133,7 @@ export default function AdminRequestsPage() {
 
       if (data.success) {
         toast.success("Заявка одобрена!", "Пользователю выдан доступ к курсу");
-        await fetchRequests(filter); // Обновляем список
+        await fetchRequests(filter, currentPage); // Остаемся на текущей странице
       } else {
         toast.error(
           "Ошибка одобрения",
@@ -151,7 +167,7 @@ export default function AdminRequestsPage() {
 
       if (data.success) {
         toast.success("Заявка отклонена");
-        await fetchRequests(filter); // Обновляем список
+        await fetchRequests(filter, currentPage); // Остаемся на текущей странице
       } else {
         toast.error(
           "Ошибка отклонения",
@@ -229,7 +245,7 @@ export default function AdminRequestsPage() {
             <div className="flex justify-between items-center">
               <p className="text-red-800 text-sm">❌ {error}</p>
               <button
-                onClick={() => fetchRequests(filter)}
+                onClick={() => fetchRequests(filter, currentPage)}
                 className="text-sm text-red-600 hover:text-red-500 underline"
               >
                 Попробовать снова
@@ -338,6 +354,61 @@ export default function AdminRequestsPage() {
           isLoading={processingId !== null}
           emptyMessage={getEmptyMessage()}
         />
+
+        {/* Пагинация */}
+        {stats.all > 10 && pagination && (
+          <div className="flex justify-center items-center gap-2 mt-6">
+            <button
+              onClick={() => fetchRequests(filter, currentPage - 1)}
+              disabled={!pagination.hasPrev}
+              className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ← Предыдущая
+            </button>
+            
+            <div className="flex items-center gap-1">
+              {(() => {
+                const totalPages = pagination.totalPages;
+                const current = currentPage;
+                const pages: number[] = [];
+                
+                const start = Math.max(1, current - 2);
+                const end = Math.min(totalPages, current + 2);
+                
+                for (let i = start; i <= end; i++) {
+                  pages.push(i);
+                }
+                
+                return pages.map(pageNum => (
+                  <button
+                    key={pageNum}
+                    onClick={() => fetchRequests(filter, pageNum)}
+                    className={`px-3 py-1 text-sm rounded border ${
+                      pageNum === currentPage
+                        ? 'bg-blue-500 text-white border-blue-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ));
+              })()}
+            </div>
+            
+            <button
+              onClick={() => fetchRequests(filter, currentPage + 1)}
+              disabled={!pagination.hasNext}
+              className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Следующая →
+            </button>
+            
+            <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
+              Страница {pagination.page} из {pagination.totalPages} 
+              ({pagination.total} заявок)
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

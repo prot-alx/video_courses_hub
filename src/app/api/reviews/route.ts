@@ -8,30 +8,77 @@ const CreateReviewSchema = z.object({
   comment: z.string().optional(),
 });
 
-// GET - получение одобренных отзывов
-export async function GET() {
+// GET - получение одобренных отзывов с пагинацией
+export async function GET(request: NextRequest) {
   try {
-    const reviews = await prisma.review.findMany({
-      where: {
-        status: "approved",
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            displayName: true,
-            email: true,
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const userId = searchParams.get('userId');
+    const skip = (page - 1) * limit;
+
+    // Получаем одобренные отзывы + pending отзывы для конкретного пользователя
+    const where = {
+      OR: [
+        { status: "approved" as const },
+        ...(userId ? [{ status: "pending" as const, userId }] : [])
+      ]
+    };
+
+    // Отдельные условия для одобренных отзывов (для статистики)
+    const approvedWhere = {
+      status: "approved" as const,
+    };
+
+    // Получаем отзывы, общее количество и среднюю оценку параллельно
+    const [reviews, total, approvedTotal, avgResult] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              name: true,
+              displayName: true,
+              email: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.review.count({
+        where,
+      }),
+      prisma.review.count({
+        where: approvedWhere,
+      }),
+      prisma.review.aggregate({
+        where: approvedWhere,
+        _avg: {
+          rating: true,
+        },
+      })
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const averageRating = avgResult._avg.rating ? Number(avgResult._avg.rating.toFixed(1)) : 0;
 
     return NextResponse.json({
       success: true,
       data: reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+        approvedTotal, // количество только одобренных отзывов для заголовка
+      },
+      averageRating,
     });
   } catch (error) {
     console.error("Ошибка получения отзывов:", error);

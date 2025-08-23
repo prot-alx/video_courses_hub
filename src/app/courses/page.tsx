@@ -132,9 +132,6 @@ export default function CoursesPage() {
             courses={filteredCourses}
             isLoading={isLoading}
             isAuthenticated={isAuthenticated}
-            userCourseAccess={filteredCourses
-              .filter((c) => c.hasAccess)
-              .map((c) => c.id)}
             onPurchaseClick={(courseId) => {
               window.location.href = `/courses/${courseId}`;
             }}

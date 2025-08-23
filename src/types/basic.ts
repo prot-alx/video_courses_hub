@@ -49,6 +49,7 @@ export interface Course extends BaseEntity {
   totalDuration: number;
   // UI поля
   hasAccess?: boolean;
+  requestStatus?: RequestStatus | null;
   videosCount?: number;
   freeVideosCount?: number;
   videos?: Video[];
@@ -196,6 +197,14 @@ export interface CourseFormData {
 
 export interface RequestsApiResponse {
   requests: CourseRequest[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
   stats: {
     total: number;
     new: number;

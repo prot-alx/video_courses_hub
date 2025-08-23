@@ -30,15 +30,29 @@ export default function AdminUsersPage() {
     withActiveRequests: 0,
     newUsersThisWeek: 0,
   });
+  const [pagination, setPagination] = useState<{
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = 1) => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/admin/users");
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+      });
+      
+      const response = await fetch(`/api/admin/users?${params}`);
       const data: ApiResponse<AdminUserView[]> = await response.json();
 
       if (data.success && data.data) {
@@ -60,6 +74,18 @@ export default function AdminUsersPage() {
 
         setUsers(normalizedUsers);
         setStats(calculateStats(normalizedUsers));
+        const apiData = data as { 
+          pagination?: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+            hasNext: boolean;
+            hasPrev: boolean;
+          }
+        };
+        setPagination(apiData.pagination || null);
+        setCurrentPage(page);
         setError(null);
       } else {
         setError(data.error || "Ошибка загрузки пользователей");
@@ -87,7 +113,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
-      fetchUsers();
+      fetchUsers(1);
       fetchPendingRequests();
     }
   }, [isAuthenticated, isAdmin]);
@@ -162,7 +188,7 @@ export default function AdminUsersPage() {
             <div className="flex justify-between items-center">
               <p className="text-red-800 text-sm">❌ {error}</p>
               <button
-                onClick={fetchUsers}
+                onClick={() => fetchUsers(currentPage)}
                 className="text-sm text-red-600 hover:text-red-500 underline"
               >
                 Попробовать снова
@@ -190,6 +216,61 @@ export default function AdminUsersPage() {
               onGrantAccess={handleGrantAccess}
               onRevokeAccess={handleRevokeAccess}
             />
+
+            {/* Пагинация */}
+            {stats.totalUsers > 10 && pagination && (
+              <div className="flex justify-center items-center gap-2 mt-6">
+                <button
+                  onClick={() => fetchUsers(currentPage - 1)}
+                  disabled={!pagination.hasPrev}
+                  className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  ← Предыдущая
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {(() => {
+                    const totalPages = pagination.totalPages;
+                    const current = currentPage;
+                    const pages: number[] = [];
+                    
+                    const start = Math.max(1, current - 2);
+                    const end = Math.min(totalPages, current + 2);
+                    
+                    for (let i = start; i <= end; i++) {
+                      pages.push(i);
+                    }
+                    
+                    return pages.map(pageNum => (
+                      <button
+                        key={pageNum}
+                        onClick={() => fetchUsers(pageNum)}
+                        className={`px-3 py-1 text-sm rounded border ${
+                          pageNum === currentPage
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ));
+                  })()}
+                </div>
+                
+                <button
+                  onClick={() => fetchUsers(currentPage + 1)}
+                  disabled={!pagination.hasNext}
+                  className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Следующая →
+                </button>
+                
+                <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
+                  Страница {pagination.page} из {pagination.totalPages} 
+                  ({pagination.total} пользователей)
+                </span>
+              </div>
+            )}
           </>
         )}
       </div>

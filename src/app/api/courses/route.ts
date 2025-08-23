@@ -69,6 +69,17 @@ export async function GET(request: NextRequest) {
               select: { userId: true },
             }
           : false,
+        requests: session?.user?.id
+          ? {
+              where: { 
+                userId: session.user.id,
+                status: { in: ["new", "approved", "rejected"] }
+              },
+              select: { status: true },
+              orderBy: { createdAt: "desc" },
+              take: 1
+            }
+          : false,
         _count: {
           select: {
             videos: true,
@@ -100,6 +111,11 @@ export async function GET(request: NextRequest) {
         (video) => video.isFree
       ).length;
 
+      // Получаем статус последней заявки
+      const requestStatus = Array.isArray(course.requests) && course.requests.length > 0
+        ? course.requests[0].status
+        : null;
+
       return {
         id: course.id,
         title: course.title,
@@ -107,6 +123,7 @@ export async function GET(request: NextRequest) {
         price: course.price,
         isFree: course.isFree,
         hasAccess,
+        requestStatus,
         videosCount: course._count.videos,
         freeVideosCount,
         totalDuration: course.totalDuration,

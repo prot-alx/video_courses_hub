@@ -19,10 +19,13 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
 
     const whereClause = status ? { status: status as "pending" | "approved" | "rejected" } : {};
 
-    const [reviews, stats] = await Promise.all([
+    const [reviews, total, stats] = await Promise.all([
       prisma.review.findMany({
         where: whereClause,
         include: {
@@ -37,6 +40,11 @@ export async function GET(request: NextRequest) {
         orderBy: {
           createdAt: "desc",
         },
+        skip,
+        take: limit,
+      }),
+      prisma.review.count({
+        where: whereClause,
       }),
       prisma.review.groupBy({
         by: ["status"],
@@ -50,14 +58,24 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {} as Record<string, number>);
 
+    const totalPages = Math.ceil(total / limit);
+
     return NextResponse.json({
       success: true,
       data: reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
       stats: {
         pending: statsObject.pending || 0,
         approved: statsObject.approved || 0,
         rejected: statsObject.rejected || 0,
-        total: reviews.length,
+        total: statsObject.pending + statsObject.approved + statsObject.rejected || 0,
       },
     });
   } catch (error) {

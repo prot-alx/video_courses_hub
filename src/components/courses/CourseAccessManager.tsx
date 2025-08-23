@@ -62,13 +62,17 @@ export default function CourseAccessManager({
     }
 
     if (course.isFree) {
-      return null;
+      return (
+        <button className="btn-discord btn-discord-success">
+          🆓 Смотреть бесплатно
+        </button>
+      );
     }
 
     if (!isAuthenticated) {
       return (
         <Link href="/auth/signin" className="btn-discord btn-discord-primary">
-          Войти для покупки
+          🔐 Войти для покупки
         </Link>
       );
     }
@@ -76,7 +80,7 @@ export default function CourseAccessManager({
     if (course.hasAccess) {
       return (
         <button className="btn-discord btn-discord-success">
-          ✓ Доступ открыт
+          🎥 Смотреть курс
         </button>
       );
     }
@@ -88,15 +92,15 @@ export default function CourseAccessManager({
             <button
               onClick={handleCancelRequest}
               disabled={requestLoading}
-              className="btn-discord btn-discord-secondary"
+              className="btn-discord btn-discord-warning"
             >
-              Отменить заявку
+              ⏳ Заявка на рассмотрении - Отменить
             </button>
           );
         case "approved":
           return (
             <button className="btn-discord btn-discord-success">
-              ✓ Заявка одобрена
+              🎥 Смотреть курс
             </button>
           );
         case "rejected":
@@ -106,7 +110,7 @@ export default function CourseAccessManager({
               disabled={requestLoading}
               className="btn-discord btn-discord-primary"
             >
-              Отправить заявку повторно
+              💰 Запросить доступ повторно
             </button>
           );
         default:
@@ -116,7 +120,7 @@ export default function CourseAccessManager({
               disabled={requestLoading}
               className="btn-discord btn-discord-primary"
             >
-              Отправить заявку
+              💰 Запросить доступ к курсу
             </button>
           );
       }
@@ -128,7 +132,7 @@ export default function CourseAccessManager({
         disabled={requestLoading}
         className="btn-discord btn-discord-primary"
       >
-        Отправить заявку
+        💰 Запросить доступ к курсу
       </button>
     );
   };

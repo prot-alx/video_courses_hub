@@ -65,10 +65,18 @@ export function useCourseRequest() {
 
   const getRequestStatus = async (
     courseId: string
-  ): Promise<ApiResponse<RequestStatus>> => {
-    return request<RequestStatus>(
-      `/api/course-request/status?courseId=${courseId}`
-    );
+  ): Promise<ApiResponse<{
+    status: RequestStatus;
+    hasAccess?: boolean;
+    requestId?: string;
+    canCancel?: boolean;
+  }>> => {
+    return request<{
+      status: RequestStatus;
+      hasAccess?: boolean;
+      requestId?: string;
+      canCancel?: boolean;
+    }>(`/api/course-request/status?courseId=${courseId}`);
   };
 
   return {

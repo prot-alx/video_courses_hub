@@ -9,7 +9,6 @@ interface CourseGridProps {
   courses: CourseGridData[];
   isLoading?: boolean;
   isAuthenticated?: boolean;
-  userCourseAccess?: string[];
   onPurchaseClick?: (courseId: string) => void;
 }
 
@@ -17,7 +16,6 @@ export default function CourseGrid({
   courses,
   isLoading = false,
   isAuthenticated = false,
-  userCourseAccess = [],
   onPurchaseClick,
 }: Readonly<CourseGridProps>) {
   if (isLoading) {
@@ -82,7 +80,7 @@ export default function CourseGrid({
           key={course.id}
           course={course}
           isAuthenticated={isAuthenticated}
-          hasAccess={userCourseAccess.includes(course.id)}
+          hasAccess={course.hasAccess || false}
           onPurchaseClick={onPurchaseClick}
         />
       ))}

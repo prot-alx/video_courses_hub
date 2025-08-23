@@ -78,7 +78,7 @@ export default function CourseDetailsPage({
         }}
       >
         <div className="max-w-7xl mx-auto flex items-center gap-4">
-          <Link href="/" className="btn-discord btn-discord-secondary">
+          <Link href="/courses" className="btn-discord btn-discord-secondary">
             ← Назад к курсам
           </Link>
           <h1

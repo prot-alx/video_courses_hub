@@ -27,6 +27,15 @@ interface ReviewStats {
   total: number;
 }
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
 export default function AdminReviewsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -36,6 +45,8 @@ export default function AdminReviewsPage() {
     rejected: 0,
     total: 0,
   });
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const { success: showSuccessToast, error: showErrorToast } = useToast();
@@ -44,19 +55,26 @@ export default function AdminReviewsPage() {
     await signOut({ callbackUrl: "/" });
   };
 
-  const fetchReviews = useCallback(async () => {
+  const fetchReviews = useCallback(async (page = 1) => {
     setIsLoading(true);
     try {
-      const url = statusFilter === "all" 
-        ? "/api/admin/reviews" 
-        : `/api/admin/reviews?status=${statusFilter}`;
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+      });
       
-      const response = await fetch(url);
+      if (statusFilter !== "all") {
+        params.set('status', statusFilter);
+      }
+      
+      const response = await fetch(`/api/admin/reviews?${params}`);
       const data = await response.json();
 
       if (data.success) {
         setReviews(data.data);
         setStats(data.stats);
+        setPagination(data.pagination);
+        setCurrentPage(page);
       } else {
         showErrorToast(data.error || "Ошибка загрузки отзывов");
       }
@@ -70,7 +88,8 @@ export default function AdminReviewsPage() {
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
-      fetchReviews();
+      setCurrentPage(1);
+      fetchReviews(1);
     }
   }, [isAuthenticated, isAdmin, statusFilter, fetchReviews]);
 
@@ -88,7 +107,7 @@ export default function AdminReviewsPage() {
 
       if (data.success) {
         showSuccessToast(data.message);
-        await fetchReviews(); // Перезагружаем список
+        await fetchReviews(currentPage); // Остаемся на текущей странице
       } else {
         showErrorToast(data.error || "Ошибка модерации");
       }
@@ -112,7 +131,7 @@ export default function AdminReviewsPage() {
 
       if (data.success) {
         showSuccessToast(data.message);
-        await fetchReviews(); // Перезагружаем список
+        await fetchReviews(currentPage); // Остаемся на текущей странице
       } else {
         showErrorToast(data.error || "Ошибка удаления");
       }
@@ -401,6 +420,62 @@ export default function AdminReviewsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Пагинация */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => fetchReviews(currentPage - 1)}
+            disabled={!pagination.hasPrev}
+            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ← Предыдущая
+          </button>
+          
+          <div className="flex items-center gap-1">
+            {(() => {
+              const totalPages = pagination.totalPages;
+              const current = currentPage;
+              const pages: number[] = [];
+              
+              // Простая логика: показываем до 5 страниц вокруг текущей
+              const start = Math.max(1, current - 2);
+              const end = Math.min(totalPages, current + 2);
+              
+              for (let i = start; i <= end; i++) {
+                pages.push(i);
+              }
+              
+              return pages.map(pageNum => (
+                <button
+                  key={pageNum}
+                  onClick={() => fetchReviews(pageNum)}
+                  className={`px-3 py-1 text-sm rounded border ${
+                    pageNum === currentPage
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ));
+            })()}
+          </div>
+          
+          <button
+            onClick={() => fetchReviews(currentPage + 1)}
+            disabled={!pagination.hasNext}
+            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Следующая →
+          </button>
+          
+          <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
+            Страница {pagination.page} из {pagination.totalPages} 
+            ({pagination.total} отзывов)
+          </span>
         </div>
       )}
       </div>

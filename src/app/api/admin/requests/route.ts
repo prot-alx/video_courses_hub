@@ -21,10 +21,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Параметры фильтрации
+    // Параметры фильтрации и пагинации
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get("status");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
 
     const whereClause: RequestWhereClause = {};
 
@@ -39,58 +41,76 @@ export async function GET(request: NextRequest) {
       whereClause.status = statusFilter as RequestStatus;
     }
 
-    const requests = await prisma.courseRequest.findMany({
-      where: whereClause as Prisma.CourseRequestWhereInput,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            telegram: true,
-            preferredContact: true,
+    const [requests, total, allStats] = await Promise.all([
+      prisma.courseRequest.findMany({
+        where: whereClause as Prisma.CourseRequestWhereInput,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              displayName: true,
+              email: true,
+              phone: true,
+              telegram: true,
+              preferredContact: true,
+            },
+          },
+          course: {
+            select: {
+              id: true,
+              title: true,
+              price: true,
+            },
+          },
+          processedByUser: {
+            select: {
+              name: true,
+              email: true,
+            },
           },
         },
-        course: {
-          select: {
-            id: true,
-            title: true,
-            price: true,
-          },
-        },
-        processedByUser: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-      take: limit,
-    });
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+        skip,
+        take: limit,
+      }),
+      prisma.courseRequest.count({
+        where: whereClause as Prisma.CourseRequestWhereInput,
+      }),
+      prisma.courseRequest.groupBy({
+        by: ["status"],
+        _count: true,
+      })
+    ]);
 
-    // Группируем заявки по статусу для удобства
-    const groupedRequests = {
-      new: requests.filter((r) => r.status === "new"),
-      approved: requests.filter((r) => r.status === "approved"),
-      rejected: requests.filter((r) => r.status === "rejected"),
-      cancelled: requests.filter((r) => r.status === "cancelled"),
-    };
+    // Формируем статистику из общих данных (а не только текущей страницы)
+    const statsObject = allStats.reduce((acc, item) => {
+      acc[item.status] = item._count;
+      return acc;
+    }, {} as Record<string, number>);
 
     const stats = {
-      total: requests.length,
-      new: groupedRequests.new.length,
-      approved: groupedRequests.approved.length,
-      rejected: groupedRequests.rejected.length,
-      cancelled: groupedRequests.cancelled.length,
+      total: statsObject.new + statsObject.approved + statsObject.rejected + statsObject.cancelled || 0,
+      new: statsObject.new || 0,
+      approved: statsObject.approved || 0,
+      rejected: statsObject.rejected || 0,
+      cancelled: statsObject.cancelled || 0,
     };
+
+    const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json({
       success: true,
       data: {
         requests,
-        grouped: groupedRequests,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
         stats,
       },
     });

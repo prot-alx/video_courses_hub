@@ -11,8 +11,19 @@ export interface Review {
   updatedAt: string;
   user: {
     name: string | null;
+    displayName?: string | null;
     email: string;
   };
+}
+
+export interface ReviewsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  approvedTotal: number;
 }
 
 export interface UserReview {
@@ -28,17 +39,22 @@ interface ReviewsStore {
   // State
   reviews: Review[];
   userReviews: UserReview[];
+  pagination: ReviewsPagination | null;
+  averageRating: number;
   isLoading: boolean;
   error: string | null;
 
   // Actions
   setReviews: (reviews: Review[]) => void;
   setUserReviews: (reviews: UserReview[]) => void;
+  setPagination: (pagination: ReviewsPagination | null) => void;
+  setAverageRating: (rating: number) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 
   // API Actions
-  fetchReviews: () => Promise<void>;
+  fetchReviews: (page?: number, limit?: number, userId?: string) => Promise<void>;
+  loadMoreReviews: () => Promise<void>;
   fetchUserReviews: () => Promise<void>;
   submitReview: (rating: number, comment: string) => Promise<string>;
   deleteReview: (reviewId: string) => Promise<string>;
@@ -55,27 +71,58 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
   // Initial state
   reviews: [],
   userReviews: [],
+  pagination: null,
+  averageRating: 0,
   isLoading: false,
   error: null,
 
   // Basic setters
   setReviews: (reviews) => set({ reviews }),
   setUserReviews: (userReviews) => set({ userReviews }),
+  setPagination: (pagination) => set({ pagination }),
+  setAverageRating: (averageRating) => set({ averageRating }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
 
   // API Actions
-  fetchReviews: async () => {
+  fetchReviews: async (page = 1, limit = 10, userId?: string) => {
     set({ isLoading: true, error: null });
     try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      if (userId) {
+        params.set('userId', userId);
+      }
+
+      const cacheKey = `reviews_${params.toString()}`;
       const data = await cachedFetch<{
         success: boolean;
         data: Review[];
+        pagination: ReviewsPagination;
+        averageRating: number;
         error?: string;
-      }>("/api/reviews", undefined, "reviews", 3 * 60 * 1000); // кэш на 3 минуты
+      }>(`/api/reviews?${params}`, undefined, cacheKey, 3 * 60 * 1000);
 
       if (data.success) {
-        set({ reviews: data.data, isLoading: false });
+        if (page === 1) {
+          set({ 
+            reviews: data.data, 
+            pagination: data.pagination,
+            averageRating: data.averageRating,
+            isLoading: false 
+          });
+        } else {
+          // Append for load more
+          set({ 
+            reviews: [...get().reviews, ...data.data],
+            pagination: data.pagination,
+            averageRating: data.averageRating,
+            isLoading: false 
+          });
+        }
       } else {
         set({
           error: data.error || "Ошибка загрузки отзывов",
@@ -86,6 +133,13 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
       console.error("Ошибка загрузки отзывов:", error);
       set({ error: "Ошибка загрузки отзывов", isLoading: false });
     }
+  },
+
+  loadMoreReviews: async () => {
+    const { pagination } = get();
+    if (!pagination?.hasNext) return;
+    
+    await get().fetchReviews(pagination.page + 1, pagination.limit);
   },
 
   fetchUserReviews: async () => {
@@ -181,6 +235,8 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
     set({
       reviews: [],
       userReviews: [],
+      pagination: null,
+      averageRating: 0,
       isLoading: false,
       error: null,
     }),

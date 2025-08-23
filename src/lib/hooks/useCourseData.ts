@@ -115,7 +115,18 @@ export function useCourseData({
     try {
       const response = await getRequestStatus(course.id);
       if (response.success && response.data) {
-        setRequestStatus(response.data);
+        const statusData = response.data;
+        console.log('statusData: ', statusData);
+        
+        setRequestStatus(statusData.status);
+        
+        // Обновляем информацию о доступе к курсу
+        if (statusData.hasAccess && course) {
+          setCourse({
+            ...course,
+            hasAccess: statusData.hasAccess
+          });
+        }
       }
     } catch (err) {
       console.error("Ошибка получения статуса заявки:", err);
@@ -197,11 +208,11 @@ export function useCourseData({
   }, [courseId]);
 
   useEffect(() => {
-    if (course && isAuthenticated) {
+    if (course?.id && isAuthenticated) {
       fetchRequestStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course, isAuthenticated]);
+  }, [course?.id, isAuthenticated]);
 
   return {
     // Data

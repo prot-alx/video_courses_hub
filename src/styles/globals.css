@@ -157,6 +157,20 @@
   .btn-discord-secondary:hover {
     background: var(--color-primary-500);
   }
+  .btn-discord-success {
+    background: var(--color-success);
+    color: var(--color-text-primary);
+  }
+  .btn-discord-success:hover {
+    background: oklch(0.55 0.15 145);
+  }
+  .btn-discord-warning {
+    background: var(--color-warning);
+    color: var(--color-primary-300);
+  }
+  .btn-discord-warning:hover {
+    background: oklch(0.65 0.15 60);
+  }
 
   /* Sidebar channel hover effect */
   .channel-item {

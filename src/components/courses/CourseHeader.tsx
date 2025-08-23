@@ -6,7 +6,7 @@ interface CourseHeaderProps {
 }
 
 export default function CourseHeader({
-  backUrl = "/",
+  backUrl = "/courses",
   backLabel = "Назад к курсам",
 }: Readonly<CourseHeaderProps>) {
   return (
