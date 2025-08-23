@@ -31,8 +31,9 @@ export async function GET() {
     const stats = {
       purchasedCourses: user.courseAccess.length,
       memberSince: user.createdAt.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
         year: "numeric",
-        month: "short",
       }),
     };
 

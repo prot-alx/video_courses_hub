@@ -33,40 +33,44 @@ export default function UserStats() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
-        <div className="flex justify-between">
-          <span style={{ color: "var(--color-text-secondary)" }}>
+      <div className="space-y-4">
+        <div>
+          <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
             Курсов куплено:
-          </span>
-          <span style={{ color: "var(--color-text-primary)" }}>...</span>
+          </div>
+          <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
+            ...
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span style={{ color: "var(--color-text-secondary)" }}>
+        <div>
+          <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
             На платформе с:
-          </span>
-          <span style={{ color: "var(--color-text-primary)" }}>...</span>
+          </div>
+          <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
+            ...
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex justify-between">
-        <span style={{ color: "var(--color-text-secondary)" }}>
+    <div className="space-y-4">
+      <div>
+        <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
           Курсов куплено:
-        </span>
-        <span style={{ color: "var(--color-text-primary)" }}>
+        </div>
+        <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
           {stats?.purchasedCourses || 0}
-        </span>
+        </div>
       </div>
-      <div className="flex justify-between">
-        <span style={{ color: "var(--color-text-secondary)" }}>
+      <div>
+        <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
           На платформе с:
-        </span>
-        <span style={{ color: "var(--color-text-primary)" }}>
+        </div>
+        <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold break-words">
           {stats?.memberSince || "—"}
-        </span>
+        </div>
       </div>
     </div>
   );
