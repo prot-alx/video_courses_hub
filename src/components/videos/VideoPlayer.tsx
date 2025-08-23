@@ -126,7 +126,7 @@ export default function VideoPlayer({
         controls
         className="w-full h-full"
         poster={poster}
-        preload="none"
+        preload="metadata"
         controlsList="nodownload noremoteplaycast" // ← Убрали nofullscreen, разрешаем фулскрин
         disablePictureInPicture // ← Отключаем картинка-в-картинке
         onContextMenu={handleContextMenu} // ← Блокируем только правый клик
@@ -156,12 +156,36 @@ export default function VideoPlayer({
         Ваш браузер не поддерживает воспроизведение видео.
       </video>
 
+      {/* Кнопка фулскрина */}
+      <button
+        onClick={handleVideoDoubleClick}
+        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all duration-200"
+        style={{ 
+          opacity: loading ? 0 : 1,
+          pointerEvents: loading ? 'none' : 'auto'
+        }}
+        title="Полноэкранный режим"
+      >
+        <svg 
+          width="20" 
+          height="20" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <polyline points="15,3 21,3 21,9" />
+          <polyline points="9,21 3,21 3,15" />
+          <line x1="21" y1="3" x2="14" y2="10" />
+          <line x1="3" y1="21" x2="10" y2="14" />
+        </svg>
+      </button>
+
       {/* Дополнительные стили для скрытия кнопок скачивания */}
       <style jsx>{`
         video::-webkit-media-controls-download-button {
-          display: none !important;
-        }
-        video::-webkit-media-controls-fullscreen-button {
           display: none !important;
         }
         video::-webkit-media-controls-picture-in-picture-button {
