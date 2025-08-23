@@ -18,6 +18,7 @@ export interface BaseEntity {
 export interface User extends BaseEntity {
   email: string;
   name: string | null;
+  displayName: string | null;
   role: UserRole;
   phone: string | null;
   telegram: string | null;
@@ -61,6 +62,7 @@ export interface CourseRequest extends BaseEntity {
   processedAt: string | null;
   user: {
     name: string | null;
+    displayName: string | null;
     email: string;
     phone: string | null;
     telegram: string | null;
@@ -85,6 +87,7 @@ export interface ApiResponse<T> {
 // === ФОРМЫ ===
 export interface UserProfile {
   name: string;
+  displayName: string | null;
   email: string;
   phone: string | null;
   telegram: string | null;
@@ -93,6 +96,7 @@ export interface UserProfile {
 
 export interface ProfileData {
   name: string;
+  displayName: string | null;
   email: string;
   phone: string | null;
   telegram: string | null;

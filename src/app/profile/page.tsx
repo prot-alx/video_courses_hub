@@ -35,6 +35,7 @@ export default function ProfilePage() {
       const data = await response.json();
       setProfileData({
         name: data.data.user.name,
+        displayName: data.data.user.displayName,
         email: data.data.user.email,
         phone: data.data.user.phone,
         telegram: data.data.user.telegram,
@@ -58,6 +59,7 @@ export default function ProfilePage() {
           phone: data.phone,
           telegram: data.telegram,
           preferredContact: data.preferredContact,
+          displayName: data.displayName,
         }),
       });
 
@@ -66,6 +68,7 @@ export default function ProfilePage() {
       const updatedData = await response.json();
       setProfileData({
         name: updatedData.user.name,
+        displayName: updatedData.user.displayName,
         email: updatedData.user.email,
         phone: updatedData.user.phone,
         telegram: updatedData.user.telegram,

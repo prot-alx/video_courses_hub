@@ -18,6 +18,7 @@ export async function GET() {
         id: true,
         email: true,
         name: true,
+        displayName: true,
         phone: true,
         telegram: true,
         preferredContact: true,
@@ -54,6 +55,7 @@ export async function GET() {
           phone: user.phone || "",
           telegram: user.telegram || "",
           name: user.name || "",
+          displayName: user.displayName || null,
         },
         reviews: user.reviews, // Все отзывы пользователя
       },
@@ -84,11 +86,13 @@ export async function PATCH(request: NextRequest) {
         phone: validatedData.phone || null,
         telegram: validatedData.telegram || null,
         preferredContact: validatedData.preferredContact,
+        displayName: validatedData.displayName || null,
       },
       select: {
         id: true,
         email: true,
         name: true,
+        displayName: true,
         phone: true,
         telegram: true,
         preferredContact: true,
@@ -101,6 +105,7 @@ export async function PATCH(request: NextRequest) {
         phone: updatedUser.phone || "",
         telegram: updatedUser.telegram || "",
         name: updatedUser.name || "",
+        displayName: updatedUser.displayName || null,
       },
     });
   } catch (error) {

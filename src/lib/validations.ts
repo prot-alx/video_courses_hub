@@ -68,6 +68,7 @@ export const UpdateProfileSchema = z.object({
   phone: z.string().optional(),
   telegram: z.string().optional(),
   preferredContact: z.enum(["email", "phone", "telegram"]).default("email"),
+  displayName: z.string().max(100, "Максимум 100 символов").optional(),
 });
 
 // Схемы для управления доступом

@@ -37,8 +37,8 @@ export default function ReviewsList({
     ));
   };
 
-  const getDisplayName = (user: { name: string | null; email: string }) => {
-    return user.name || user.email.split("@")[0] || "Пользователь";
+  const getDisplayName = (user: { name: string | null; displayName?: string | null; email: string }) => {
+    return user.displayName || user.name || user.email.split("@")[0] || "Пользователь";
   };
 
   if (isLoading) {
@@ -87,7 +87,7 @@ export default function ReviewsList({
           className="text-2xl font-bold"
           style={{ color: "var(--color-text-primary)" }}
         >
-          Отзывы учеников ({reviews.length})
+          Отзывы ({reviews.length})
         </h3>
       )}
 

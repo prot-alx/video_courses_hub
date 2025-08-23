@@ -15,6 +15,7 @@ interface Review {
   updatedAt: string;
   user: {
     name: string | null;
+    displayName: string | null;
     email: string;
   };
 }
@@ -335,7 +336,10 @@ export default function AdminReviewsPage() {
                     </span>
                   </div>
                   <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
-                    От: {review.user.name || review.user.email}
+                    Имя: {review.user.displayName || review.user.name || "Не указано"}
+                  </div>
+                  <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
+                    Email: {review.user.email}
                   </div>
                   <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
                     Дата: {formatDate(review.createdAt)}

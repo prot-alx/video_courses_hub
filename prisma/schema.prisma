@@ -47,6 +47,7 @@ model User {
   email             String           @unique
   googleId          String           @unique
   name              String?
+  displayName       String?          // Имя для отображения на платформе
   role              UserRole         @default(USER)
   phone             String?
   telegram          String?

@@ -26,7 +26,12 @@ export default function ProfileForm({
       value = "@" + value.replace(/^@+/, ""); // Убираем лишние @ и добавляем один
     }
 
-    const newData = { ...formData, [field]: value };
+    // Для nullable полей преобразуем пустую строку в null
+    const processedValue = (field === "displayName" || field === "phone" || field === "telegram") 
+      ? (value.trim() === "" ? null : value)
+      : value;
+
+    const newData = { ...formData, [field]: processedValue };
     setFormData(newData);
     setHasChanges(JSON.stringify(newData) !== JSON.stringify(initialData));
   };
@@ -42,12 +47,6 @@ export default function ProfileForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Простая валидация
-    if (!formData.name.trim()) {
-      toast.warning("Пустое имя", "Введите имя");
-      return;
-    }
 
     onSave(formData);
     setIsEditing(false);
@@ -97,14 +96,23 @@ export default function ProfileForm({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Имя */}
+          {/* Имя из Google (всегда отключено) */}
           <ContactField
-            label="Имя"
+            label="Имя из Google аккаунта"
             value={formData.name}
-            onChange={(value) => handleFieldChange("name", value)}
+            onChange={() => {}} // Не изменяется
+            disabled={true} // Всегда заблокировано
+            helpText="Автоматически подтягивается из Google аккаунта"
+          />
+
+          {/* Отображаемое имя */}
+          <ContactField
+            label="Имя на платформе"
+            value={formData.displayName || ""}
+            onChange={(value) => handleFieldChange("displayName", value)}
             disabled={!isEditing}
-            placeholder="Ваше имя"
-            required
+            placeholder="Имя для показа в отзывах и комментариях"
+            helpText="Если не заполнено, будет использоваться имя из Google"
           />
 
           {/* Email */}
