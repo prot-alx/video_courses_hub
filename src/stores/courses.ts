@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { Course, Video, CourseFilterType } from "@/types";
 
 interface CoursesStore {
@@ -42,9 +41,7 @@ interface CoursesStore {
   fetchVideos: (courseId: string) => Promise<void>;
 }
 
-export const useCoursesStore = create<CoursesStore>()(
-  persist(
-    (set, get) => ({
+export const useCoursesStore = create<CoursesStore>()((set, get) => ({
       // Initial state
       courses: [],
       currentCourse: null,
@@ -295,14 +292,4 @@ export const useCoursesStore = create<CoursesStore>()(
           });
         }
       },
-    }),
-    {
-      name: "courses-storage",
-      partialize: (state) => ({
-        courses: state.courses,
-        filter: state.filter,
-        currentCourse: state.currentCourse,
-      }),
-    }
-  )
-);
+  }));

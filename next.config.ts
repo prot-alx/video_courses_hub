@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Оптимизация изображений
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -9,18 +8,40 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 дней
   },
 
-  // Сжатие
   compress: true,
 
-  // Кэширование заголовков
   async headers() {
     return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '.*text/html.*',
+          },
+        ],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       {
         source: '/uploads/thumbnails/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=2592000, immutable', // 30 дней
+            value: 'public, max-age=2592000, immutable',
           },
         ],
       },
@@ -29,7 +50,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable', // 1 год
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
@@ -38,14 +59,13 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=2592000, immutable', // 30 дней
+            value: 'public, max-age=2592000, immutable',
           },
         ],
       },
     ];
   },
 
-  // Экспериментальные функции для производительности
   experimental: {
     optimizePackageImports: ['zustand', 'lucide-react'],
   },

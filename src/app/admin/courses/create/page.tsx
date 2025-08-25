@@ -72,6 +72,7 @@ export default function CreateCoursePage() {
               formData={formData}
               onFormDataChange={updateFormData}
               isSubmitting={isSubmitting}
+              validationErrors={validationErrors}
             />
 
             <CourseStatusToggle

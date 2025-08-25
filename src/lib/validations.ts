@@ -18,7 +18,8 @@ export const CreateCourseSchema = z.object({
     .nullable(),
   price: z
     .number()
-    .min(0, "Цена не может быть отрицательной")
+    .min(1, "Цена должна быть больше 0")
+    .max(999999, "Максимальная цена 999,999 ₽")
     .optional()
     .nullable(),
   isFree: z.boolean().default(false),
@@ -77,7 +78,7 @@ export const UpdateProfileSchema = z.object({
   phone: z.string().optional(),
   telegram: z.string().optional(),
   preferredContact: z.enum(["email", "phone", "telegram"]).default("email"),
-  displayName: z.string().max(100, "Максимум 100 символов").optional(),
+  displayName: z.string().max(100, "Максимум 100 символов").optional().nullable(),
 });
 
 // Схемы для управления доступом

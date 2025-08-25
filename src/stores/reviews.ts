@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { cachedFetch, apiCache } from "@/lib/cache";
 
 export interface Review {
   id: string;
@@ -43,6 +42,8 @@ interface ReviewsStore {
   averageRating: number;
   isLoading: boolean;
   error: string | null;
+  // Запоминаем последние параметры для обновления
+  lastFetchParams: { page: number; limit: number; userId?: string } | null;
 
   // Actions
   setReviews: (reviews: Review[]) => void;
@@ -75,6 +76,7 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
   averageRating: 0,
   isLoading: false,
   error: null,
+  lastFetchParams: null,
 
   // Basic setters
   setReviews: (reviews) => set({ reviews }),
@@ -87,6 +89,10 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
   // API Actions
   fetchReviews: async (page = 1, limit = 10, userId?: string) => {
     set({ isLoading: true, error: null });
+    
+    // Запоминаем параметры для последующих обновлений
+    set({ lastFetchParams: { page, limit, userId } });
+    
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -97,14 +103,8 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
         params.set('userId', userId);
       }
 
-      const cacheKey = `reviews_${params.toString()}`;
-      const data = await cachedFetch<{
-        success: boolean;
-        data: Review[];
-        pagination: ReviewsPagination;
-        averageRating: number;
-        error?: string;
-      }>(`/api/reviews?${params}`, undefined, cacheKey, 3 * 60 * 1000);
+      const response = await fetch(`/api/reviews?${params}`);
+      const data = await response.json();
 
       if (data.success) {
         if (page === 1) {
@@ -177,10 +177,13 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
 
       if (data.success) {
         set({ isLoading: false });
-        // Инвалидируем кэш
-        apiCache.delete("reviews");
         // Обновляем отзывы пользователя и общий список
-        await Promise.all([get().fetchUserReviews(), get().fetchReviews()]);
+        // Используем сохраненные параметры для обновления
+        const params = get().lastFetchParams;
+        await Promise.all([
+          get().fetchUserReviews(), 
+          params ? get().fetchReviews(params.page, params.limit, params.userId) : get().fetchReviews()
+        ]);
         return data.message;
       } else {
         set({
@@ -208,10 +211,13 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
 
       if (data.success) {
         set({ isLoading: false });
-        // Инвалидируем кэш
-        apiCache.delete("reviews");
         // Обновляем отзывы пользователя и общий список
-        await Promise.all([get().fetchUserReviews(), get().fetchReviews()]);
+        // Используем сохраненные параметры для обновления
+        const params = get().lastFetchParams;
+        await Promise.all([
+          get().fetchUserReviews(), 
+          params ? get().fetchReviews(params.page, params.limit, params.userId) : get().fetchReviews()
+        ]);
         return data.message;
       } else {
         set({
@@ -239,6 +245,7 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
       averageRating: 0,
       isLoading: false,
       error: null,
+      lastFetchParams: null,
     }),
 
   // Computed

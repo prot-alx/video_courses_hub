@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { ApiResponse, CourseRequest } from "@/types";
 
 interface CourseRequestsStore {
@@ -34,9 +33,7 @@ interface CourseRequestsStore {
   rejectRequest: (requestId: string) => Promise<boolean>;
 }
 
-export const useCourseRequestsStore = create<CourseRequestsStore>()(
-  persist(
-    (set, get) => ({
+export const useCourseRequestsStore = create<CourseRequestsStore>()((set, get) => ({
       // Initial state
       requests: [],
       isLoading: false,
@@ -196,12 +193,4 @@ export const useCourseRequestsStore = create<CourseRequestsStore>()(
           return false;
         }
       },
-    }),
-    {
-      name: "course-requests-storage",
-      partialize: (state) => ({
-        requests: state.requests,
-      }),
-    }
-  )
-);
+  }));

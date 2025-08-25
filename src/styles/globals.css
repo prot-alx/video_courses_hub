@@ -65,6 +65,10 @@
   --animate-bounce: bounce 1s infinite; /* Typing indicator */
   --animate-slide-in: slide-in 0.3s var(--ease-smooth); /* Sidebar/menu slide */
   --animate-fade: fade 0.2s var(--ease-snappy); /* Modal fades */
+  
+  /* Button sizes */
+  --btn-sm-padding: 0.25rem 0.75rem;
+  --btn-sm-font-size: 0.75rem;
 
   /* Opacity for overlays and states */
   --opacity-50: 0.5; /* Disabled buttons, overlays */
@@ -184,6 +188,13 @@
   .channel-item.active {
     background: var(--color-primary-500);
     color: var(--color-text-primary);
+  }
+
+  /* Button size variations */
+  .btn-sm {
+    padding: var(--btn-sm-padding);
+    font-size: var(--btn-sm-font-size);
+    line-height: 1;
   }
 
   /* Custom keyframes for animations */

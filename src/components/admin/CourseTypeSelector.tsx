@@ -4,12 +4,14 @@ interface CourseTypeSelectorProps {
   formData: CourseFormData;
   onFormDataChange: (updates: Partial<CourseFormData>) => void;
   isSubmitting: boolean;
+  validationErrors?: Record<string, string>;
 }
 
 export default function CourseTypeSelector({
   formData,
   onFormDataChange,
   isSubmitting,
+  validationErrors = {},
 }: Readonly<CourseTypeSelectorProps>) {
   return (
     <>
@@ -66,15 +68,28 @@ export default function CourseTypeSelector({
             onChange={(e) => onFormDataChange({ price: e.target.value })}
             placeholder="2500"
             min="1"
-            className="w-full px-3 py-2 rounded border"
+            max="999999"
+            step="1"
+            className={`w-full px-3 py-2 rounded border ${
+              validationErrors.price ? 'border-red-500' : ''
+            }`}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
+              borderColor: validationErrors.price ? "#ef4444" : "var(--color-primary-400)",
               color: "var(--color-primary-300)",
             }}
             disabled={isSubmitting}
             required={!formData.isFree}
           />
+          {validationErrors.price && (
+            <p className="text-xs text-red-500 mt-1">{validationErrors.price}</p>
+          )}
+          <p
+            className="text-xs mt-1"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
+            Цена в рублях (от 1 до 999,999)
+          </p>
         </div>
       )}
     </>
