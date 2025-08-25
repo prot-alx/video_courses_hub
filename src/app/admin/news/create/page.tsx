@@ -66,12 +66,12 @@ export default function CreateNewsPage() {
     }
 
     // Валидация ограничений по символам
-    if (formData.title.length > 200) {
-      toast.error("Заголовок не должен превышать 200 символов");
+    if (formData.title.length > 100) {
+      toast.error("Заголовок не должен превышать 100 символов");
       return;
     }
-    if (formData.shortDescription.length > 300) {
-      toast.error("Краткое описание не должно превышать 300 символов");
+    if (formData.shortDescription.length > 150) {
+      toast.error("Краткое описание не должно превышать 150 символов");
       return;
     }
     if (formData.fullDescription.length > 2000) {
@@ -169,13 +169,13 @@ export default function CreateNewsPage() {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                maxLength={200}
+                maxLength={100}
                 className={`w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  formData.title.length > 200 ? 'border-red-500' : ''
+                  formData.title.length > 100 ? 'border-red-500' : ''
                 }`}
                 style={{
                   background: "var(--color-primary-100)",
-                  border: `1px solid ${formData.title.length > 200 ? "#ef4444" : "var(--color-primary-400)"}`,
+                  border: `1px solid ${formData.title.length > 100 ? "#ef4444" : "var(--color-primary-400)"}`,
                   color: "var(--color-text-primary)",
                 }}
                 placeholder="Введите заголовок новости"
@@ -186,9 +186,9 @@ export default function CreateNewsPage() {
                   Заголовок, который увидят читатели
                 </p>
                 <span
-                  className={`text-xs ${formData.title.length > 200 ? 'text-red-500' : 'text-gray-500'}`}
+                  className={`text-xs ${formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
                 >
-                  {formData.title.length}/200
+                  {formData.title.length}/100
                 </span>
               </div>
             </div>
@@ -201,14 +201,14 @@ export default function CreateNewsPage() {
                 name="shortDescription"
                 value={formData.shortDescription}
                 onChange={handleInputChange}
-                maxLength={300}
+                maxLength={150}
                 rows={3}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  formData.shortDescription.length > 300 ? 'border-red-500' : ''
+                  formData.shortDescription.length > 150 ? 'border-red-500' : ''
                 }`}
                 style={{
                   background: "var(--color-primary-100)",
-                  borderColor: formData.shortDescription.length > 300 ? "#ef4444" : "var(--color-primary-400)",
+                  borderColor: formData.shortDescription.length > 150 ? "#ef4444" : "var(--color-primary-400)",
                   color: "var(--color-text-primary)",
                 }}
                 placeholder="Краткое описание для отображения в списке новостей"
@@ -219,9 +219,9 @@ export default function CreateNewsPage() {
                   Это описание будет показано в карточке новости
                 </p>
                 <span
-                  className={`text-xs ${formData.shortDescription.length > 300 ? 'text-red-500' : 'text-gray-500'}`}
+                  className={`text-xs ${formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
                 >
-                  {formData.shortDescription.length}/300
+                  {formData.shortDescription.length}/150
                 </span>
               </div>
             </div>

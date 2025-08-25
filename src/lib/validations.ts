@@ -5,10 +5,10 @@ export const CreateCourseSchema = z.object({
   title: z
     .string()
     .min(1, "Название обязательно")
-    .max(200, "Максимум 200 символов"),
+    .max(100, "Максимум 100 символов"),
   shortDescription: z
     .string()
-    .max(300, "Краткое описание не должно превышать 300 символов")
+    .max(150, "Краткое описание не должно превышать 150 символов")
     .optional()
     .nullable(),
   fullDescription: z
@@ -31,8 +31,8 @@ export const UpdateCourseSchema = CreateCourseSchema.partial();
 // Схемы для видео
 export const CreateVideoSchema = z.object({
   courseId: z.string().min(1, "ID курса обязателен"),
-  title: z.string().min(1, "Название видео обязательно").max(200), // Для совместимости
-  displayName: z.string().min(1, "Отображаемое название обязательно").max(200),
+  title: z.string().min(1, "Название видео обязательно").max(100), // Для совместимости
+  displayName: z.string().min(1, "Отображаемое название обязательно").max(150),
   description: z
     .string()
     .max(2000, "Описание не должно превышать 2000 символов")
@@ -49,7 +49,7 @@ export const UpdateVideoSchema = z.object({
   displayName: z
     .string()
     .min(1, "Отображаемое название обязательно")
-    .max(200)
+    .max(100)
     .optional(),
   description: z
     .string()
@@ -108,11 +108,11 @@ export const CreateNewsSchema = z.object({
   title: z
     .string()
     .min(1, "Название обязательно")
-    .max(200, "Максимум 200 символов"),
+    .max(100, "Максимум 100 символов"),
   shortDescription: z
     .string()
     .min(1, "Краткое описание обязательно")
-    .max(300, "Краткое описание не должно превышать 300 символов"),
+    .max(150, "Краткое описание не должно превышать 150 символов"),
   fullDescription: z
     .string()
     .min(1, "Подробное описание обязательно")

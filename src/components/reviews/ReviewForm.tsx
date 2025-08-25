@@ -101,13 +101,13 @@ export default function ReviewForm({
             color: "var(--color-text-primary)",
           }}
           placeholder="Расскажите о своем опыте обучения..."
-          maxLength={1000}
+          maxLength={500}
         />
         <p
           className="text-sm mt-1 text-right"
           style={{ color: "var(--color-text-secondary)" }}
         >
-          {comment.length}/1000
+          {comment.length}/500
         </p>
       </div>
 

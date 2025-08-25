@@ -26,13 +26,13 @@ export default function CourseBasicInfoForm({
           value={formData.title}
           onChange={(e) => onFormDataChange({ title: e.target.value })}
           placeholder="Например: Основы React"
-          maxLength={200}
+          maxLength={100}
           className={`w-full px-3 py-2 rounded border ${
-            formData.title.length > 200 ? 'border-red-500' : ''
+            formData.title.length > 100 ? 'border-red-500' : ''
           }`}
           style={{
             background: "var(--color-primary-100)",
-            borderColor: formData.title.length > 200 ? "#ef4444" : "var(--color-primary-400)",
+            borderColor: formData.title.length > 100 ? "#ef4444" : "var(--color-primary-400)",
             color: "var(--color-primary-300)",
           }}
           disabled={isSubmitting}
@@ -46,9 +46,9 @@ export default function CourseBasicInfoForm({
             Название, которое увидят пользователи
           </p>
           <span
-            className={`text-xs ${formData.title.length > 200 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-xs ${formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
           >
-            {formData.title.length}/200
+            {formData.title.length}/100
           </span>
         </div>
       </div>
@@ -65,14 +65,14 @@ export default function CourseBasicInfoForm({
           value={formData.shortDescription}
           onChange={(e) => onFormDataChange({ shortDescription: e.target.value })}
           placeholder="Краткое описание для отображения в карточке курса"
-          maxLength={300}
+          maxLength={150}
           rows={3}
           className={`w-full px-3 py-2 rounded border resize-none ${
-            formData.shortDescription.length > 300 ? 'border-red-500' : ''
+            formData.shortDescription.length > 150 ? 'border-red-500' : ''
           }`}
           style={{
             background: "var(--color-primary-100)",
-            borderColor: formData.shortDescription.length > 300 ? "#ef4444" : "var(--color-primary-400)",
+            borderColor: formData.shortDescription.length > 150 ? "#ef4444" : "var(--color-primary-400)",
             color: "var(--color-primary-300)",
           }}
           disabled={isSubmitting}
@@ -85,9 +85,9 @@ export default function CourseBasicInfoForm({
             Это описание будет показано в списке курсов
           </p>
           <span
-            className={`text-xs ${formData.shortDescription.length > 300 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-xs ${formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
           >
-            {formData.shortDescription.length}/300
+            {formData.shortDescription.length}/150
           </span>
         </div>
       </div>

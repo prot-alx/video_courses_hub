@@ -106,7 +106,7 @@ export default function VideoEditForm({
             }
             className="input-discord w-full"
             placeholder="Введите название видео"
-            maxLength={200}
+            maxLength={100}
             disabled={saving}
             style={{
               background: "var(--color-primary-100)",
@@ -122,7 +122,7 @@ export default function VideoEditForm({
             style={{ color: "var(--color-text-secondary)" }}
           >
             Это название будет отображаться пользователям (
-            {formData.displayName.length}/200)
+            {formData.displayName.length}/100)
           </p>
         </div>
 

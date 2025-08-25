@@ -37,7 +37,7 @@ export default function VideoMetadataForm({
           onChange={(e) => onMetadataChange({ displayName: e.target.value })}
           className="input-discord w-full"
           placeholder="Введите название видео"
-          maxLength={200}
+          maxLength={100}
           required
         />
         <p
@@ -45,7 +45,7 @@ export default function VideoMetadataForm({
           style={{ color: "var(--color-text-secondary)" }}
         >
           Это название будет отображаться пользователям (
-          {metadata.displayName.length}/200)
+          {metadata.displayName.length}/100)
         </p>
       </div>
 
