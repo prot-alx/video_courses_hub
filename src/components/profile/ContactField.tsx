@@ -9,6 +9,7 @@ interface ContactFieldProps {
   required?: boolean;
   maxLength?: number;
   showCounter?: boolean;
+  error?: string;
 }
 
 export default function ContactField({
@@ -22,6 +23,7 @@ export default function ContactField({
   required = false,
   maxLength,
   showCounter = false,
+  error,
 }: Readonly<ContactFieldProps>) {
   return (
     <div>
@@ -40,28 +42,30 @@ export default function ContactField({
         placeholder={placeholder}
         maxLength={maxLength}
         className={`w-full px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed ${
-          maxLength && value.length > maxLength ? 'border-red-500' : ''
+          error ? 'border-red-500' : maxLength && value.length > maxLength ? 'border-red-500' : ''
         }`}
         style={{
           background: disabled
             ? "var(--color-primary-400)"
             : "var(--color-primary-100)",
-          borderColor: maxLength && value.length > maxLength ? "#ef4444" : "var(--color-primary-400)",
+          borderColor: error ? "#ef4444" : maxLength && value.length > maxLength ? "#ef4444" : "var(--color-primary-400)",
           color: disabled
             ? "var(--color-text-secondary)"
             : "var(--color-primary-400)",
         }}
       />
-      {(helpText || showCounter) && (
-        <div className={`mt-1 ${showCounter && helpText ? 'flex justify-between items-center' : ''}`}>
-          {helpText && (
+      {(error || helpText || showCounter) && (
+        <div className={`mt-1 ${showCounter && (helpText || error) ? 'flex justify-between items-center' : ''}`}>
+          {error ? (
+            <p className="text-xs text-red-500">{error}</p>
+          ) : helpText ? (
             <p
               className="text-xs"
               style={{ color: "var(--color-text-secondary)" }}
             >
               {helpText}
             </p>
-          )}
+          ) : null}
           {showCounter && maxLength && (
             <span
               className={`text-xs ${value.length > maxLength ? 'text-red-500' : 'text-gray-500'}`}

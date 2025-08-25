@@ -287,13 +287,13 @@ export default function AdminNewsPage() {
                               <div>
                                 <h3
                                   className="font-medium truncate max-w-xs"
-                                  style={{ color: "var(--color-text-primary)" }}
+                                  style={{ color: "var(--color-primary-400)" }}
                                 >
                                   {item.title}
                                 </h3>
                                 <p
                                   className="text-sm truncate max-w-xs mt-1"
-                                  style={{ color: "var(--color-text-secondary)" }}
+                                  style={{ color: "var(--color-primary-400)" }}
                                 >
                                   {item.shortDescription}
                                 </p>
@@ -301,13 +301,13 @@ export default function AdminNewsPage() {
                             </td>
                             <td
                               className="px-4 py-3 text-sm hidden md:table-cell"
-                              style={{ color: "var(--color-text-secondary)" }}
+                              style={{ color: "var(--color-primary-400)" }}
                             >
                               {item.author.displayName || item.author.name}
                             </td>
                             <td
                               className="px-4 py-3 text-sm hidden lg:table-cell"
-                              style={{ color: "var(--color-text-secondary)" }}
+                              style={{ color: "var(--color-primary-400)" }}
                             >
                               {formatDate(item.createdAt)}
                             </td>

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import type { Course, CourseFormData, UpdateCourseInput } from "@/types";
+import { UpdateCourseSchema } from "@/lib/validations";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
 
 interface AdminCourse extends Course {
   isActive: boolean;
@@ -20,6 +22,9 @@ interface UseCourseEditReturn {
   loading: boolean;
   isSubmitting: boolean;
   error: string | null;
+
+  // Validation
+  validationErrors: Record<string, string>;
 
   // Actions
   updateFormData: (updates: Partial<CourseFormData>) => void;
@@ -46,6 +51,14 @@ export function useCourseEdit({
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { validate, validationErrors, clearErrors } = useFormValidation(
+    UpdateCourseSchema, 
+    {
+      showToastOnError: true,
+      toastErrorTitle: "Ошибка валидации курса"
+    }
+  );
 
   const fetchCourse = async () => {
     try {
@@ -84,6 +97,7 @@ export function useCourseEdit({
 
   const updateFormData = (updates: Partial<CourseFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
+    clearErrors(); // Очищаем ошибки при изменении данных
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,34 +105,18 @@ export function useCourseEdit({
     setIsSubmitting(true);
     setError(null);
 
-    // Валидация
-    if (!formData.title.trim()) {
-      setError("Введите название курса");
-      setIsSubmitting(false);
-      return;
-    }
+    // Подготавливаем данные для валидации
+    const validationData = {
+      title: formData.title,
+      shortDescription: formData.shortDescription || null,
+      fullDescription: formData.fullDescription || null,
+      price: formData.isFree ? null : Number(formData.price) || null,
+      isFree: formData.isFree,
+      isActive: formData.isActive,
+      thumbnail: formData.thumbnail || null,
+    };
 
-    // Валидация ограничений по символам
-    if (formData.title.length > 200) {
-      setError("Название курса не должно превышать 200 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.shortDescription.length > 300) {
-      setError("Краткое описание не должно превышать 300 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.fullDescription.length > 2000) {
-      setError("Подробное описание не должно превышать 2000 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.isFree && (!formData.price || Number(formData.price) <= 0)) {
-      setError("Для платного курса укажите корректную цену");
+    if (!validate(validationData)) {
       setIsSubmitting(false);
       return;
     }
@@ -170,6 +168,9 @@ export function useCourseEdit({
     loading,
     isSubmitting,
     error,
+
+    // Validation
+    validationErrors,
 
     // Actions
     updateFormData,

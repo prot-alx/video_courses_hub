@@ -31,8 +31,8 @@ export const UpdateCourseSchema = CreateCourseSchema.partial();
 // Схемы для видео
 export const CreateVideoSchema = z.object({
   courseId: z.string().min(1, "ID курса обязателен"),
-  title: z.string().min(1, "Название видео обязательно").max(100), // Для совместимости
-  displayName: z.string().min(1, "Отображаемое название обязательно").max(150),
+  title: z.string().min(1, "Название видео обязательно").max(100, "Максимум 100 символов"), // Для совместимости
+  displayName: z.string().min(1, "Отображаемое название обязательно").max(100, "Максимум 100 символов"),
   description: z
     .string()
     .max(2000, "Описание не должно превышать 2000 символов")
@@ -49,7 +49,7 @@ export const UpdateVideoSchema = z.object({
   displayName: z
     .string()
     .min(1, "Отображаемое название обязательно")
-    .max(100)
+    .max(100, "Максимум 100 символов")
     .optional(),
   description: z
     .string()
@@ -122,3 +122,25 @@ export const CreateNewsSchema = z.object({
 });
 
 export const UpdateNewsSchema = CreateNewsSchema.partial();
+
+// Схема для отзывов
+export const ReviewSchema = z.object({
+  rating: z.number().int().min(1, "Оценка обязательна").max(5, "Максимальная оценка 5"),
+  comment: z.string().max(500, "Комментарий не должен превышать 500 символов").optional().nullable()
+});
+
+// Схема для формы обратной связи
+export const ContactFormSchema = z.object({
+  name: z.string().min(1, "Имя обязательно").max(100, "Максимум 100 символов"),
+  email: z.string().email("Некорректный email"),
+  subject: z.enum(["general", "courses", "enrollment", "technical", "partnership", "other"], {
+    message: "Выберите корректную тему"
+  }).optional(),
+  message: z.string().min(1, "Сообщение обязательно").max(2000, "Максимум 2000 символов")
+});
+
+// Схема для входа администратора
+export const AdminLoginSchema = z.object({
+  email: z.string().email("Некорректный email"),
+  password: z.string().min(1, "Пароль обязателен")
+});

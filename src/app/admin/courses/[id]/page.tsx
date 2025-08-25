@@ -19,6 +19,7 @@ export default function EditCoursePage({
     loading,
     isSubmitting,
     error,
+    validationErrors,
     updateFormData,
     handleSubmit,
   } = useCourseEdit({ courseId: resolvedParams.id });
@@ -64,6 +65,7 @@ export default function EditCoursePage({
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           error={error}
+          validationErrors={validationErrors}
         />
 
         <VideoManagementSection courseId={resolvedParams.id} />

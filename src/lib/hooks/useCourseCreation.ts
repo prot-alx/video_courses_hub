@@ -3,11 +3,14 @@ import { useRouter } from "next/navigation";
 import { useCoursesStore } from "@/stores/courses";
 import { useToast } from "@/stores/notifications";
 import { CourseFormData } from "@/types";
+import { CreateCourseSchema } from "@/lib/validations";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
 
 interface UseCourseCreationReturn {
   formData: CourseFormData;
   isSubmitting: boolean;
   error: string | null;
+  validationErrors: Record<string, string>;
   updateFormData: (updates: Partial<CourseFormData>) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }
@@ -30,8 +33,17 @@ export function useCourseCreation(): UseCourseCreationReturn {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { validate, validationErrors, clearErrors } = useFormValidation(
+    CreateCourseSchema, 
+    {
+      showToastOnError: true,
+      toastErrorTitle: "Ошибка валидации курса"
+    }
+  );
+
   const updateFormData = (updates: Partial<CourseFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
+    clearErrors();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,34 +51,18 @@ export function useCourseCreation(): UseCourseCreationReturn {
     setIsSubmitting(true);
     setError(null);
 
-    // Валидация
-    if (!formData.title.trim()) {
-      setError("Введите название курса");
-      setIsSubmitting(false);
-      return;
-    }
+    // Подготавливаем данные для валидации
+    const validationData = {
+      title: formData.title,
+      shortDescription: formData.shortDescription || null,
+      fullDescription: formData.fullDescription || null,
+      price: formData.isFree ? null : Number(formData.price) || null,
+      isFree: formData.isFree,
+      isActive: formData.isActive,
+      thumbnail: formData.thumbnail || null,
+    };
 
-    // Валидация ограничений по символам
-    if (formData.title.length > 200) {
-      setError("Название курса не должно превышать 200 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.shortDescription.length > 300) {
-      setError("Краткое описание не должно превышать 300 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.fullDescription.length > 2000) {
-      setError("Подробное описание не должно превышать 2000 символов");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.isFree && (!formData.price || Number(formData.price) <= 0)) {
-      setError("Для платного курса укажите корректную цену");
+    if (!validate(validationData)) {
       setIsSubmitting(false);
       return;
     }
@@ -118,6 +114,7 @@ export function useCourseCreation(): UseCourseCreationReturn {
     formData,
     isSubmitting,
     error,
+    validationErrors,
     updateFormData,
     handleSubmit,
   };

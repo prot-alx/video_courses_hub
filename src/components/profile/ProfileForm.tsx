@@ -2,6 +2,9 @@
 import { useState } from "react";
 import ContactField from "./ContactField";
 import type { UserProfile, PreferredContact } from "@/types";
+import { UpdateProfileSchema } from "@/lib/validations";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
+import { useToastContext } from "@/components/providers/ToastProvider";
 
 interface ProfileFormProps {
   initialData: UserProfile;
@@ -14,9 +17,18 @@ export default function ProfileForm({
   isLoading = false,
   onSave,
 }: Readonly<ProfileFormProps>) {
+  const toast = useToastContext();
   const [formData, setFormData] = useState<UserProfile>(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  
+  const { validate, validationErrors, getFieldError, clearErrors } = useFormValidation(
+    UpdateProfileSchema, 
+    {
+      showToastOnError: true,
+      toastErrorTitle: "Ошибка валидации профиля"
+    }
+  );
 
   const handleFieldChange = (field: keyof UserProfile, value: string) => {
     // Валидация telegram username
@@ -46,21 +58,29 @@ export default function ProfileForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Валидация ограничений по символам
-    if (formData.displayName && formData.displayName.length > 100) {
-      alert("Имя на платформе не должно превышать 100 символов");
+    // Подготавливаем данные для валидации (исключаем системные поля)
+    const validationData = {
+      phone: formData.phone || undefined,
+      telegram: formData.telegram || undefined,
+      preferredContact: formData.preferredContact,
+      displayName: formData.displayName || undefined,
+    };
+
+    if (!validate(validationData)) {
       return;
     }
 
     onSave(formData);
     setIsEditing(false);
     setHasChanges(false);
+    toast.success("Профиль обновлен", "Ваши данные успешно сохранены");
   };
 
   const handleCancel = () => {
     setFormData(initialData);
     setIsEditing(false);
     setHasChanges(false);
+    clearErrors();
   };
 
   const contactOptions: Array<{
@@ -119,6 +139,7 @@ export default function ProfileForm({
             helpText="Если не заполнено, будет использоваться имя из Google"
             maxLength={100}
             showCounter={true}
+            error={getFieldError("displayName")}
           />
 
           {/* Email */}
@@ -139,6 +160,7 @@ export default function ProfileForm({
             disabled={!isEditing}
             type="tel"
             placeholder="+7 999 123-45-67"
+            error={getFieldError("phone")}
           />
 
           {/* Telegram */}
@@ -148,6 +170,7 @@ export default function ProfileForm({
             onChange={(value) => handleFieldChange("telegram", value)}
             disabled={!isEditing}
             placeholder="@username"
+            error={getFieldError("telegram")}
           />
 
           {/* Предпочитаемый способ связи */}

@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { ReviewSchema } from "@/lib/validations";
+import { FormErrorBoundary } from "@/components/errors/ErrorBoundary";
+import { useToastContext } from "@/components/providers/ToastProvider";
 
 interface ReviewFormProps {
   onSubmit: (rating: number, comment: string) => Promise<void>;
@@ -11,20 +14,44 @@ interface ReviewFormProps {
   isLoading?: boolean;
 }
 
-export default function ReviewForm({
+function ReviewFormContent({
   onSubmit,
   initialData,
   isLoading = false,
 }: Readonly<ReviewFormProps>) {
   const { isAuthenticated } = useAuth();
+  const toast = useToastContext();
   const [rating, setRating] = useState(initialData?.rating || 0);
   const [comment, setComment] = useState(initialData?.comment || "");
   const [hoveredRating, setHoveredRating] = useState(0);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (rating === 0) return;
-    await onSubmit(rating, comment);
+    
+    // Валидация с Zod
+    const validation = ReviewSchema.safeParse({ rating, comment });
+    
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.issues.forEach((error) => {
+        if (error.path[0]) {
+          errors[error.path[0] as string] = error.message;
+        }
+      });
+      setValidationErrors(errors);
+      toast.error("Ошибка валидации", "Проверьте правильность заполнения формы");
+      return;
+    }
+    
+    setValidationErrors({});
+    
+    try {
+      await onSubmit(validation.data.rating, validation.data.comment || "");
+    } catch (error) {
+      console.log(error);
+      toast.error("Ошибка", "Не удалось отправить отзыв. Попробуйте позже.");
+    }
   };
 
   if (!isAuthenticated) {
@@ -72,14 +99,18 @@ export default function ReviewForm({
         </div>
         <p
           className="text-sm mt-1"
-          style={{ color: "var(--color-text-secondary)" }}
+          style={{ color: validationErrors.rating ? "var(--color-danger)" : "var(--color-text-secondary)" }}
         >
-          {rating === 0 && "Выберите оценку"}
-          {rating === 1 && "Ужасно"}
-          {rating === 2 && "Плохо"}
-          {rating === 3 && "Нормально"}
-          {rating === 4 && "Хорошо"}
-          {rating === 5 && "Отлично"}
+          {validationErrors.rating ? validationErrors.rating : (
+            <>
+              {rating === 0 && "Выберите оценку"}
+              {rating === 1 && "Ужасно"}
+              {rating === 2 && "Плохо"}
+              {rating === 3 && "Нормально"}
+              {rating === 4 && "Хорошо"}
+              {rating === 5 && "Отлично"}
+            </>
+          )}
         </p>
       </div>
 
@@ -103,21 +134,36 @@ export default function ReviewForm({
           placeholder="Расскажите о своем опыте обучения..."
           maxLength={500}
         />
-        <p
-          className="text-sm mt-1 text-right"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
-          {comment.length}/500
-        </p>
+        <div className="flex justify-between items-center mt-1">
+          {validationErrors.comment && (
+            <p className="text-sm" style={{ color: "var(--color-danger)" }}>
+              {validationErrors.comment}
+            </p>
+          )}
+          <p
+            className="text-sm ml-auto"
+            style={{ color: comment.length > 450 ? "var(--color-warning)" : "var(--color-text-secondary)" }}
+          >
+            {comment.length}/500
+          </p>
+        </div>
       </div>
 
       <button
         type="submit"
-        disabled={rating === 0 || isLoading}
+        disabled={rating === 0 || isLoading || Object.keys(validationErrors).length > 0}
         className="btn-discord btn-discord-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? "Отправка..." : "Отправить отзыв"}
       </button>
     </form>
+  );
+}
+
+export default function ReviewForm(props: Readonly<ReviewFormProps>) {
+  return (
+    <FormErrorBoundary>
+      <ReviewFormContent {...props} />
+    </FormErrorBoundary>
   );
 }

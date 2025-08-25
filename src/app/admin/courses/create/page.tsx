@@ -8,7 +8,7 @@ import CourseStatusToggle from "@/components/admin/CourseStatusToggle";
 import NextStepsInfo from "@/components/admin/NextStepsInfo";
 
 export default function CreateCoursePage() {
-  const { formData, isSubmitting, error, updateFormData, handleSubmit } =
+  const { formData, isSubmitting, error, validationErrors, updateFormData, handleSubmit } =
     useCourseCreation();
 
   return (
@@ -57,6 +57,7 @@ export default function CreateCoursePage() {
               formData={formData}
               onFormDataChange={updateFormData}
               isSubmitting={isSubmitting}
+              validationErrors={validationErrors}
             />
 
             <ThumbnailUploader

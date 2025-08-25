@@ -6,6 +6,8 @@ import { use } from "react";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import ThumbnailUploader from "@/components/admin/ThumbnailUploader";
 import { useToastContext } from "@/components/providers/ToastProvider";
+import { UpdateNewsSchema } from "@/lib/validations";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
 import type { ApiResponse } from "@/types";
 
 interface News {
@@ -34,6 +36,14 @@ export default function EditNewsPage({
   const toast = useToastContext();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  
+  const { validate, validationErrors, getFieldError } = useFormValidation(
+    UpdateNewsSchema, 
+    {
+      showToastOnError: true,
+      toastErrorTitle: "Ошибка валидации новости"
+    }
+  );
   const [formData, setFormData] = useState({
     title: "",
     shortDescription: "",
@@ -91,22 +101,8 @@ export default function EditNewsPage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.shortDescription.trim() || !formData.fullDescription.trim()) {
-      toast.error("Заполните все обязательные поля");
-      return;
-    }
-
-    // Валидация ограничений по символам
-    if (formData.title.length > 100) {
-      toast.error("Заголовок не должен превышать 100 символов");
-      return;
-    }
-    if (formData.shortDescription.length > 150) {
-      toast.error("Краткое описание не должно превышать 150 символов");
-      return;
-    }
-    if (formData.fullDescription.length > 2000) {
-      toast.error("Полное описание не должно превышать 2000 символов");
+    // Валидация с Zod
+    if (!validate(formData)) {
       return;
     }
 
@@ -170,22 +166,26 @@ export default function EditNewsPage({
               onChange={handleInputChange}
               maxLength={100}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                formData.title.length > 100 ? 'border-red-500' : ''
+                getFieldError("title") ? 'border-red-500' : ''
               }`}
               style={{
                 background: "var(--color-primary-100)",
-                borderColor: formData.title.length > 100 ? "#ef4444" : "var(--color-primary-400)",
-                color: "var(--color-text-primary)",
+                borderColor: getFieldError("title") ? "#ef4444" : "var(--color-primary-400)",
+                color: "var(--color-primary-400)",
               }}
               placeholder="Введите заголовок новости"
               disabled={submitting}
             />
             <div className="flex justify-between items-center mt-1">
-              <p className="text-xs text-gray-500">
-                Заголовок, который увидят читатели
-              </p>
+              {getFieldError("title") ? (
+                <p className="text-xs text-red-500">{getFieldError("title")}</p>
+              ) : (
+                <p className="text-xs text-gray-500">
+                  Заголовок, который увидят читатели
+                </p>
+              )}
               <span
-                className={`text-xs ${formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+                className={`text-xs ${getFieldError("title") ? 'text-red-500' : 'text-gray-500'}`}
               >
                 {formData.title.length}/100
               </span>
@@ -203,22 +203,26 @@ export default function EditNewsPage({
               maxLength={150}
               rows={3}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                formData.shortDescription.length > 150 ? 'border-red-500' : ''
+                getFieldError("shortDescription") ? 'border-red-500' : ''
               }`}
               style={{
                 background: "var(--color-primary-100)",
-                borderColor: formData.shortDescription.length > 150 ? "#ef4444" : "var(--color-primary-400)",
-                color: "var(--color-text-primary)",
+                borderColor: getFieldError("shortDescription") ? "#ef4444" : "var(--color-primary-400)",
+                color: "var(--color-primary-400)",
               }}
               placeholder="Краткое описание для отображения в списке новостей"
               disabled={submitting}
             />
             <div className="flex justify-between items-center mt-1">
-              <p className="text-xs text-gray-500">
-                Это описание будет показано в карточке новости
-              </p>
+              {getFieldError("shortDescription") ? (
+                <p className="text-xs text-red-500">{getFieldError("shortDescription")}</p>
+              ) : (
+                <p className="text-xs text-gray-500">
+                  Это описание будет показано в карточке новости
+                </p>
+              )}
               <span
-                className={`text-xs ${formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
+                className={`text-xs ${getFieldError("shortDescription") ? 'text-red-500' : 'text-gray-500'}`}
               >
                 {formData.shortDescription.length}/150
               </span>
@@ -236,22 +240,26 @@ export default function EditNewsPage({
               maxLength={2000}
               rows={8}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                formData.fullDescription.length > 2000 ? 'border-red-500' : ''
+                getFieldError("fullDescription") ? 'border-red-500' : ''
               }`}
               style={{
                 background: "var(--color-primary-100)",
-                borderColor: formData.fullDescription.length > 2000 ? "#ef4444" : "var(--color-primary-400)",
-                color: "var(--color-text-primary)",
+                borderColor: getFieldError("fullDescription") ? "#ef4444" : "var(--color-primary-400)",
+                color: "var(--color-primary-400)",
               }}
               placeholder="Полное содержание новости"
               disabled={submitting}
             />
             <div className="flex justify-between items-center mt-1">
-              <p className="text-xs text-gray-500">
-                Детальное описание будет показано на странице новости
-              </p>
+              {getFieldError("fullDescription") ? (
+                <p className="text-xs text-red-500">{getFieldError("fullDescription")}</p>
+              ) : (
+                <p className="text-xs text-gray-500">
+                  Детальное описание будет показано на странице новости
+                </p>
+              )}
               <span
-                className={`text-xs ${formData.fullDescription.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
+                className={`text-xs ${getFieldError("fullDescription") ? 'text-red-500' : 'text-gray-500'}`}
               >
                 {formData.fullDescription.length}/2000
               </span>

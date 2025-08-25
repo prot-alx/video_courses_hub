@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import type { ApiResponse } from "@/types";
+import { UpdateVideoSchema } from "@/lib/validations";
+import { useFormValidation } from "@/lib/hooks/useFormValidation";
 
 interface AdminVideo {
   id: string;
@@ -34,9 +36,22 @@ export default function VideoEditForm({
     isFree: video.isFree,
   });
 
+  const { validate, validationErrors, getFieldError } = useFormValidation(
+    UpdateVideoSchema, 
+    {
+      showToastOnError: true,
+      toastErrorTitle: "Ошибка валидации видео"
+    }
+  );
+
   const handleSave = async () => {
-    if (!formData.displayName.trim()) {
-      toast.warning("Пустое название", "Название видео обязательно");
+    const validationData = {
+      displayName: formData.displayName,
+      description: formData.description || null,
+      isFree: formData.isFree,
+    };
+
+    if (!validate(validationData)) {
       return;
     }
 
@@ -104,26 +119,36 @@ export default function VideoEditForm({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, displayName: e.target.value }))
             }
-            className="input-discord w-full"
+            className={`input-discord w-full ${getFieldError("displayName") ? 'border-red-500' : ''}`}
             placeholder="Введите название видео"
             maxLength={100}
             disabled={saving}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
+              borderColor: getFieldError("displayName") ? "#ef4444" : "var(--color-primary-400)",
               color: "var(--color-primary-400)",
               borderWidth: "1px",
               borderRadius: "var(--radius-sm)",
               padding: "var(--spacing-2) var(--spacing-3)",
             }}
           />
-          <p
-            className="text-xs mt-1"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Это название будет отображаться пользователям (
-            {formData.displayName.length}/100)
-          </p>
+          <div className="flex justify-between items-center mt-1">
+            {getFieldError("displayName") ? (
+              <p className="text-xs text-red-500">{getFieldError("displayName")}</p>
+            ) : (
+              <p
+                className="text-xs"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
+                Это название будет отображаться пользователям
+              </p>
+            )}
+            <span
+              className={`text-xs ${formData.displayName.length > 90 ? 'text-orange-500' : formData.displayName.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+            >
+              {formData.displayName.length}/100
+            </span>
+          </div>
         </div>
 
         <div>
@@ -138,27 +163,37 @@ export default function VideoEditForm({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, description: e.target.value }))
             }
-            className="input-discord w-full min-h-[100px] resize-y"
+            className={`input-discord w-full min-h-[100px] resize-y ${getFieldError("description") ? 'border-red-500' : ''}`}
             placeholder="Введите описание видео (необязательно)"
             maxLength={2000}
             rows={4}
             disabled={saving}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
+              borderColor: getFieldError("description") ? "#ef4444" : "var(--color-primary-400)",
               color: "var(--color-primary-400)",
               borderWidth: "1px",
               borderRadius: "var(--radius-sm)",
               padding: "var(--spacing-2) var(--spacing-3)",
             }}
           />
-          <p
-            className="text-xs mt-1"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Краткое описание содержания видео ({formData.description.length}
-            /2000)
-          </p>
+          <div className="flex justify-between items-center mt-1">
+            {getFieldError("description") ? (
+              <p className="text-xs text-red-500">{getFieldError("description")}</p>
+            ) : (
+              <p
+                className="text-xs"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
+                Краткое описание содержания видео
+              </p>
+            )}
+            <span
+              className={`text-xs ${formData.description.length > 1800 ? 'text-orange-500' : formData.description.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
+            >
+              {formData.description.length}/2000
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">

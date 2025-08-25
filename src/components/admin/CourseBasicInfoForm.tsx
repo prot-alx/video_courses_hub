@@ -4,12 +4,14 @@ interface CourseBasicInfoFormProps {
   formData: CourseFormData;
   onFormDataChange: (updates: Partial<CourseFormData>) => void;
   isSubmitting: boolean;
+  validationErrors?: Record<string, string>;
 }
 
 export default function CourseBasicInfoForm({
   formData,
   onFormDataChange,
   isSubmitting,
+  validationErrors = {},
 }: Readonly<CourseBasicInfoFormProps>) {
   return (
     <>
@@ -28,25 +30,29 @@ export default function CourseBasicInfoForm({
           placeholder="Например: Основы React"
           maxLength={100}
           className={`w-full px-3 py-2 rounded border ${
-            formData.title.length > 100 ? 'border-red-500' : ''
+            validationErrors.title ? 'border-red-500' : ''
           }`}
           style={{
             background: "var(--color-primary-100)",
-            borderColor: formData.title.length > 100 ? "#ef4444" : "var(--color-primary-400)",
+            borderColor: validationErrors.title ? "#ef4444" : "var(--color-primary-400)",
             color: "var(--color-primary-300)",
           }}
           disabled={isSubmitting}
           required
         />
         <div className="flex justify-between items-center mt-1">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Название, которое увидят пользователи
-          </p>
+          {validationErrors.title ? (
+            <p className="text-xs text-red-500">{validationErrors.title}</p>
+          ) : (
+            <p
+              className="text-xs"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Название, которое увидят пользователи
+            </p>
+          )}
           <span
-            className={`text-xs ${formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-xs ${formData.title.length > 90 ? 'text-orange-500' : formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
           >
             {formData.title.length}/100
           </span>
@@ -68,24 +74,28 @@ export default function CourseBasicInfoForm({
           maxLength={150}
           rows={3}
           className={`w-full px-3 py-2 rounded border resize-none ${
-            formData.shortDescription.length > 150 ? 'border-red-500' : ''
+            validationErrors.shortDescription ? 'border-red-500' : ''
           }`}
           style={{
             background: "var(--color-primary-100)",
-            borderColor: formData.shortDescription.length > 150 ? "#ef4444" : "var(--color-primary-400)",
+            borderColor: validationErrors.shortDescription ? "#ef4444" : "var(--color-primary-400)",
             color: "var(--color-primary-300)",
           }}
           disabled={isSubmitting}
         />
         <div className="flex justify-between items-center mt-1">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Это описание будет показано в списке курсов
-          </p>
+          {validationErrors.shortDescription ? (
+            <p className="text-xs text-red-500">{validationErrors.shortDescription}</p>
+          ) : (
+            <p
+              className="text-xs"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Это описание будет показано в списке курсов
+            </p>
+          )}
           <span
-            className={`text-xs ${formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-xs ${formData.shortDescription.length > 130 ? 'text-orange-500' : formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
           >
             {formData.shortDescription.length}/150
           </span>
@@ -107,24 +117,28 @@ export default function CourseBasicInfoForm({
           maxLength={2000}
           rows={6}
           className={`w-full px-3 py-2 rounded border resize-none ${
-            formData.fullDescription.length > 2000 ? 'border-red-500' : ''
+            validationErrors.fullDescription ? 'border-red-500' : ''
           }`}
           style={{
             background: "var(--color-primary-100)",
-            borderColor: formData.fullDescription.length > 2000 ? "#ef4444" : "var(--color-primary-400)",
+            borderColor: validationErrors.fullDescription ? "#ef4444" : "var(--color-primary-400)",
             color: "var(--color-primary-300)",
           }}
           disabled={isSubmitting}
         />
         <div className="flex justify-between items-center mt-1">
-          <p
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Детальное описание будет показано на странице курса
-          </p>
+          {validationErrors.fullDescription ? (
+            <p className="text-xs text-red-500">{validationErrors.fullDescription}</p>
+          ) : (
+            <p
+              className="text-xs"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Детальное описание будет показано на странице курса
+            </p>
+          )}
           <span
-            className={`text-xs ${formData.fullDescription.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-xs ${formData.fullDescription.length > 1800 ? 'text-orange-500' : formData.fullDescription.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
           >
             {formData.fullDescription.length}/2000
           </span>

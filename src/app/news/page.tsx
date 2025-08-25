@@ -146,7 +146,7 @@ export default function NewsPage() {
                   <div className="p-6">
                     <div
                       className="flex items-center text-sm mb-3"
-                      style={{ color: "var(--color-text-secondary)" }}
+                      style={{ color: "var(--color-primary-400)" }}
                     >
                       <time dateTime={item.createdAt}>
                         {formatDate(item.createdAt)}
@@ -157,7 +157,7 @@ export default function NewsPage() {
                       <h2
                         className="text-xl font-semibold mb-3 line-clamp-2 transition-colors"
                         style={{
-                          color: "var(--color-text-primary)",
+                          color: "var(--color-primary-400)",
                         }}
                       >
                         {item.title}
@@ -166,7 +166,7 @@ export default function NewsPage() {
 
                     <p
                       className="text-sm line-clamp-3 mb-4"
-                      style={{ color: "var(--color-text-secondary)" }}
+                      style={{ color: "var(--color-primary-400)" }}
                     >
                       {item.shortDescription}
                     </p>

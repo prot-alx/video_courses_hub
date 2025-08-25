@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
+import { ContactFormSchema } from "@/lib/validations";
 
 interface ContactFormData {
   name: string;
@@ -11,6 +12,7 @@ interface ContactFormData {
 interface UseContactFormReturn {
   formData: ContactFormData;
   isSubmitting: boolean;
+  validationErrors: Record<string, string>;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleChange: (
     e: React.ChangeEvent<
@@ -28,15 +30,27 @@ export function useContactForm(): UseContactFormReturn {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error("Ошибка", "Пожалуйста, заполните все обязательные поля");
+    // Валидация с Zod
+    const validation = ContactFormSchema.safeParse(formData);
+    
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.issues.forEach((error) => {
+        if (error.path[0]) {
+          errors[error.path[0] as string] = error.message;
+        }
+      });
+      setValidationErrors(errors);
+      toast.error("Ошибка валидации", "Проверьте правильность заполнения формы");
       return;
     }
-
+    
+    setValidationErrors({});
     setIsSubmitting(true);
 
     try {
@@ -73,6 +87,7 @@ export function useContactForm(): UseContactFormReturn {
   return {
     formData,
     isSubmitting,
+    validationErrors,
     handleSubmit,
     handleChange,
   };
