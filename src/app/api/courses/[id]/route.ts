@@ -75,7 +75,8 @@ export async function GET(
     const courseData = {
       id: course.id,
       title: course.title,
-      description: course.description,
+      shortDescription: course.shortDescription,
+      fullDescription: course.fullDescription,
       price: course.price,
       isFree: course.isFree,
       thumbnail: course.thumbnail,

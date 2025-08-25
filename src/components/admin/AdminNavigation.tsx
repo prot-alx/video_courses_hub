@@ -66,6 +66,11 @@ export default function AdminNavigation({
       isActive: pathname.startsWith("/admin/reviews"),
     },
     {
+      href: "/admin/news",
+      label: "Новости",
+      isActive: pathname.startsWith("/admin/news"),
+    },
+    {
       href: "/admin/users",
       label: "Пользователи",
       isActive: pathname.startsWith("/admin/users"),

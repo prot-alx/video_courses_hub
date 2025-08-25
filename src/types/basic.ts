@@ -40,7 +40,8 @@ export interface Video extends BaseEntity {
 
 export interface Course extends BaseEntity {
   title: string;
-  description: string | null;
+  shortDescription: string | null;
+  fullDescription: string | null;
   price: number | null;
   isFree: boolean;
   isActive: boolean;
@@ -106,7 +107,8 @@ export interface ProfileData {
 
 export interface CreateCourseInput {
   title: string;
-  description?: string | null;
+  shortDescription?: string | null;
+  fullDescription?: string | null;
   price?: number | null;
   isFree: boolean;
 }
@@ -167,7 +169,8 @@ export interface CreateRequestData {
 export interface BaseCourse {
   id: string;
   title: string;
-  description: string | null;
+  shortDescription: string | null;
+  fullDescription: string | null;
   price: number | null;
   isFree: boolean;
   hasAccess: boolean;
@@ -188,7 +191,8 @@ export interface BaseVideo {
 
 export interface CourseFormData {
   title: string;
-  description: string;
+  shortDescription: string;
+  fullDescription: string;
   price: string;
   isFree: boolean;
   isActive: boolean;

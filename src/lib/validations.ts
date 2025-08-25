@@ -6,7 +6,16 @@ export const CreateCourseSchema = z.object({
     .string()
     .min(1, "Название обязательно")
     .max(200, "Максимум 200 символов"),
-  description: z.string().optional().nullable(),
+  shortDescription: z
+    .string()
+    .max(300, "Краткое описание не должно превышать 300 символов")
+    .optional()
+    .nullable(),
+  fullDescription: z
+    .string()
+    .max(2000, "Подробное описание не должно превышать 2000 символов")
+    .optional()
+    .nullable(),
   price: z
     .number()
     .min(0, "Цена не может быть отрицательной")
@@ -93,3 +102,23 @@ export const PaginationSchema = z.object({
 export const ReorderVideosSchema = z.object({
   videoIds: z.array(z.string()).min(1, "Список видео не может быть пустым"),
 });
+
+// Схемы для новостей
+export const CreateNewsSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Название обязательно")
+    .max(200, "Максимум 200 символов"),
+  shortDescription: z
+    .string()
+    .min(1, "Краткое описание обязательно")
+    .max(300, "Краткое описание не должно превышать 300 символов"),
+  fullDescription: z
+    .string()
+    .min(1, "Подробное описание обязательно")
+    .max(2000, "Подробное описание не должно превышать 2000 символов"),
+  image: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
+export const UpdateNewsSchema = CreateNewsSchema.partial();

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 const navigationItems = [
   { href: "/", label: "Главная" },
   { href: "/courses", label: "Курсы" },
+  { href: "/news", label: "Новости" },
   { href: "/about", label: "О школе" },
   { href: "/teachers", label: "Педагоги" },
   { href: "/contacts", label: "Контакты" },

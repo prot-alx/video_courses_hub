@@ -46,6 +46,12 @@ export default function ProfileForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Валидация ограничений по символам
+    if (formData.displayName && formData.displayName.length > 100) {
+      alert("Имя на платформе не должно превышать 100 символов");
+      return;
+    }
+
     onSave(formData);
     setIsEditing(false);
     setHasChanges(false);
@@ -111,6 +117,8 @@ export default function ProfileForm({
             disabled={!isEditing}
             placeholder="Имя для показа в отзывах и комментариях"
             helpText="Если не заполнено, будет использоваться имя из Google"
+            maxLength={100}
+            showCounter={true}
           />
 
           {/* Email */}

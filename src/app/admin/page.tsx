@@ -38,7 +38,8 @@ export default function AdminPage() {
         const processedCourses: AdminCourse[] = data.data.map((apiCourse) => ({
           id: apiCourse.id,
           title: apiCourse.title,
-          description: apiCourse.description || "",
+          shortDescription: apiCourse.shortDescription || "",
+          fullDescription: apiCourse.fullDescription || "",
           price: apiCourse.price,
           isFree: apiCourse.isFree,
           videosCount: apiCourse.videosCount,

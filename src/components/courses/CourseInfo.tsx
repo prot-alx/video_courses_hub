@@ -92,7 +92,7 @@ export default function CourseInfo({
           className="text-base leading-relaxed mb-6"
           style={{ color: "var(--color-text-secondary)" }}
         >
-          {course.description || "Описание курса скоро появится."}
+          {course.fullDescription || "Описание курса скоро появится."}
         </p>
         {/* Кнопка покупки */}
         <PurchaseButton

@@ -67,10 +67,10 @@ export default function CourseDetails({
       </div>
 
       <p
-        className="text-base leading-relaxed mb-6"
+        className="text-base leading-relaxed mb-6 whitespace-pre-wrap"
         style={{ color: "var(--color-text-secondary)" }}
       >
-        {course.description}
+        {course.fullDescription || course.shortDescription || "Описание курса скоро появится."}
       </p>
 
       <CourseAccessManager

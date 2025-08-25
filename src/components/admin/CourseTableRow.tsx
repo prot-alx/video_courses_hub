@@ -41,7 +41,7 @@ export default function CourseTableRow({
             className="text-sm truncate max-w-xs"
             style={{ color: "var(--color-text-secondary)" }}
           >
-            {truncateText(course.description)}
+            {truncateText(course.shortDescription || "")}
           </div>
         </div>
       </td>

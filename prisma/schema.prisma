@@ -60,21 +60,23 @@ model User {
   processedRequests CourseRequest[]    @relation("ProcessedBy")
   grantedAccess     UserCourseAccess[] @relation("GrantedBy")
   reviews           Review[]
+  createdNews       News[]
   
   @@map("users")
 }
 
 model Course {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  price       Decimal? // null для бесплатных
-  orderIndex  Int      @default(0)
-  isFree      Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  thumbnail   String?
-  totalDuration Int    @default(0)  // ← ИЗМЕНИТЬ: было String?, стало Int @default(0)
-  createdAt   DateTime @default(now())
+  id               String   @id @default(cuid())
+  title            String
+  shortDescription String?  // Краткое описание для карточек
+  fullDescription  String?  // Полное описание для страницы курса
+  price            Decimal? // null для бесплатных
+  orderIndex       Int      @default(0)
+  isFree           Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  thumbnail        String?
+  totalDuration    Int      @default(0)
+  createdAt        DateTime @default(now())
  
   // Relations
   videos        Video[]
@@ -151,6 +153,23 @@ model Review {
   
   // Убираем ограничение на один отзыв на пользователя
   @@map("reviews")
+}
+
+model News {
+  id               String   @id @default(cuid())
+  title            String
+  shortDescription String   // Краткое описание для карточки
+  fullDescription  String   // Подробное описание
+  image            String?  // Путь к изображению
+  isActive         Boolean  @default(true)
+  createdBy        String   // ID админа создавшего новость
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations  
+  author           User     @relation(fields: [createdBy], references: [id])
+
+  @@map("news")
 }
 
 model SimpleLog {

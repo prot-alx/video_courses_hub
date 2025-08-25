@@ -36,7 +36,8 @@ export function useCourseEdit({
   const [course, setCourse] = useState<AdminCourse | null>(null);
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
-    description: "",
+    shortDescription: "",
+    fullDescription: "",
     price: "",
     isFree: false,
     isActive: true,
@@ -57,7 +58,8 @@ export function useCourseEdit({
         setCourse(courseData);
         setFormData({
           title: courseData.title,
-          description: courseData.description || "",
+          shortDescription: courseData.shortDescription || "",
+          fullDescription: courseData.fullDescription || "",
           price: courseData.price?.toString() || "",
           isFree: courseData.isFree,
           isActive: courseData.isActive,
@@ -96,6 +98,25 @@ export function useCourseEdit({
       return;
     }
 
+    // Валидация ограничений по символам
+    if (formData.title.length > 200) {
+      setError("Название курса не должно превышать 200 символов");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.shortDescription.length > 300) {
+      setError("Краткое описание не должно превышать 300 символов");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.fullDescription.length > 2000) {
+      setError("Подробное описание не должно превышать 2000 символов");
+      setIsSubmitting(false);
+      return;
+    }
+
     if (!formData.isFree && (!formData.price || Number(formData.price) <= 0)) {
       setError("Для платного курса укажите корректную цену");
       setIsSubmitting(false);
@@ -105,7 +126,8 @@ export function useCourseEdit({
     try {
       const updateData: UpdateCourseInput & { isActive: boolean } = {
         title: formData.title.trim(),
-        description: formData.description.trim() || null,
+        shortDescription: formData.shortDescription.trim() || null,
+        fullDescription: formData.fullDescription.trim() || null,
         price: formData.isFree ? null : Number(formData.price),
         isFree: formData.isFree,
         isActive: formData.isActive,

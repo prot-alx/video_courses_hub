@@ -54,7 +54,8 @@ export async function GET() {
     const coursesWithStats = courses.map((course) => ({
       id: course.id,
       title: course.title,
-      description: course.description,
+      shortDescription: course.shortDescription,
+      fullDescription: course.fullDescription,
       price: course.price,
       isFree: course.isFree,
       isActive: course.isActive,
@@ -110,7 +111,8 @@ export async function POST(request: NextRequest) {
     const course = await prisma.course.create({
       data: {
         title: validatedData.title,
-        description: validatedData.description || null,
+        shortDescription: validatedData.shortDescription || null,
+        fullDescription: validatedData.fullDescription || null,
         price: validatedData.price || null,
         isFree: validatedData.isFree,
         isActive: validatedData.isActive,

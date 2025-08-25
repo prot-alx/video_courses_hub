@@ -154,15 +154,30 @@ async function cleanupUnusedThumbnails() {
       where: { thumbnail: { not: null } },
     });
 
-    const usedFilenames = new Set(
-      usedThumbnails
+    // Получаем все используемые изображения новостей из БД
+    const usedNewsImages = await prisma.news.findMany({
+      select: { image: true },
+      where: { image: { not: null } },
+    });
+
+    const usedFilenames = new Set([
+      // Превьюшки курсов
+      ...usedThumbnails
         .map((c) => c.thumbnail)
         .filter(Boolean)
         .map((thumb) =>
           thumb!.includes("/") ? thumb!.split("/").pop() : thumb
         )
+        .filter(Boolean),
+      // Изображения новостей
+      ...usedNewsImages
+        .map((n) => n.image)
         .filter(Boolean)
-    );
+        .map((img) =>
+          img!.includes("/") ? img!.split("/").pop() : img
+        )
+        .filter(Boolean)
+    ]);
 
     // Удаляем неиспользуемые файлы
     for (const filename of files) {
@@ -232,20 +247,37 @@ async function getUnusedThumbnailsStats() {
     if (!existsSync(thumbnailsDir)) return { total: 0, unused: 0, size: 0 };
 
     const files = await readdir(thumbnailsDir);
+    
+    // Получаем все используемые превью курсов
     const usedThumbnails = await prisma.course.findMany({
       select: { thumbnail: true },
       where: { thumbnail: { not: null } },
     });
 
-    const usedFilenames = new Set(
-      usedThumbnails
+    // Получаем все используемые изображения новостей
+    const usedNewsImages = await prisma.news.findMany({
+      select: { image: true },
+      where: { image: { not: null } },
+    });
+
+    const usedFilenames = new Set([
+      // Превьюшки курсов
+      ...usedThumbnails
         .map((c) => c.thumbnail)
         .filter(Boolean)
         .map((thumb) =>
           thumb!.includes("/") ? thumb!.split("/").pop() : thumb
         )
+        .filter(Boolean),
+      // Изображения новостей
+      ...usedNewsImages
+        .map((n) => n.image)
         .filter(Boolean)
-    );
+        .map((img) =>
+          img!.includes("/") ? img!.split("/").pop() : img
+        )
+        .filter(Boolean)
+    ]);
 
     let unusedCount = 0;
     let totalSize = 0;

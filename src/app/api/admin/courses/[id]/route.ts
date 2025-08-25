@@ -93,8 +93,11 @@ export async function PATCH(
       where: { id },
       data: {
         ...(validatedData.title && { title: validatedData.title }),
-        ...(validatedData.description !== undefined && {
-          description: validatedData.description,
+        ...(validatedData.shortDescription !== undefined && {
+          shortDescription: validatedData.shortDescription,
+        }),
+        ...(validatedData.fullDescription !== undefined && {
+          fullDescription: validatedData.fullDescription,
         }),
         ...(validatedData.price !== undefined && {
           price: validatedData.price,

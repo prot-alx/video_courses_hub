@@ -52,7 +52,8 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         title: true,
-        description: true,
+        shortDescription: true,
+        fullDescription: true,
         price: true,
         isFree: true,
         thumbnail: true,
@@ -119,7 +120,8 @@ export async function GET(request: NextRequest) {
       return {
         id: course.id,
         title: course.title,
-        description: course.description,
+        shortDescription: course.shortDescription,
+        fullDescription: course.fullDescription,
         price: course.price,
         isFree: course.isFree,
         hasAccess,

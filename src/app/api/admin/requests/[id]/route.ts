@@ -169,7 +169,8 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            description: true,
+            shortDescription: true,
+            fullDescription: true,
             price: true,
             isFree: true,
           },

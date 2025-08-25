@@ -225,7 +225,7 @@ export default function AdminFilesPage() {
                 <code>uploads/videos/</code>
               </div>
               <div>
-                <strong>Превью курсов:</strong> Хранятся в папке{" "}
+                <strong>Изображения:</strong> Превью курсов и изображения новостей хранятся в папке{" "}
                 <code>uploads/thumbnails/</code>
               </div>
               <div>

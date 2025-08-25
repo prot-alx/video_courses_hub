@@ -210,7 +210,7 @@ export default function CourseCard({
         className="text-sm mb-4"
         style={{ color: "var(--color-text-secondary)" }}
       >
-        {course.description || "Описание курса скоро появится."}
+        {course.shortDescription || "Описание курса скоро появится."}
       </p>
 
       {/* Метаинформация */}
