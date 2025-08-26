@@ -335,7 +335,7 @@ export default function CourseEditForm({
                 borderColor: validationErrors.price
                   ? "#ef4444"
                   : "var(--color-primary-400)",
-                color: "var(--color-text-primary)",
+                color: "var(--color-primary-400)",
               }}
               disabled={isSubmitting}
               required={!formData.isFree}

@@ -158,7 +158,7 @@ export default function NewsDetailPage({
           {/* Изображение */}
           {news.image && (
             <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
-              <div className="aspect-video relative bg-gray-100">
+              <div className="aspect-video relative">
                 <OptimizedImage
                   src={getImageUrl(news.image)}
                   alt={news.title}

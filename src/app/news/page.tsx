@@ -125,19 +125,24 @@ export default function NewsPage() {
                 <div
                   key={item.id}
                   className="rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow duration-200"
-                  style={{
-                    background: "var(--color-primary-100)",
+                  style={{                    
                     borderColor: "var(--color-primary-400)",
                   }}
                 >
                   <Link href={`/news/${item.id}`}>
-                    <div className="aspect-video relative bg-gray-100">
+                    <div className="aspect-video relative">
                       <OptimizedImage
                         src={getImageUrl(item.image)}
                         alt={item.title}
                         fill
                         className="object-cover hover:scale-105 transition-transform duration-200"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        fallback={
+                          <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-gray-100 to-gray-200">
+                            <div className="text-4xl mb-2">📰</div>
+                            <span className="text-gray-500 text-sm">Изображение недоступно</span>
+                          </div>
+                        }
                       />
                     </div>
                   </Link>
@@ -145,7 +150,7 @@ export default function NewsPage() {
                   <div className="p-6">
                     <div
                       className="flex items-center text-sm mb-3"
-                      style={{ color: "var(--color-primary-400)" }}
+                      style={{ color: "var(--color-primary-100)" }}
                     >
                       <time dateTime={item.createdAt}>
                         {formatDate(item.createdAt)}
@@ -156,7 +161,7 @@ export default function NewsPage() {
                       <h2
                         className="text-xl font-semibold mb-3 line-clamp-2 transition-colors"
                         style={{
-                          color: "var(--color-primary-400)",
+                          color: "var(--color-primary-100)",
                         }}
                       >
                         {item.title}
@@ -165,7 +170,7 @@ export default function NewsPage() {
 
                     <p
                       className="text-sm line-clamp-3 mb-4"
-                      style={{ color: "var(--color-primary-400)" }}
+                      style={{ color: "var(--color-primary-100)" }}
                     >
                       {item.shortDescription}
                     </p>
@@ -173,7 +178,7 @@ export default function NewsPage() {
                     <Link
                       href={`/news/${item.id}`}
                       className="inline-flex items-center font-medium text-sm transition-colors hover:opacity-80"
-                      style={{ color: "var(--color-primary-500)" }}
+                      style={{ color: "var(--color-primary-100)" }}
                     >
                       Читать далее
                       <svg

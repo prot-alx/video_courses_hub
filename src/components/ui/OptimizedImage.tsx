@@ -47,6 +47,16 @@ export default function OptimizedImage({
 
   // Если есть ошибка, показываем fallback
   if (imageError) {
+    if (fill) {
+      return (
+        <div className={`absolute inset-0 flex items-center justify-center bg-gray-200 ${className}`}>
+          {fallback || (
+            <span className="text-gray-400 text-sm">Изображение недоступно</span>
+          )}
+        </div>
+      );
+    }
+    
     return (
       <div
         className={`flex items-center justify-center bg-gray-200 ${className}`}

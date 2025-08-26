@@ -55,18 +55,14 @@ export default function CourseAccessManager({
 
     if (isAdmin) {
       return (
-        <button className="btn-discord btn-discord-success">
+        <p>
           ✓ Админский доступ
-        </button>
+        </p>
       );
     }
 
     if (course.isFree) {
-      return (
-        <button className="btn-discord btn-discord-success">
-          🆓 Смотреть бесплатно
-        </button>
-      );
+      return
     }
 
     if (!isAuthenticated) {
@@ -78,11 +74,7 @@ export default function CourseAccessManager({
     }
 
     if (course.hasAccess) {
-      return (
-        <button className="btn-discord btn-discord-success">
-          🎥 Смотреть курс
-        </button>
-      );
+      return 
     }
 
     if (requestStatus) {

@@ -83,7 +83,12 @@
   --bg-overlay: oklch(0 0 0 / 0.4); /* Modal backgrounds */
   --bg-hover: oklch(0.35 0.04 270 / 0.1); /* Hover backgrounds */
 }
-
+h1, h2, h3, p {
+  cursor: default
+}
+button {
+  cursor: pointer;
+}
 @layer utilities {
   /* Discord-style scrollbars */
   .scrollbar-thin {

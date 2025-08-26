@@ -8,7 +8,7 @@ export default function Logo() {
     >
       <h1
         className="text-xl font-semibold"
-        style={{ color: "var(--color-text-primary)" }}
+        style={{ color: "var(--color-text-primary)", cursor: "pointer" }}
       >
         🎓 Образовательная школа
       </h1>

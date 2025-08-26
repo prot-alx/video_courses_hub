@@ -226,7 +226,7 @@ export default function CourseCard({
       </div>
 
       {/* Кнопка действия */}
-      <div className="mt-auto">{getActionButton()}</div>
+      <div className="mt-auto min-h-[44px] min-w-[230px] flex items-end">{getActionButton()}</div>
     </div>
   );
 }

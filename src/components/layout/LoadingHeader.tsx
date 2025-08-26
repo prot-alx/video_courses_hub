@@ -1,3 +1,5 @@
+import { Pointer } from "lucide-react";
+
 export default function LoadingHeader() {
   return (
     <header
@@ -12,7 +14,7 @@ export default function LoadingHeader() {
           <div className="flex items-center gap-8">
             <h1
               className="text-xl font-semibold"
-              style={{ color: "var(--color-text-primary)" }}
+              style={{ color: "var(--color-text-primary)", cursor: "pointer" }}
             >
               🎓 Образовательная школа
             </h1>
