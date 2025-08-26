@@ -37,7 +37,7 @@ export default function CourseFilter({
         <button
           key={filter.id}
           onClick={() => onFilterChange(filter.id)}
-          className={`px-6 py-3 rounded-lg border transition-all duration-200 ${
+          className={`w-60 px-4 py-3 rounded-lg border transition-all duration-200 ${
             activeFilter === filter.id
               ? "border-accent bg-accent text-primary-300"
               : "border-primary-400 hover:border-accent"

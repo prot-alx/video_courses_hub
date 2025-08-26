@@ -10,7 +10,8 @@ export default function Logo() {
         className="text-xl font-semibold"
         style={{ color: "var(--color-text-primary)", cursor: "pointer" }}
       >
-        🎓 Образовательная школа
+        <span className="hidden md:inline">🎓 Образовательная школа</span>
+        <span className="md:hidden">На главную</span>
       </h1>
     </Link>
   );
