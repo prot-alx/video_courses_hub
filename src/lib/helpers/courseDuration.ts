@@ -1,4 +1,3 @@
-// lib/helpers/courseDuration.ts
 import { prisma } from "@/lib/prisma";
 
 /**

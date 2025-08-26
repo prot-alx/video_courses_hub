@@ -30,14 +30,16 @@ export function useContactForm(): UseContactFormReturn {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Валидация с Zod
     const validation = ContactFormSchema.safeParse(formData);
-    
+
     if (!validation.success) {
       const errors: Record<string, string> = {};
       validation.error.issues.forEach((error) => {
@@ -46,10 +48,13 @@ export function useContactForm(): UseContactFormReturn {
         }
       });
       setValidationErrors(errors);
-      toast.error("Ошибка валидации", "Проверьте правильность заполнения формы");
+      toast.error(
+        "Ошибка валидации",
+        "Проверьте правильность заполнения формы"
+      );
       return;
     }
-    
+
     setValidationErrors({});
     setIsSubmitting(true);
 

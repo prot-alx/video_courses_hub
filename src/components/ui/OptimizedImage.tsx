@@ -26,7 +26,7 @@ export default function OptimizedImage({
   sizes,
   onError,
   fallback,
-}: OptimizedImageProps) {
+}: Readonly<OptimizedImageProps>) {
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -48,21 +48,20 @@ export default function OptimizedImage({
   // Если есть ошибка, показываем fallback
   if (imageError) {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gray-200 ${className}`}
         style={{ width, height }}
       >
         {fallback || (
-          <span className="text-gray-400 text-sm">
-            Изображение недоступно
-          </span>
+          <span className="text-gray-400 text-sm">Изображение недоступно</span>
         )}
       </div>
     );
   }
 
   // Генерируем blur placeholder
-  const blurDataURL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGBkaGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bsnjyiuWz7s6l3T7hGlJzQJMqFWJ/9k=";
+  const blurDataURL =
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGBkaGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bsnjyiuWz7s6l3T7hGlJzQJMqFWJ/9k=";
 
   if (fill) {
     return (
@@ -71,19 +70,21 @@ export default function OptimizedImage({
         {!isLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
-        
+
         <Image
           src={src}
           alt={alt}
           fill
           className={`transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
+            isLoaded ? "opacity-100" : "opacity-0"
           }`}
           loading={priority ? "eager" : "lazy"}
           quality={85}
           placeholder="blur"
           blurDataURL={blurDataURL}
-          sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+          sizes={
+            sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          }
           onLoad={handleLoad}
           onError={handleError}
         />
@@ -95,25 +96,24 @@ export default function OptimizedImage({
     <div className={`relative overflow-hidden ${className}`}>
       {/* Loading placeholder для обычного режима */}
       {!isLoaded && (
-        <div 
-          className="bg-gray-200 animate-pulse"
-          style={{ width, height }}
-        />
+        <div className="bg-gray-200 animate-pulse" style={{ width, height }} />
       )}
-      
+
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
         className={`transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
+          isLoaded ? "opacity-100" : "opacity-0"
         }`}
         loading={priority ? "eager" : "lazy"}
         quality={85}
         placeholder="blur"
         blurDataURL={blurDataURL}
-        sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+        sizes={
+          sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        }
         onLoad={handleLoad}
         onError={handleError}
       />

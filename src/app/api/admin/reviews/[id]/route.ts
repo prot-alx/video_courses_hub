@@ -14,7 +14,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.role || session.user.role !== "ADMIN") {
       return NextResponse.json(
         {
@@ -70,9 +70,11 @@ export async function PATCH(
       success: true,
       data: updatedReview,
       message: `Отзыв ${
-        status === "approved" ? "одобрен" : 
-        status === "rejected" ? "отклонен" : 
-        "возвращен на модерацию"
+        status === "approved"
+          ? "одобрен"
+          : status === "rejected"
+          ? "отклонен"
+          : "возвращен на модерацию"
       }`,
     });
   } catch (error) {
@@ -105,7 +107,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.role || session.user.role !== "ADMIN") {
       return NextResponse.json(
         {

@@ -72,13 +72,13 @@ export async function GET(request: NextRequest) {
           : false,
         requests: session?.user?.id
           ? {
-              where: { 
+              where: {
                 userId: session.user.id,
-                status: { in: ["new", "approved", "rejected"] }
+                status: { in: ["new", "approved", "rejected"] },
               },
               select: { status: true },
               orderBy: { createdAt: "desc" },
-              take: 1
+              take: 1,
             }
           : false,
         _count: {
@@ -113,9 +113,10 @@ export async function GET(request: NextRequest) {
       ).length;
 
       // Получаем статус последней заявки
-      const requestStatus = Array.isArray(course.requests) && course.requests.length > 0
-        ? course.requests[0].status
-        : null;
+      const requestStatus =
+        Array.isArray(course.requests) && course.requests.length > 0
+          ? course.requests[0].status
+          : null;
 
       return {
         id: course.id,

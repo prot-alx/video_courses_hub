@@ -37,10 +37,10 @@ export default function VideoEditForm({
   });
 
   const { validate, validationErrors, getFieldError } = useFormValidation(
-    UpdateVideoSchema, 
+    UpdateVideoSchema,
     {
       showToastOnError: true,
-      toastErrorTitle: "Ошибка валидации видео"
+      toastErrorTitle: "Ошибка валидации видео",
     }
   );
 
@@ -119,13 +119,17 @@ export default function VideoEditForm({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, displayName: e.target.value }))
             }
-            className={`input-discord w-full ${getFieldError("displayName") ? 'border-red-500' : ''}`}
+            className={`input-discord w-full ${
+              getFieldError("displayName") ? "border-red-500" : ""
+            }`}
             placeholder="Введите название видео"
             maxLength={100}
             disabled={saving}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: getFieldError("displayName") ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: getFieldError("displayName")
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-400)",
               borderWidth: "1px",
               borderRadius: "var(--radius-sm)",
@@ -134,7 +138,9 @@ export default function VideoEditForm({
           />
           <div className="flex justify-between items-center mt-1">
             {getFieldError("displayName") ? (
-              <p className="text-xs text-red-500">{getFieldError("displayName")}</p>
+              <p className="text-xs text-red-500">
+                {getFieldError("displayName")}
+              </p>
             ) : (
               <p
                 className="text-xs"
@@ -144,7 +150,13 @@ export default function VideoEditForm({
               </p>
             )}
             <span
-              className={`text-xs ${formData.displayName.length > 90 ? 'text-orange-500' : formData.displayName.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                formData.displayName.length > 90
+                  ? "text-orange-500"
+                  : formData.displayName.length > 100
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }`}
             >
               {formData.displayName.length}/100
             </span>
@@ -163,14 +175,18 @@ export default function VideoEditForm({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, description: e.target.value }))
             }
-            className={`input-discord w-full min-h-[100px] resize-y ${getFieldError("description") ? 'border-red-500' : ''}`}
+            className={`input-discord w-full min-h-[100px] resize-y ${
+              getFieldError("description") ? "border-red-500" : ""
+            }`}
             placeholder="Введите описание видео (необязательно)"
             maxLength={2000}
             rows={4}
             disabled={saving}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: getFieldError("description") ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: getFieldError("description")
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-400)",
               borderWidth: "1px",
               borderRadius: "var(--radius-sm)",
@@ -179,7 +195,9 @@ export default function VideoEditForm({
           />
           <div className="flex justify-between items-center mt-1">
             {getFieldError("description") ? (
-              <p className="text-xs text-red-500">{getFieldError("description")}</p>
+              <p className="text-xs text-red-500">
+                {getFieldError("description")}
+              </p>
             ) : (
               <p
                 className="text-xs"
@@ -189,7 +207,13 @@ export default function VideoEditForm({
               </p>
             )}
             <span
-              className={`text-xs ${formData.description.length > 1800 ? 'text-orange-500' : formData.description.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                formData.description.length > 1800
+                  ? "text-orange-500"
+                  : formData.description.length > 2000
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }`}
             >
               {formData.description.length}/2000
             </span>

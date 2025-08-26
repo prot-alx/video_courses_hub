@@ -28,43 +28,48 @@ export function useFormValidation<T>(
   } = options;
 
   const toast = useToastContext();
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   const validate = (data: T): boolean => {
     try {
       schema.parse(data);
-      
+
       if (resetOnSuccess) {
         setValidationErrors({});
       }
-      
+
       return true;
     } catch (error) {
       if (error instanceof ZodError) {
         const errors: Record<string, string> = {};
-        
+
         error.issues.forEach((err) => {
           const path = err.path.join(".");
           if (path) {
             errors[path] = err.message;
           }
         });
-        
+
         setValidationErrors(errors);
-        
+
         if (showToastOnError) {
-          toast.error(toastErrorTitle, "Проверьте правильность заполнения формы");
+          toast.error(
+            toastErrorTitle,
+            "Проверьте правильность заполнения формы"
+          );
         }
-        
+
         return false;
       }
-      
+
       // Неожиданная ошибка
       console.error("Unexpected validation error:", error);
       if (showToastOnError) {
         toast.error("Ошибка", "Произошла неожиданная ошибка валидации");
       }
-      
+
       return false;
     }
   };
@@ -74,9 +79,9 @@ export function useFormValidation<T>(
   };
 
   const setFieldError = (field: string, message: string) => {
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
-      [field]: message
+      [field]: message,
     }));
   };
 

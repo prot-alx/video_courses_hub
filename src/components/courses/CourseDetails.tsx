@@ -70,7 +70,9 @@ export default function CourseDetails({
         className="text-base leading-relaxed mb-6 whitespace-pre-wrap"
         style={{ color: "var(--color-text-secondary)" }}
       >
-        {course.fullDescription || course.shortDescription || "Описание курса скоро появится."}
+        {course.fullDescription ||
+          course.shortDescription ||
+          "Описание курса скоро появится."}
       </p>
 
       <CourseAccessManager

@@ -179,10 +179,12 @@ export default function CourseCard({
           {/* Иконка доступа */}
           {!course.isFree && (
             <span
-              title={hasAccess ? "У вас есть доступ к курсу" : "Курс требует покупки"}
+              title={
+                hasAccess ? "У вас есть доступ к курсу" : "Курс требует покупки"
+              }
               className="text-base"
             >
-{hasAccess ? "🔓" : "🔐"}
+              {hasAccess ? "🔓" : "🔐"}
             </span>
           )}
         </div>

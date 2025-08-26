@@ -13,7 +13,16 @@ export default function ReviewsList({
 }: Readonly<ReviewsListProps>) {
   const { user } = useAuth();
   const { success: showSuccessToast, error: showErrorToast } = useToast();
-  const { reviews, pagination, averageRating, isLoading, error, fetchReviews, loadMoreReviews, deleteReview } = useReviewsStore();
+  const {
+    reviews,
+    pagination,
+    averageRating,
+    isLoading,
+    error,
+    fetchReviews,
+    loadMoreReviews,
+    deleteReview,
+  } = useReviewsStore();
 
   useEffect(() => {
     fetchReviews(1, 10, user?.id);
@@ -41,8 +50,17 @@ export default function ReviewsList({
     ));
   };
 
-  const getDisplayName = (user: { name: string | null; displayName?: string | null; email: string }) => {
-    return user.displayName || user.name || user.email.split("@")[0] || "Пользователь";
+  const getDisplayName = (user: {
+    name: string | null;
+    displayName?: string | null;
+    email: string;
+  }) => {
+    return (
+      user.displayName ||
+      user.name ||
+      user.email.split("@")[0] ||
+      "Пользователь"
+    );
   };
 
   const handleDeleteReview = async (reviewId: string) => {
@@ -105,7 +123,10 @@ export default function ReviewsList({
             className="text-2xl font-bold"
             style={{ color: "var(--color-text-primary)" }}
           >
-            Отзывы {pagination ? `(${pagination.approvedTotal})` : `(${reviews.length})`}
+            Отзывы{" "}
+            {pagination
+              ? `(${pagination.approvedTotal})`
+              : `(${reviews.length})`}
           </h3>
           {pagination && pagination.approvedTotal > 0 && (
             <div className="flex items-center gap-2">
@@ -127,15 +148,19 @@ export default function ReviewsList({
         {reviews.map((review) => (
           <div
             key={review.id}
-            className={`p-4 rounded border ${review.status === 'pending' ? 'opacity-75' : ''}`}
+            className={`p-4 rounded border ${
+              review.status === "pending" ? "opacity-75" : ""
+            }`}
             style={{
-              background: review.status === 'pending' 
-                ? "var(--color-primary-50)" 
-                : "var(--color-primary-100)",
-              borderColor: review.status === 'pending'
-                ? "var(--color-warning)"
-                : "var(--color-primary-400)",
-              borderWidth: review.status === 'pending' ? '2px' : '1px',
+              background:
+                review.status === "pending"
+                  ? "var(--color-primary-50)"
+                  : "var(--color-primary-100)",
+              borderColor:
+                review.status === "pending"
+                  ? "var(--color-warning)"
+                  : "var(--color-primary-400)",
+              borderWidth: review.status === "pending" ? "2px" : "1px",
             }}
           >
             {/* Заголовок с рейтингом и статусом */}
@@ -147,7 +172,7 @@ export default function ReviewsList({
               >
                 {review.rating}/5
               </span>
-              {review.status === 'pending' && (
+              {review.status === "pending" && (
                 <span
                   className="text-xs px-2 py-1 rounded"
                   style={{
@@ -161,19 +186,22 @@ export default function ReviewsList({
             </div>
 
             {/* Автор и дата */}
-            <div className="text-sm mb-3" style={{ color: "var(--color-primary-400)" }}>
+            <div
+              className="text-sm mb-3"
+              style={{ color: "var(--color-primary-400)" }}
+            >
               От: {getDisplayName(review.user)}
             </div>
-            <div className="text-sm mb-4" style={{ color: "var(--color-primary-400)" }}>
+            <div
+              className="text-sm mb-4"
+              style={{ color: "var(--color-primary-400)" }}
+            >
               Дата: {formatDate(review.createdAt)}
             </div>
 
             {/* Комментарий */}
             {review.comment && (
-              <p
-                className="mb-3"
-                style={{ color: "var(--color-primary-400)" }}
-              >
+              <p className="mb-3" style={{ color: "var(--color-primary-400)" }}>
                 {review.comment}
               </p>
             )}

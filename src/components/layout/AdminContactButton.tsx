@@ -1,6 +1,4 @@
-// src/components/layout/AdminContactButton.tsx
 "use client";
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 

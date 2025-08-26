@@ -47,11 +47,11 @@ export default function AdminRequestsPage() {
       setIsLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '10',
+        limit: "10",
       });
 
       if (statusFilter && statusFilter !== "all") {
-        params.set('status', statusFilter);
+        params.set("status", statusFilter);
       }
 
       const response = await fetch(`/api/admin/requests?${params}`);
@@ -365,28 +365,28 @@ export default function AdminRequestsPage() {
             >
               ← Предыдущая
             </button>
-            
+
             <div className="flex items-center gap-1">
               {(() => {
                 const totalPages = pagination.totalPages;
                 const current = currentPage;
                 const pages: number[] = [];
-                
+
                 const start = Math.max(1, current - 2);
                 const end = Math.min(totalPages, current + 2);
-                
+
                 for (let i = start; i <= end; i++) {
                   pages.push(i);
                 }
-                
-                return pages.map(pageNum => (
+
+                return pages.map((pageNum) => (
                   <button
                     key={pageNum}
                     onClick={() => fetchRequests(filter, pageNum)}
                     className={`px-3 py-1 text-sm rounded border ${
                       pageNum === currentPage
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                     }`}
                   >
                     {pageNum}
@@ -394,7 +394,7 @@ export default function AdminRequestsPage() {
                 ));
               })()}
             </div>
-            
+
             <button
               onClick={() => fetchRequests(filter, currentPage + 1)}
               disabled={!pagination.hasNext}
@@ -402,10 +402,13 @@ export default function AdminRequestsPage() {
             >
               Следующая →
             </button>
-            
-            <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
-              Страница {pagination.page} из {pagination.totalPages} 
-              ({pagination.total} заявок)
+
+            <span
+              className="text-sm ml-4"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Страница {pagination.page} из {pagination.totalPages}(
+              {pagination.total} заявок)
             </span>
           </div>
         )}

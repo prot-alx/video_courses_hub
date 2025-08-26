@@ -108,19 +108,6 @@ export default function VideoPlayer({
       className={`aspect-video rounded-lg overflow-hidden relative ${className}`}
       style={{ background: "var(--color-primary-400)" }}
     >
-      {(loading || buffering) && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-2"></div>
-            <p
-              className="text-sm"
-              style={{ color: "var(--color-text-secondary)" }}
-            >
-              {loading ? "Загрузка видео..." : "Буферизация..."}
-            </p>
-          </div>
-        </div>
-      )}
       <video
         ref={videoRef}
         controls
@@ -160,20 +147,20 @@ export default function VideoPlayer({
       <button
         onClick={handleVideoDoubleClick}
         className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all duration-200"
-        style={{ 
+        style={{
           opacity: loading ? 0 : 1,
-          pointerEvents: loading ? 'none' : 'auto'
+          pointerEvents: loading ? "none" : "auto",
         }}
         title="Полноэкранный режим"
       >
-        <svg 
-          width="20" 
-          height="20" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
           strokeLinejoin="round"
         >
           <polyline points="15,3 21,3 21,9" />

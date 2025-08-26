@@ -59,11 +59,13 @@ export default function CourseEditForm({
             placeholder="Например: Основы React"
             maxLength={100}
             className={`w-full px-3 py-2 rounded border ${
-              validationErrors.title ? 'border-red-500' : ''
+              validationErrors.title ? "border-red-500" : ""
             }`}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: validationErrors.title ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: validationErrors.title
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-300)",
             }}
             disabled={isSubmitting}
@@ -81,7 +83,13 @@ export default function CourseEditForm({
               </p>
             )}
             <span
-              className={`text-xs ${formData.title.length > 90 ? 'text-orange-500' : formData.title.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                formData.title.length > 90
+                  ? "text-orange-500"
+                  : formData.title.length > 100
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }`}
             >
               {formData.title.length}/100
             </span>
@@ -98,23 +106,29 @@ export default function CourseEditForm({
           </label>
           <textarea
             value={formData.shortDescription}
-            onChange={(e) => onFormDataChange({ shortDescription: e.target.value })}
+            onChange={(e) =>
+              onFormDataChange({ shortDescription: e.target.value })
+            }
             placeholder="Краткое описание для отображения в карточке курса"
             maxLength={150}
             rows={3}
             className={`w-full px-3 py-2 rounded border resize-none ${
-              validationErrors.shortDescription ? 'border-red-500' : ''
+              validationErrors.shortDescription ? "border-red-500" : ""
             }`}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: validationErrors.shortDescription ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: validationErrors.shortDescription
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-300)",
             }}
             disabled={isSubmitting}
           />
           <div className="flex justify-between items-center mt-1">
             {validationErrors.shortDescription ? (
-              <p className="text-xs text-red-500">{validationErrors.shortDescription}</p>
+              <p className="text-xs text-red-500">
+                {validationErrors.shortDescription}
+              </p>
             ) : (
               <p
                 className="text-xs"
@@ -124,7 +138,13 @@ export default function CourseEditForm({
               </p>
             )}
             <span
-              className={`text-xs ${formData.shortDescription.length > 130 ? 'text-orange-500' : formData.shortDescription.length > 150 ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                formData.shortDescription.length > 130
+                  ? "text-orange-500"
+                  : formData.shortDescription.length > 150
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }`}
             >
               {formData.shortDescription.length}/150
             </span>
@@ -141,23 +161,29 @@ export default function CourseEditForm({
           </label>
           <textarea
             value={formData.fullDescription}
-            onChange={(e) => onFormDataChange({ fullDescription: e.target.value })}
+            onChange={(e) =>
+              onFormDataChange({ fullDescription: e.target.value })
+            }
             placeholder="Подробное описание курса, что изучит студент..."
             maxLength={2000}
             rows={6}
             className={`w-full px-3 py-2 rounded border resize-none ${
-              validationErrors.fullDescription ? 'border-red-500' : ''
+              validationErrors.fullDescription ? "border-red-500" : ""
             }`}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: validationErrors.fullDescription ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: validationErrors.fullDescription
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-300)",
             }}
             disabled={isSubmitting}
           />
           <div className="flex justify-between items-center mt-1">
             {validationErrors.fullDescription ? (
-              <p className="text-xs text-red-500">{validationErrors.fullDescription}</p>
+              <p className="text-xs text-red-500">
+                {validationErrors.fullDescription}
+              </p>
             ) : (
               <p
                 className="text-xs"
@@ -167,7 +193,13 @@ export default function CourseEditForm({
               </p>
             )}
             <span
-              className={`text-xs ${formData.fullDescription.length > 1800 ? 'text-orange-500' : formData.fullDescription.length > 2000 ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                formData.fullDescription.length > 1800
+                  ? "text-orange-500"
+                  : formData.fullDescription.length > 2000
+                  ? "text-red-500"
+                  : "text-gray-500"
+              }`}
             >
               {formData.fullDescription.length}/2000
             </span>
@@ -296,18 +328,22 @@ export default function CourseEditForm({
               max="999999"
               step="1"
               className={`w-full px-3 py-2 rounded border ${
-                validationErrors.price ? 'border-red-500' : ''
+                validationErrors.price ? "border-red-500" : ""
               }`}
               style={{
                 background: "var(--color-primary-100)",
-                borderColor: validationErrors.price ? "#ef4444" : "var(--color-primary-400)",
+                borderColor: validationErrors.price
+                  ? "#ef4444"
+                  : "var(--color-primary-400)",
                 color: "var(--color-text-primary)",
               }}
               disabled={isSubmitting}
               required={!formData.isFree}
             />
             {validationErrors.price && (
-              <p className="text-xs text-red-500 mt-1">{validationErrors.price}</p>
+              <p className="text-xs text-red-500 mt-1">
+                {validationErrors.price}
+              </p>
             )}
             <p
               className="text-xs mt-1"

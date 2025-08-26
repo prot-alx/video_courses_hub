@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
 
     // Параметры пагинации
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.user.count()
+      prisma.user.count(),
     ]);
 
     // Преобразуем данные для фронтенда

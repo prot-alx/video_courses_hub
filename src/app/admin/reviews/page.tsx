@@ -55,36 +55,39 @@ export default function AdminReviewsPage() {
     await signOut({ callbackUrl: "/" });
   };
 
-  const fetchReviews = useCallback(async (page = 1) => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-      });
-      
-      if (statusFilter !== "all") {
-        params.set('status', statusFilter);
-      }
-      
-      const response = await fetch(`/api/admin/reviews?${params}`);
-      const data = await response.json();
+  const fetchReviews = useCallback(
+    async (page = 1) => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: "10",
+        });
 
-      if (data.success) {
-        setReviews(data.data);
-        setStats(data.stats);
-        setPagination(data.pagination);
-        setCurrentPage(page);
-      } else {
-        showErrorToast(data.error || "Ошибка загрузки отзывов");
+        if (statusFilter !== "all") {
+          params.set("status", statusFilter);
+        }
+
+        const response = await fetch(`/api/admin/reviews?${params}`);
+        const data = await response.json();
+
+        if (data.success) {
+          setReviews(data.data);
+          setStats(data.stats);
+          setPagination(data.pagination);
+          setCurrentPage(page);
+        } else {
+          showErrorToast(data.error || "Ошибка загрузки отзывов");
+        }
+      } catch (error) {
+        console.error("Ошибка загрузки отзывов:", error);
+        showErrorToast("Ошибка загрузки отзывов");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Ошибка загрузки отзывов:", error);
-      showErrorToast("Ошибка загрузки отзывов");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [statusFilter, showErrorToast]);
+    },
+    [statusFilter, showErrorToast]
+  );
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
@@ -93,7 +96,10 @@ export default function AdminReviewsPage() {
     }
   }, [isAuthenticated, isAdmin, statusFilter, fetchReviews]);
 
-  const moderateReview = async (reviewId: string, status: "approved" | "rejected") => {
+  const moderateReview = async (
+    reviewId: string,
+    status: "approved" | "rejected"
+  ) => {
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
         method: "PATCH",
@@ -226,157 +232,209 @@ export default function AdminReviewsPage() {
       style={{ background: "var(--color-primary-200)" }}
     >
       <AdminHeader title="Модерация отзывов" onSignOut={handleSignOut} />
-      
+
       <div className="max-w-7xl mx-auto px-6 py-8">
         <AdminNavigation />
 
-      {/* Статистика */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div
-          className="p-4 rounded-lg text-center"
-          style={{
-            background: "var(--color-primary-300)",
-            borderColor: "var(--color-primary-400)",
-          }}
-        >
-          <div className="text-2xl font-bold" style={{ color: "#f59e0b" }}>
-            {stats.pending}
-          </div>
-          <div className="text-sm" style={{ color: "var(--color-text-primary)" }}>
-            На модерации
-          </div>
-        </div>
-        <div
-          className="p-4 rounded-lg text-center"
-          style={{
-            background: "var(--color-primary-300)",
-            borderColor: "var(--color-primary-400)",
-          }}
-        >
-          <div className="text-2xl font-bold" style={{ color: "#10b981" }}>
-            {stats.approved}
-          </div>
-          <div className="text-sm" style={{ color: "var(--color-text-primary)" }}>
-            Одобрено
-          </div>
-        </div>
-        <div
-          className="p-4 rounded-lg text-center"
-          style={{
-            background: "var(--color-primary-300)",
-            borderColor: "var(--color-primary-400)",
-          }}
-        >
-          <div className="text-2xl font-bold" style={{ color: "#ef4444" }}>
-            {stats.rejected}
-          </div>
-          <div className="text-sm" style={{ color: "var(--color-text-primary)" }}>
-            Отклонено
-          </div>
-        </div>
-        <div
-          className="p-4 rounded-lg text-center"
-          style={{
-            background: "var(--color-primary-300)",
-            borderColor: "var(--color-primary-400)",
-          }}
-        >
-          <div className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
-            {stats.total}
-          </div>
-          <div className="text-sm" style={{ color: "var(--color-text-primary)" }}>
-            Всего
-          </div>
-        </div>
-      </div>
-
-      {/* Фильтры */}
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2">
-          {[
-            { key: "all", label: "Все" },
-            { key: "pending", label: "На модерации" },
-            { key: "approved", label: "Одобренные" },
-            { key: "rejected", label: "Отклоненные" },
-          ].map((filter) => (
-            <button
-              key={filter.key}
-              onClick={() => setStatusFilter(filter.key)}
-              className={`btn-discord ${
-                statusFilter === filter.key ? "btn-discord-primary" : "btn-discord-secondary"
-              } text-sm`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Список отзывов */}
-      {isLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-        </div>
-      ) : reviews.length === 0 ? (
-        <div
-          className="p-8 rounded-lg text-center"
-          style={{
-            background: "var(--color-primary-200)",
-            borderColor: "var(--color-primary-400)",
-          }}
-        >
-          <p style={{ color: "var(--color-text-secondary)" }}>
-            Отзывов не найдено
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {reviews.map((review) => (
+        {/* Статистика */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-300)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
+            <div className="text-2xl font-bold" style={{ color: "#f59e0b" }}>
+              {stats.pending}
+            </div>
             <div
-              key={review.id}
-              className="p-4 rounded-lg border"
-              style={{
-                background: "var(--color-primary-100)",
-                borderColor: "var(--color-primary-400)",
-              }}
+              className="text-sm"
+              style={{ color: "var(--color-text-primary)" }}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="flex">{renderStars(review.rating)}</div>
-                    <span
-                      className="text-sm px-2 py-1 rounded"
-                      style={{
-                        background: getStatusColor(review.status),
-                        color: "white",
-                      }}
+              На модерации
+            </div>
+          </div>
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-300)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
+            <div className="text-2xl font-bold" style={{ color: "#10b981" }}>
+              {stats.approved}
+            </div>
+            <div
+              className="text-sm"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Одобрено
+            </div>
+          </div>
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-300)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
+            <div className="text-2xl font-bold" style={{ color: "#ef4444" }}>
+              {stats.rejected}
+            </div>
+            <div
+              className="text-sm"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Отклонено
+            </div>
+          </div>
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-300)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
+            <div
+              className="text-2xl font-bold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              {stats.total}
+            </div>
+            <div
+              className="text-sm"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Всего
+            </div>
+          </div>
+        </div>
+
+        {/* Фильтры */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { key: "all", label: "Все" },
+              { key: "pending", label: "На модерации" },
+              { key: "approved", label: "Одобренные" },
+              { key: "rejected", label: "Отклоненные" },
+            ].map((filter) => (
+              <button
+                key={filter.key}
+                onClick={() => setStatusFilter(filter.key)}
+                className={`btn-discord ${
+                  statusFilter === filter.key
+                    ? "btn-discord-primary"
+                    : "btn-discord-secondary"
+                } text-sm`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Список отзывов */}
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+          </div>
+        ) : reviews.length === 0 ? (
+          <div
+            className="p-8 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-200)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
+            <p style={{ color: "var(--color-text-secondary)" }}>
+              Отзывов не найдено
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="p-4 rounded-lg border"
+                style={{
+                  background: "var(--color-primary-100)",
+                  borderColor: "var(--color-primary-400)",
+                }}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="flex">{renderStars(review.rating)}</div>
+                      <span
+                        className="text-sm px-2 py-1 rounded"
+                        style={{
+                          background: getStatusColor(review.status),
+                          color: "white",
+                        }}
+                      >
+                        {getStatusText(review.status)}
+                      </span>
+                    </div>
+                    <div
+                      className="text-sm"
+                      style={{ color: "var(--color-primary-400)" }}
                     >
-                      {getStatusText(review.status)}
-                    </span>
-                  </div>
-                  <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
-                    Имя: {review.user.displayName || review.user.name || "Не указано"}
-                  </div>
-                  <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
-                    Email: {review.user.email}
-                  </div>
-                  <div className="text-sm" style={{ color: "var(--color-primary-400)" }}>
-                    Дата: {formatDate(review.createdAt)}
+                      Имя:{" "}
+                      {review.user.displayName ||
+                        review.user.name ||
+                        "Не указано"}
+                    </div>
+                    <div
+                      className="text-sm"
+                      style={{ color: "var(--color-primary-400)" }}
+                    >
+                      Email: {review.user.email}
+                    </div>
+                    <div
+                      className="text-sm"
+                      style={{ color: "var(--color-primary-400)" }}
+                    >
+                      Дата: {formatDate(review.createdAt)}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {review.comment && (
-                <div className="mb-4">
-                  <p style={{ color: "var(--color-primary-400)" }}>
-                    {review.comment}
-                  </p>
-                </div>
-              )}
+                {review.comment && (
+                  <div className="mb-4">
+                    <p style={{ color: "var(--color-primary-400)" }}>
+                      {review.comment}
+                    </p>
+                  </div>
+                )}
 
-              <div className="flex gap-2">
-                {review.status === "pending" && (
-                  <>
+                <div className="flex gap-2">
+                  {review.status === "pending" && (
+                    <>
+                      <button
+                        onClick={() => moderateReview(review.id, "approved")}
+                        className="btn-discord text-sm"
+                        style={{
+                          background: "#10b981",
+                          borderColor: "#059669",
+                        }}
+                      >
+                        ✓ Одобрить
+                      </button>
+                      <button
+                        onClick={() => moderateReview(review.id, "rejected")}
+                        className="btn-discord text-sm"
+                        style={{
+                          background: "#ef4444",
+                          borderColor: "#dc2626",
+                        }}
+                      >
+                        ✗ Отклонить
+                      </button>
+                    </>
+                  )}
+                  {review.status === "rejected" && (
                     <button
                       onClick={() => moderateReview(review.id, "approved")}
                       className="btn-discord text-sm"
@@ -384,6 +442,8 @@ export default function AdminReviewsPage() {
                     >
                       ✓ Одобрить
                     </button>
+                  )}
+                  {review.status === "approved" && (
                     <button
                       onClick={() => moderateReview(review.id, "rejected")}
                       className="btn-discord text-sm"
@@ -391,93 +451,77 @@ export default function AdminReviewsPage() {
                     >
                       ✗ Отклонить
                     </button>
-                  </>
-                )}
-                {review.status === "rejected" && (
+                  )}
                   <button
-                    onClick={() => moderateReview(review.id, "approved")}
-                    className="btn-discord text-sm"
-                    style={{ background: "#10b981", borderColor: "#059669" }}
+                    onClick={() => deleteReview(review.id)}
+                    className="btn-discord btn-discord-secondary text-sm"
                   >
-                    ✓ Одобрить
+                    🗑 Удалить
                   </button>
-                )}
-                {review.status === "approved" && (
-                  <button
-                    onClick={() => moderateReview(review.id, "rejected")}
-                    className="btn-discord text-sm"
-                    style={{ background: "#ef4444", borderColor: "#dc2626" }}
-                  >
-                    ✗ Отклонить
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteReview(review.id)}
-                  className="btn-discord btn-discord-secondary text-sm"
-                >
-                  🗑 Удалить
-                </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Пагинация */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
-          <button
-            onClick={() => fetchReviews(currentPage - 1)}
-            disabled={!pagination.hasPrev}
-            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            ← Предыдущая
-          </button>
-          
-          <div className="flex items-center gap-1">
-            {(() => {
-              const totalPages = pagination.totalPages;
-              const current = currentPage;
-              const pages: number[] = [];
-              
-              // Простая логика: показываем до 5 страниц вокруг текущей
-              const start = Math.max(1, current - 2);
-              const end = Math.min(totalPages, current + 2);
-              
-              for (let i = start; i <= end; i++) {
-                pages.push(i);
-              }
-              
-              return pages.map(pageNum => (
-                <button
-                  key={pageNum}
-                  onClick={() => fetchReviews(pageNum)}
-                  className={`px-3 py-1 text-sm rounded border ${
-                    pageNum === currentPage
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ));
-            })()}
+            ))}
           </div>
-          
-          <button
-            onClick={() => fetchReviews(currentPage + 1)}
-            disabled={!pagination.hasNext}
-            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Следующая →
-          </button>
-          
-          <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
-            Страница {pagination.page} из {pagination.totalPages} 
-            ({pagination.total} отзывов)
-          </span>
-        </div>
-      )}
+        )}
+
+        {/* Пагинация */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-6">
+            <button
+              onClick={() => fetchReviews(currentPage - 1)}
+              disabled={!pagination.hasPrev}
+              className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ← Предыдущая
+            </button>
+
+            <div className="flex items-center gap-1">
+              {(() => {
+                const totalPages = pagination.totalPages;
+                const current = currentPage;
+                const pages: number[] = [];
+
+                // Простая логика: показываем до 5 страниц вокруг текущей
+                const start = Math.max(1, current - 2);
+                const end = Math.min(totalPages, current + 2);
+
+                for (let i = start; i <= end; i++) {
+                  pages.push(i);
+                }
+
+                return pages.map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => fetchReviews(pageNum)}
+                    className={`px-3 py-1 text-sm rounded border ${
+                      pageNum === currentPage
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ));
+              })()}
+            </div>
+
+            <button
+              onClick={() => fetchReviews(currentPage + 1)}
+              disabled={!pagination.hasNext}
+              className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Следующая →
+            </button>
+
+            <span
+              className="text-sm ml-4"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Страница {pagination.page} из {pagination.totalPages}(
+              {pagination.total} отзывов)
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

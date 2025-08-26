@@ -10,22 +10,20 @@ import type { CourseFilterType } from "@/types";
 
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { 
-    courses, 
-    isLoading, 
-    error, 
-    filter, 
-    fetchCourses, 
-    setFilter, 
-    getFilteredCourses 
+  const {
+    courses,
+    isLoading,
+    error,
+    filter,
+    fetchCourses,
+    setFilter,
+    getFilteredCourses,
   } = useCoursesStore();
 
   useEffect(() => {
-    // Загружаем курсы только если их еще нет
-    if (courses.length === 0) {
-      fetchCourses();
-    }
-  }, [courses.length, fetchCourses]);
+    // Всегда загружаем свежие курсы при монтировании компонента
+    fetchCourses();
+  }, [fetchCourses]);
 
   const handleFilterChange = (newFilter: CourseFilterType) => {
     setFilter(newFilter);

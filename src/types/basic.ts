@@ -224,3 +224,19 @@ export interface RequestStats {
   approved: number;
   rejected: number;
 }
+
+export interface News {
+  id: string;
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  image: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    displayName: string | null;
+    name: string | null;
+    email: string;
+  };
+}

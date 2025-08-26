@@ -33,164 +33,164 @@ interface CourseRequestsStore {
   rejectRequest: (requestId: string) => Promise<boolean>;
 }
 
-export const useCourseRequestsStore = create<CourseRequestsStore>()((set, get) => ({
-      // Initial state
-      requests: [],
-      isLoading: false,
-      error: null,
+export const useCourseRequestsStore = create<CourseRequestsStore>()(
+  (set, get) => ({
+    // Initial state
+    requests: [],
+    isLoading: false,
+    error: null,
 
-      // Basic setters
-      setRequests: (requests) => set({ requests, error: null }),
-      setLoading: (isLoading) => set({ isLoading }),
-      setError: (error) => set({ error, isLoading: false }),
+    // Basic setters
+    setRequests: (requests) => set({ requests, error: null }),
+    setLoading: (isLoading) => set({ isLoading }),
+    setError: (error) => set({ error, isLoading: false }),
 
-      // Request management
-      addRequest: (request) => {
-        const requests = get().requests;
-        set({ requests: [request, ...requests] });
-      },
+    // Request management
+    addRequest: (request) => {
+      const requests = get().requests;
+      set({ requests: [request, ...requests] });
+    },
 
-      updateRequestStatus: (requestId, status) => {
-        const requests = get().requests;
-        const updatedRequests = requests.map((request) =>
-          request.id === requestId
-            ? { ...request, status, processedAt: new Date().toISOString() }
-            : request
-        );
-        set({ requests: updatedRequests });
-      },
+    updateRequestStatus: (requestId, status) => {
+      const requests = get().requests;
+      const updatedRequests = requests.map((request) =>
+        request.id === requestId
+          ? { ...request, status, processedAt: new Date().toISOString() }
+          : request
+      );
+      set({ requests: updatedRequests });
+    },
 
-      removeRequest: (requestId) => {
-        const requests = get().requests;
-        const filteredRequests = requests.filter(
-          (request) => request.id !== requestId
-        );
-        set({ requests: filteredRequests });
-      },
+    removeRequest: (requestId) => {
+      const requests = get().requests;
+      const filteredRequests = requests.filter(
+        (request) => request.id !== requestId
+      );
+      set({ requests: filteredRequests });
+    },
 
-      // Computed getters
-      getPendingRequests: () => {
-        return get().requests.filter((request) => request.status === "new");
-      },
+    // Computed getters
+    getPendingRequests: () => {
+      return get().requests.filter((request) => request.status === "new");
+    },
 
-      getRequestsByStatus: (status) => {
-        return get().requests.filter((request) => request.status === status);
-      },
+    getRequestsByStatus: (status) => {
+      return get().requests.filter((request) => request.status === status);
+    },
 
-      getRequestsCount: () => {
-        return get().requests.length;
-      },
+    getRequestsCount: () => {
+      return get().requests.length;
+    },
 
-      getPendingCount: () => {
-        return get().requests.filter((request) => request.status === "new")
-          .length;
-      },
+    getPendingCount: () => {
+      return get().requests.filter((request) => request.status === "new")
+        .length;
+    },
 
-      // Async actions
-      fetchRequests: async () => {
-        set({ isLoading: true, error: null });
+    // Async actions
+    fetchRequests: async () => {
+      set({ isLoading: true, error: null });
 
-        try {
-          const response = await fetch("/api/admin/requests");
-          const result: ApiResponse<CourseRequest[]> = await response.json();
+      try {
+        const response = await fetch("/api/admin/requests");
+        const result: ApiResponse<CourseRequest[]> = await response.json();
 
-          if (result.success && result.data) {
-            set({
-              requests: result.data,
-              isLoading: false,
-            });
-          } else {
-            set({
-              error: result.error || "Ошибка загрузки заявок",
-              isLoading: false,
-            });
-          }
-        } catch (error) {
-          console.error("Ошибка загрузки заявок:", error);
+        if (result.success && result.data) {
           set({
-            error: "Ошибка сети",
+            requests: result.data,
+            isLoading: false,
+          });
+        } else {
+          set({
+            error: result.error || "Ошибка загрузки заявок",
             isLoading: false,
           });
         }
-      },
+      } catch (error) {
+        console.error("Ошибка загрузки заявок:", error);
+        set({
+          error: "Ошибка сети",
+          isLoading: false,
+        });
+      }
+    },
 
-      createRequest: async (courseId) => {
-        try {
-          const response = await fetch("/api/course-request", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ courseId }),
-          });
+    createRequest: async (courseId) => {
+      try {
+        const response = await fetch("/api/course-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ courseId }),
+        });
 
-          const result: ApiResponse<CourseRequest> = await response.json();
+        const result: ApiResponse<CourseRequest> = await response.json();
 
-          if (result.success && result.data) {
-            get().addRequest(result.data);
-            return true;
-          } else {
-            set({ error: result.error || "Ошибка создания заявки" });
-            return false;
-          }
-        } catch (error) {
-          console.error("Ошибка создания заявки:", error);
-          set({ error: "Ошибка сети" });
+        if (result.success && result.data) {
+          get().addRequest(result.data);
+          return true;
+        } else {
+          set({ error: result.error || "Ошибка создания заявки" });
           return false;
         }
-      },
+      } catch (error) {
+        console.error("Ошибка создания заявки:", error);
+        set({ error: "Ошибка сети" });
+        return false;
+      }
+    },
 
-      approveRequest: async (requestId) => {
-        try {
-          const response = await fetch(`/api/admin/requests/${requestId}`, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: "approved" }),
-          });
+    approveRequest: async (requestId) => {
+      try {
+        const response = await fetch(`/api/admin/requests/${requestId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "approved" }),
+        });
 
-          const result: ApiResponse<{ success: boolean }> =
-            await response.json();
+        const result: ApiResponse<{ success: boolean }> = await response.json();
 
-          if (result.success) {
-            get().updateRequestStatus(requestId, "approved");
-            return true;
-          } else {
-            set({ error: result.error || "Ошибка одобрения заявки" });
-            return false;
-          }
-        } catch (error) {
-          console.error("Ошибка одобрения заявки:", error);
-          set({ error: "Ошибка сети" });
+        if (result.success) {
+          get().updateRequestStatus(requestId, "approved");
+          return true;
+        } else {
+          set({ error: result.error || "Ошибка одобрения заявки" });
           return false;
         }
-      },
+      } catch (error) {
+        console.error("Ошибка одобрения заявки:", error);
+        set({ error: "Ошибка сети" });
+        return false;
+      }
+    },
 
-      rejectRequest: async (requestId) => {
-        try {
-          const response = await fetch(`/api/admin/requests/${requestId}`, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: "rejected" }),
-          });
+    rejectRequest: async (requestId) => {
+      try {
+        const response = await fetch(`/api/admin/requests/${requestId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "rejected" }),
+        });
 
-          const result: ApiResponse<{ success: boolean }> =
-            await response.json();
+        const result: ApiResponse<{ success: boolean }> = await response.json();
 
-          if (result.success) {
-            get().updateRequestStatus(requestId, "rejected");
-            return true;
-          } else {
-            set({ error: result.error || "Ошибка отклонения заявки" });
-            return false;
-          }
-        } catch (error) {
-          console.error("Ошибка отклонения заявки:", error);
-          set({ error: "Ошибка сети" });
+        if (result.success) {
+          get().updateRequestStatus(requestId, "rejected");
+          return true;
+        } else {
+          set({ error: result.error || "Ошибка отклонения заявки" });
           return false;
         }
-      },
-  }));
+      } catch (error) {
+        console.error("Ошибка отклонения заявки:", error);
+        set({ error: "Ошибка сети" });
+        return false;
+      }
+    },
+  })
+);

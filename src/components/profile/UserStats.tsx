@@ -1,4 +1,3 @@
-// components/profile/UserStats.tsx
 "use client";
 import { useState, useEffect } from "react";
 
@@ -35,18 +34,30 @@ export default function UserStats() {
     return (
       <div className="space-y-4">
         <div>
-          <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
+          <div
+            style={{ color: "var(--color-text-secondary)" }}
+            className="text-sm mb-1"
+          >
             Курсов куплено:
           </div>
-          <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
+          <div
+            style={{ color: "var(--color-text-primary)" }}
+            className="text-lg font-semibold"
+          >
             ...
           </div>
         </div>
         <div>
-          <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
+          <div
+            style={{ color: "var(--color-text-secondary)" }}
+            className="text-sm mb-1"
+          >
             На платформе с:
           </div>
-          <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
+          <div
+            style={{ color: "var(--color-text-primary)" }}
+            className="text-lg font-semibold"
+          >
             ...
           </div>
         </div>
@@ -57,18 +68,30 @@ export default function UserStats() {
   return (
     <div className="space-y-4">
       <div>
-        <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
+        <div
+          style={{ color: "var(--color-text-secondary)" }}
+          className="text-sm mb-1"
+        >
           Курсов куплено:
         </div>
-        <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold">
+        <div
+          style={{ color: "var(--color-text-primary)" }}
+          className="text-lg font-semibold"
+        >
           {stats?.purchasedCourses || 0}
         </div>
       </div>
       <div>
-        <div style={{ color: "var(--color-text-secondary)" }} className="text-sm mb-1">
+        <div
+          style={{ color: "var(--color-text-secondary)" }}
+          className="text-sm mb-1"
+        >
           На платформе с:
         </div>
-        <div style={{ color: "var(--color-text-primary)" }} className="text-lg font-semibold break-words">
+        <div
+          style={{ color: "var(--color-text-primary)" }}
+          className="text-lg font-semibold break-words"
+        >
           {stats?.memberSince || "—"}
         </div>
       </div>

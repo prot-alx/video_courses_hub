@@ -10,35 +10,19 @@ import ThumbnailUploader from "@/components/admin/ThumbnailUploader";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import { CreateNewsSchema } from "@/lib/validations";
 import { useFormValidation } from "@/lib/hooks/useFormValidation";
-import type { ApiResponse } from "@/types";
-
-interface News {
-  id: string;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  image: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    displayName: string | null;
-    name: string | null;
-    email: string;
-  };
-}
+import type { ApiResponse, News } from "@/types";
 
 export default function CreateNewsPage() {
   const { isAuthenticated, isAdmin, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const toast = useToastContext();
   const [submitting, setSubmitting] = useState(false);
-  
+
   const { validate, validationErrors, getFieldError } = useFormValidation(
-    CreateNewsSchema, 
+    CreateNewsSchema,
     {
       showToastOnError: true,
-      toastErrorTitle: "Ошибка валидации новости"
+      toastErrorTitle: "Ошибка валидации новости",
     }
   );
   const [formData, setFormData] = useState({
@@ -171,11 +155,15 @@ export default function CreateNewsPage() {
                 onChange={handleInputChange}
                 maxLength={100}
                 className={`w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  getFieldError("title") ? 'border-red-500' : ''
+                  getFieldError("title") ? "border-red-500" : ""
                 }`}
                 style={{
                   background: "var(--color-primary-100)",
-                  border: `1px solid ${getFieldError("title") ? "#ef4444" : "var(--color-primary-400)"}`,
+                  border: `1px solid ${
+                    getFieldError("title")
+                      ? "#ef4444"
+                      : "var(--color-primary-400)"
+                  }`,
                   color: "var(--color-primary-400)",
                 }}
                 placeholder="Введите заголовок новости"
@@ -183,14 +171,18 @@ export default function CreateNewsPage() {
               />
               <div className="flex justify-between items-center mt-1">
                 {getFieldError("title") ? (
-                  <p className="text-xs text-red-500">{getFieldError("title")}</p>
+                  <p className="text-xs text-red-500">
+                    {getFieldError("title")}
+                  </p>
                 ) : (
                   <p className="text-xs text-gray-500">
                     Заголовок, который увидят читатели
                   </p>
                 )}
                 <span
-                  className={`text-xs ${getFieldError("title") ? 'text-red-500' : 'text-gray-500'}`}
+                  className={`text-xs ${
+                    getFieldError("title") ? "text-red-500" : "text-gray-500"
+                  }`}
                 >
                   {formData.title.length}/100
                 </span>
@@ -208,11 +200,13 @@ export default function CreateNewsPage() {
                 maxLength={150}
                 rows={3}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  getFieldError("shortDescription") ? 'border-red-500' : ''
+                  getFieldError("shortDescription") ? "border-red-500" : ""
                 }`}
                 style={{
                   background: "var(--color-primary-100)",
-                  borderColor: getFieldError("shortDescription") ? "#ef4444" : "var(--color-primary-400)",
+                  borderColor: getFieldError("shortDescription")
+                    ? "#ef4444"
+                    : "var(--color-primary-400)",
                   color: "var(--color-primary-400)",
                 }}
                 placeholder="Краткое описание для отображения в списке новостей"
@@ -220,14 +214,20 @@ export default function CreateNewsPage() {
               />
               <div className="flex justify-between items-center mt-1">
                 {getFieldError("shortDescription") ? (
-                  <p className="text-xs text-red-500">{getFieldError("shortDescription")}</p>
+                  <p className="text-xs text-red-500">
+                    {getFieldError("shortDescription")}
+                  </p>
                 ) : (
                   <p className="text-xs text-gray-500">
                     Это описание будет показано в карточке новости
                   </p>
                 )}
                 <span
-                  className={`text-xs ${getFieldError("shortDescription") ? 'text-red-500' : 'text-gray-500'}`}
+                  className={`text-xs ${
+                    getFieldError("shortDescription")
+                      ? "text-red-500"
+                      : "text-gray-500"
+                  }`}
                 >
                   {formData.shortDescription.length}/150
                 </span>
@@ -245,11 +245,13 @@ export default function CreateNewsPage() {
                 maxLength={2000}
                 rows={8}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  getFieldError("fullDescription") ? 'border-red-500' : ''
+                  getFieldError("fullDescription") ? "border-red-500" : ""
                 }`}
                 style={{
                   background: "var(--color-primary-100)",
-                  borderColor: getFieldError("fullDescription") ? "#ef4444" : "var(--color-primary-400)",
+                  borderColor: getFieldError("fullDescription")
+                    ? "#ef4444"
+                    : "var(--color-primary-400)",
                   color: "var(--color-primary-400)",
                 }}
                 placeholder="Полное содержание новости"
@@ -257,14 +259,20 @@ export default function CreateNewsPage() {
               />
               <div className="flex justify-between items-center mt-1">
                 {getFieldError("fullDescription") ? (
-                  <p className="text-xs text-red-500">{getFieldError("fullDescription")}</p>
+                  <p className="text-xs text-red-500">
+                    {getFieldError("fullDescription")}
+                  </p>
                 ) : (
                   <p className="text-xs text-gray-500">
                     Детальное описание будет показано на странице новости
                   </p>
                 )}
                 <span
-                  className={`text-xs ${getFieldError("fullDescription") ? 'text-red-500' : 'text-gray-500'}`}
+                  className={`text-xs ${
+                    getFieldError("fullDescription")
+                      ? "text-red-500"
+                      : "text-gray-500"
+                  }`}
                 >
                   {formData.fullDescription.length}/2000
                 </span>

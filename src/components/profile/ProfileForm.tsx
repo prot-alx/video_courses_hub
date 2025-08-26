@@ -19,8 +19,12 @@ export default function ProfileForm({
 }: Readonly<ProfileFormProps>) {
   const toast = useToastContext();
   const [formData, setFormData] = useState<UserProfile>(initialData);
-  const [editingFields, setEditingFields] = useState<Set<keyof UserProfile>>(new Set());
-  const [savingFields, setSavingFields] = useState<Set<keyof UserProfile>>(new Set());
+  const [editingFields, setEditingFields] = useState<Set<keyof UserProfile>>(
+    new Set()
+  );
+  const [savingFields, setSavingFields] = useState<Set<keyof UserProfile>>(
+    new Set()
+  );
 
   // Обновляем форму при изменении данных от родителя
   useEffect(() => {
@@ -30,25 +34,23 @@ export default function ProfileForm({
   // Проверяем доступность выбранного способа связи
   useEffect(() => {
     const { preferredContact, phone, telegram } = formData;
-    
+
     // Если выбран телефон, но поле пустое - сбрасываем на email
     if (preferredContact === "phone" && !phone?.trim()) {
-      setFormData(prev => ({ ...prev, preferredContact: "email" }));
+      setFormData((prev) => ({ ...prev, preferredContact: "email" }));
     }
-    
-    // Если выбран телеграм, но поле пустое - сбрасываем на email  
+
+    // Если выбран телеграм, но поле пустое - сбрасываем на email
     if (preferredContact === "telegram" && !telegram?.trim()) {
-      setFormData(prev => ({ ...prev, preferredContact: "email" }));
+      setFormData((prev) => ({ ...prev, preferredContact: "email" }));
     }
   }, [formData.phone, formData.telegram, formData.preferredContact]);
-  
-  const { validate, validationErrors, getFieldError, clearErrors } = useFormValidation(
-    UpdateProfileSchema, 
-    {
+
+  const { validate, validationErrors, getFieldError, clearErrors } =
+    useFormValidation(UpdateProfileSchema, {
       showToastOnError: true,
-      toastErrorTitle: "Ошибка валидации профиля"
-    }
-  );
+      toastErrorTitle: "Ошибка валидации профиля",
+    });
 
   const handleFieldChange = (field: keyof UserProfile, value: string) => {
     // Валидация telegram username
@@ -57,27 +59,30 @@ export default function ProfileForm({
     }
 
     // Для nullable полей преобразуем пустую строку в null
-    const processedValue = (field === "displayName" || field === "phone" || field === "telegram") 
-      ? (value.trim() === "" ? null : value)
-      : value;
+    const processedValue =
+      field === "displayName" || field === "phone" || field === "telegram"
+        ? value.trim() === ""
+          ? null
+          : value
+        : value;
 
     const newData = { ...formData, [field]: processedValue };
     setFormData(newData);
   };
 
   const startEditing = (field: keyof UserProfile) => {
-    setEditingFields(prev => new Set(prev).add(field));
+    setEditingFields((prev) => new Set(prev).add(field));
     clearErrors();
   };
 
   const cancelEditing = (field: keyof UserProfile) => {
-    setEditingFields(prev => {
+    setEditingFields((prev) => {
       const newSet = new Set(prev);
       newSet.delete(field);
       return newSet;
     });
     // Возвращаем исходное значение
-    setFormData(prev => ({ ...prev, [field]: initialData[field] }));
+    setFormData((prev) => ({ ...prev, [field]: initialData[field] }));
     clearErrors();
   };
 
@@ -85,23 +90,25 @@ export default function ProfileForm({
     // Подготавливаем данные для валидации - всегда включаем preferredContact
     const validationData = {
       preferredContact: formData.preferredContact,
-      ...(field === 'displayName' && { displayName: formData.displayName || undefined }),
-      ...(field === 'phone' && { phone: formData.phone || undefined }),
-      ...(field === 'telegram' && { telegram: formData.telegram || undefined }),
+      ...(field === "displayName" && {
+        displayName: formData.displayName || undefined,
+      }),
+      ...(field === "phone" && { phone: formData.phone || undefined }),
+      ...(field === "telegram" && { telegram: formData.telegram || undefined }),
     };
 
     if (!validate(validationData)) {
       return;
     }
 
-    setSavingFields(prev => new Set(prev).add(field));
-    
+    setSavingFields((prev) => new Set(prev).add(field));
+
     try {
       // Отправляем только измененное поле
       const updateData: Partial<UserProfile> = {
-        [field]: formData[field]
+        [field]: formData[field],
       };
-      
+
       const response = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -111,36 +118,41 @@ export default function ProfileForm({
       if (!response.ok) throw new Error("Ошибка сохранения");
 
       const updatedData = await response.json();
-      
+
       // Обновляем initialData чтобы отражать сохраненные изменения
       const newInitialData = {
         ...initialData,
-        [field]: updatedData.user[field]
+        [field]: updatedData.user[field],
       };
-      
+
       // Обновляем состояние формы с актуальными данными с сервера
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        ...updatedData.user
+        ...updatedData.user,
       }));
 
       // Выходим из режима редактирования
-      setEditingFields(prev => {
+      setEditingFields((prev) => {
         const newSet = new Set(prev);
         newSet.delete(field);
         return newSet;
       });
 
-      toast.success("Поле обновлено!", `${getFieldLabel(field)} успешно сохранено`);
-      
+      toast.success(
+        "Поле обновлено!",
+        `${getFieldLabel(field)} успешно сохранено`
+      );
+
       // Обновляем через onSave для синхронизации с родительским компонентом
       onSave(newInitialData);
-      
     } catch (error) {
       console.error(`Ошибка сохранения ${field}:`, error);
-      toast.error("Ошибка сохранения", `Ошибка при сохранении ${getFieldLabel(field).toLowerCase()}`);
+      toast.error(
+        "Ошибка сохранения",
+        `Ошибка при сохранении ${getFieldLabel(field).toLowerCase()}`
+      );
     } finally {
-      setSavingFields(prev => {
+      setSavingFields((prev) => {
         const newSet = new Set(prev);
         newSet.delete(field);
         return newSet;
@@ -150,12 +162,12 @@ export default function ProfileForm({
 
   const getFieldLabel = (field: keyof UserProfile): string => {
     const labels: Record<keyof UserProfile, string> = {
-      name: 'Имя',
-      displayName: 'Имя на платформе',
-      email: 'Email',
-      phone: 'Телефон',
-      telegram: 'Telegram',
-      preferredContact: 'Предпочитаемый способ связи'
+      name: "Имя",
+      displayName: "Имя на платформе",
+      email: "Email",
+      phone: "Телефон",
+      telegram: "Telegram",
+      preferredContact: "Предпочитаемый способ связи",
     };
     return labels[field] || field;
   };
@@ -171,7 +183,8 @@ export default function ProfileForm({
 
   const isFieldEditing = (field: keyof UserProfile) => editingFields.has(field);
   const isFieldSaving = (field: keyof UserProfile) => savingFields.has(field);
-  const hasFieldChanged = (field: keyof UserProfile) => formData[field] !== initialData[field];
+  const hasFieldChanged = (field: keyof UserProfile) =>
+    formData[field] !== initialData[field];
 
   const contactOptions: Array<{
     value: PreferredContact;
@@ -198,7 +211,10 @@ export default function ProfileForm({
           >
             Личные данные
           </h2>
-          <p className="text-sm mt-2" style={{ color: "var(--color-text-secondary)" }}>
+          <p
+            className="text-sm mt-2"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
             Нажмите на поле для редактирования
           </p>
         </div>
@@ -214,7 +230,10 @@ export default function ProfileForm({
           />
 
           {/* Отображаемое имя */}
-          <div className="border rounded-lg p-4" style={{ borderColor: "var(--color-primary-400)" }}>
+          <div
+            className="border rounded-lg p-4"
+            style={{ borderColor: "var(--color-primary-400)" }}
+          >
             <ContactField
               label="Имя на платформе"
               value={formData.displayName || ""}
@@ -241,10 +260,15 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => saveField("displayName")}
-                    disabled={isFieldSaving("displayName") || !hasFieldChanged("displayName")}
+                    disabled={
+                      isFieldSaving("displayName") ||
+                      !hasFieldChanged("displayName")
+                    }
                     className="btn-discord btn-discord-primary btn-sm disabled:opacity-50"
                   >
-                    {isFieldSaving("displayName") ? "Сохраняем..." : "Сохранить"}
+                    {isFieldSaving("displayName")
+                      ? "Сохраняем..."
+                      : "Сохранить"}
                   </button>
                   <button
                     type="button"
@@ -270,7 +294,10 @@ export default function ProfileForm({
           />
 
           {/* Телефон */}
-          <div className="border rounded-lg p-4" style={{ borderColor: "var(--color-primary-400)" }}>
+          <div
+            className="border rounded-lg p-4"
+            style={{ borderColor: "var(--color-primary-400)" }}
+          >
             <ContactField
               label="Телефон"
               value={formData.phone || ""}
@@ -295,7 +322,9 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => saveField("phone")}
-                    disabled={isFieldSaving("phone") || !hasFieldChanged("phone")}
+                    disabled={
+                      isFieldSaving("phone") || !hasFieldChanged("phone")
+                    }
                     className="btn-discord btn-discord-primary btn-sm disabled:opacity-50"
                   >
                     {isFieldSaving("phone") ? "Сохраняем..." : "Сохранить"}
@@ -314,7 +343,10 @@ export default function ProfileForm({
           </div>
 
           {/* Telegram */}
-          <div className="border rounded-lg p-4" style={{ borderColor: "var(--color-primary-400)" }}>
+          <div
+            className="border rounded-lg p-4"
+            style={{ borderColor: "var(--color-primary-400)" }}
+          >
             <ContactField
               label="Telegram"
               value={formData.telegram || ""}
@@ -338,7 +370,9 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => saveField("telegram")}
-                    disabled={isFieldSaving("telegram") || !hasFieldChanged("telegram")}
+                    disabled={
+                      isFieldSaving("telegram") || !hasFieldChanged("telegram")
+                    }
                     className="btn-discord btn-discord-primary btn-sm disabled:opacity-50"
                   >
                     {isFieldSaving("telegram") ? "Сохраняем..." : "Сохранить"}
@@ -357,7 +391,10 @@ export default function ProfileForm({
           </div>
 
           {/* Предпочитаемый способ связи */}
-          <div className="border rounded-lg p-4" style={{ borderColor: "var(--color-primary-400)" }}>
+          <div
+            className="border rounded-lg p-4"
+            style={{ borderColor: "var(--color-primary-400)" }}
+          >
             <div>
               <label
                 className="block text-sm font-medium mb-2"
@@ -382,10 +419,10 @@ export default function ProfileForm({
               >
                 {contactOptions.map((option) => {
                   // Проверяем доступность опций
-                  const isDisabled = 
+                  const isDisabled =
                     (option.value === "phone" && !formData.phone?.trim()) ||
                     (option.value === "telegram" && !formData.telegram?.trim());
-                  
+
                   return (
                     <option
                       key={option.value}
@@ -393,7 +430,9 @@ export default function ProfileForm({
                       disabled={isDisabled}
                       style={{
                         background: "var(--color-primary-300)",
-                        color: isDisabled ? "var(--color-text-secondary)" : "var(--color-text-primary)",
+                        color: isDisabled
+                          ? "var(--color-text-secondary)"
+                          : "var(--color-text-primary)",
                       }}
                     >
                       {option.label}
@@ -418,10 +457,15 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => saveField("preferredContact")}
-                    disabled={isFieldSaving("preferredContact") || !hasFieldChanged("preferredContact")}
+                    disabled={
+                      isFieldSaving("preferredContact") ||
+                      !hasFieldChanged("preferredContact")
+                    }
                     className="btn-discord btn-discord-primary btn-sm disabled:opacity-50"
                   >
-                    {isFieldSaving("preferredContact") ? "Сохраняем..." : "Сохранить"}
+                    {isFieldSaving("preferredContact")
+                      ? "Сохраняем..."
+                      : "Сохранить"}
                   </button>
                   <button
                     type="button"
@@ -435,7 +479,6 @@ export default function ProfileForm({
               )}
             </div>
           </div>
-
         </div>
       </div>
     </div>

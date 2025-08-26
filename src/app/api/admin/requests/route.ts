@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     // Параметры фильтрации и пагинации
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get("status");
-    const page = parseInt(searchParams.get('page') || '1');
+    const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
       prisma.courseRequest.groupBy({
         by: ["status"],
         _count: true,
-      })
+      }),
     ]);
 
     // Формируем статистику из общих данных (а не только текущей страницы)
@@ -90,7 +90,11 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, number>);
 
     const stats = {
-      total: statsObject.new + statsObject.approved + statsObject.rejected + statsObject.cancelled || 0,
+      total:
+        statsObject.new +
+          statsObject.approved +
+          statsObject.rejected +
+          statsObject.cancelled || 0,
       new: statsObject.new || 0,
       approved: statsObject.approved || 0,
       rejected: statsObject.rejected || 0,

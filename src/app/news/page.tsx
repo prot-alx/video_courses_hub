@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
@@ -89,7 +88,7 @@ export default function NewsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Header />
-      
+
       <main className="flex-grow max-w-7xl mx-auto px-6 py-8">
         <div className="text-center mb-12">
           <h1
@@ -217,7 +216,8 @@ export default function NewsPage() {
                       );
                     })
                     .map((page, index, array) => {
-                      const showEllipsis = index > 0 && array[index - 1] !== page - 1;
+                      const showEllipsis =
+                        index > 0 && array[index - 1] !== page - 1;
                       return (
                         <div key={page} className="flex items-center">
                           {showEllipsis && (

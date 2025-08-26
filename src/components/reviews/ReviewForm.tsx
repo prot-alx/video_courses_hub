@@ -24,14 +24,16 @@ function ReviewFormContent({
   const [rating, setRating] = useState(initialData?.rating || 0);
   const [comment, setComment] = useState(initialData?.comment || "");
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Валидация с Zod
     const validation = ReviewSchema.safeParse({ rating, comment });
-    
+
     if (!validation.success) {
       const errors: Record<string, string> = {};
       validation.error.issues.forEach((error) => {
@@ -40,12 +42,15 @@ function ReviewFormContent({
         }
       });
       setValidationErrors(errors);
-      toast.error("Ошибка валидации", "Проверьте правильность заполнения формы");
+      toast.error(
+        "Ошибка валидации",
+        "Проверьте правильность заполнения формы"
+      );
       return;
     }
-    
+
     setValidationErrors({});
-    
+
     try {
       await onSubmit(validation.data.rating, validation.data.comment || "");
     } catch (error) {
@@ -99,9 +104,15 @@ function ReviewFormContent({
         </div>
         <p
           className="text-sm mt-1"
-          style={{ color: validationErrors.rating ? "var(--color-danger)" : "var(--color-text-secondary)" }}
+          style={{
+            color: validationErrors.rating
+              ? "var(--color-danger)"
+              : "var(--color-text-secondary)",
+          }}
         >
-          {validationErrors.rating ? validationErrors.rating : (
+          {validationErrors.rating ? (
+            validationErrors.rating
+          ) : (
             <>
               {rating === 0 && "Выберите оценку"}
               {rating === 1 && "Ужасно"}
@@ -142,7 +153,12 @@ function ReviewFormContent({
           )}
           <p
             className="text-sm ml-auto"
-            style={{ color: comment.length > 450 ? "var(--color-warning)" : "var(--color-text-secondary)" }}
+            style={{
+              color:
+                comment.length > 450
+                  ? "var(--color-warning)"
+                  : "var(--color-text-secondary)",
+            }}
           >
             {comment.length}/500
           </p>
@@ -151,7 +167,9 @@ function ReviewFormContent({
 
       <button
         type="submit"
-        disabled={rating === 0 || isLoading || Object.keys(validationErrors).length > 0}
+        disabled={
+          rating === 0 || isLoading || Object.keys(validationErrors).length > 0
+        }
         className="btn-discord btn-discord-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? "Отправка..." : "Отправить отзыв"}

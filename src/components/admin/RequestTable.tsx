@@ -1,4 +1,3 @@
-// components/admin/RequestTable.tsx (обновленная версия с централизованными типами)
 import RequestTableRow from "./RequestTableRow";
 import type { CourseRequest } from "@/types";
 

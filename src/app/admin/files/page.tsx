@@ -1,4 +1,3 @@
-// app/admin/files/page.tsx
 "use client";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -225,8 +224,8 @@ export default function AdminFilesPage() {
                 <code>uploads/videos/</code>
               </div>
               <div>
-                <strong>Изображения:</strong> Превью курсов и изображения новостей хранятся в папке{" "}
-                <code>uploads/thumbnails/</code>
+                <strong>Изображения:</strong> Превью курсов и изображения
+                новостей хранятся в папке <code>uploads/thumbnails/</code>
               </div>
               <div>
                 <strong>Автоочистка:</strong> При удалении курса все связанные

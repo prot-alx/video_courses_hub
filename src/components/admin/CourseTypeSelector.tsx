@@ -71,18 +71,22 @@ export default function CourseTypeSelector({
             max="999999"
             step="1"
             className={`w-full px-3 py-2 rounded border ${
-              validationErrors.price ? 'border-red-500' : ''
+              validationErrors.price ? "border-red-500" : ""
             }`}
             style={{
               background: "var(--color-primary-100)",
-              borderColor: validationErrors.price ? "#ef4444" : "var(--color-primary-400)",
+              borderColor: validationErrors.price
+                ? "#ef4444"
+                : "var(--color-primary-400)",
               color: "var(--color-primary-300)",
             }}
             disabled={isSubmitting}
             required={!formData.isFree}
           />
           {validationErrors.price && (
-            <p className="text-xs text-red-500 mt-1">{validationErrors.price}</p>
+            <p className="text-xs text-red-500 mt-1">
+              {validationErrors.price}
+            </p>
           )}
           <p
             className="text-xs mt-1"

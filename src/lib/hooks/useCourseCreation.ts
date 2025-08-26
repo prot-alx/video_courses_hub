@@ -34,10 +34,10 @@ export function useCourseCreation(): UseCourseCreationReturn {
   const [error, setError] = useState<string | null>(null);
 
   const { validate, validationErrors, clearErrors } = useFormValidation(
-    CreateCourseSchema, 
+    CreateCourseSchema,
     {
       showToastOnError: true,
-      toastErrorTitle: "Ошибка валидации курса"
+      toastErrorTitle: "Ошибка валидации курса",
     }
   );
 
@@ -93,6 +93,10 @@ export function useCourseCreation(): UseCourseCreationReturn {
       if (result.success) {
         // Добавляем курс в store
         addCourse(result.data);
+
+        // Принудительно обновляем список курсов для публичной страницы
+        const { fetchCourses } = useCoursesStore.getState();
+        fetchCourses();
 
         toast.success(
           "Курс создан!",

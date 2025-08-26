@@ -173,10 +173,8 @@ async function cleanupUnusedThumbnails() {
       ...usedNewsImages
         .map((n) => n.image)
         .filter(Boolean)
-        .map((img) =>
-          img!.includes("/") ? img!.split("/").pop() : img
-        )
-        .filter(Boolean)
+        .map((img) => (img!.includes("/") ? img!.split("/").pop() : img))
+        .filter(Boolean),
     ]);
 
     // Удаляем неиспользуемые файлы
@@ -247,7 +245,7 @@ async function getUnusedThumbnailsStats() {
     if (!existsSync(thumbnailsDir)) return { total: 0, unused: 0, size: 0 };
 
     const files = await readdir(thumbnailsDir);
-    
+
     // Получаем все используемые превью курсов
     const usedThumbnails = await prisma.course.findMany({
       select: { thumbnail: true },
@@ -273,10 +271,8 @@ async function getUnusedThumbnailsStats() {
       ...usedNewsImages
         .map((n) => n.image)
         .filter(Boolean)
-        .map((img) =>
-          img!.includes("/") ? img!.split("/").pop() : img
-        )
-        .filter(Boolean)
+        .map((img) => (img!.includes("/") ? img!.split("/").pop() : img))
+        .filter(Boolean),
     ]);
 
     let unusedCount = 0;

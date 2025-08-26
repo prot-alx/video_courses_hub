@@ -54,7 +54,11 @@ interface ReviewsStore {
   setError: (error: string | null) => void;
 
   // API Actions
-  fetchReviews: (page?: number, limit?: number, userId?: string) => Promise<void>;
+  fetchReviews: (
+    page?: number,
+    limit?: number,
+    userId?: string
+  ) => Promise<void>;
   loadMoreReviews: () => Promise<void>;
   fetchUserReviews: () => Promise<void>;
   submitReview: (rating: number, comment: string) => Promise<string>;
@@ -89,10 +93,10 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
   // API Actions
   fetchReviews: async (page = 1, limit = 10, userId?: string) => {
     set({ isLoading: true, error: null });
-    
+
     // Запоминаем параметры для последующих обновлений
     set({ lastFetchParams: { page, limit, userId } });
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -100,7 +104,7 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
       });
 
       if (userId) {
-        params.set('userId', userId);
+        params.set("userId", userId);
       }
 
       const response = await fetch(`/api/reviews?${params}`);
@@ -108,19 +112,19 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
 
       if (data.success) {
         if (page === 1) {
-          set({ 
-            reviews: data.data, 
+          set({
+            reviews: data.data,
             pagination: data.pagination,
             averageRating: data.averageRating,
-            isLoading: false 
+            isLoading: false,
           });
         } else {
           // Append for load more
-          set({ 
+          set({
             reviews: [...get().reviews, ...data.data],
             pagination: data.pagination,
             averageRating: data.averageRating,
-            isLoading: false 
+            isLoading: false,
           });
         }
       } else {
@@ -138,7 +142,7 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
   loadMoreReviews: async () => {
     const { pagination } = get();
     if (!pagination?.hasNext) return;
-    
+
     await get().fetchReviews(pagination.page + 1, pagination.limit);
   },
 
@@ -181,8 +185,10 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
         // Используем сохраненные параметры для обновления
         const params = get().lastFetchParams;
         await Promise.all([
-          get().fetchUserReviews(), 
-          params ? get().fetchReviews(params.page, params.limit, params.userId) : get().fetchReviews()
+          get().fetchUserReviews(),
+          params
+            ? get().fetchReviews(params.page, params.limit, params.userId)
+            : get().fetchReviews(),
         ]);
         return data.message;
       } else {
@@ -215,8 +221,10 @@ export const useReviewsStore = create<ReviewsStore>((set, get) => ({
         // Используем сохраненные параметры для обновления
         const params = get().lastFetchParams;
         await Promise.all([
-          get().fetchUserReviews(), 
-          params ? get().fetchReviews(params.page, params.limit, params.userId) : get().fetchReviews()
+          get().fetchUserReviews(),
+          params
+            ? get().fetchReviews(params.page, params.limit, params.userId)
+            : get().fetchReviews(),
         ]);
         return data.message;
       } else {

@@ -1,7 +1,5 @@
 "use client";
-
-import { useState, useEffect } from "react";
-import { use } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/layout/Header";
@@ -20,9 +18,9 @@ interface News {
 
 export default function NewsDetailPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ id: string }>;
-}) {
+}>) {
   const { id } = use(params);
   const [news, setNews] = useState<News | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,10 +62,10 @@ export default function NewsDetailPage({
   };
 
   const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => (
+    return text.split("\n").map((line, index) => (
       <span key={index}>
         {line}
-        {index < text.split('\n').length - 1 && <br />}
+        {index < text.split("\n").length - 1 && <br />}
       </span>
     ));
   };
@@ -99,7 +97,7 @@ export default function NewsDetailPage({
   return (
     <div className="flex flex-col flex-1">
       <Header />
-      
+
       <main className="flex-grow max-w-7xl mx-auto px-6 py-8">
         {/* Навигационные крошки */}
         <nav
@@ -139,7 +137,7 @@ export default function NewsDetailPage({
             >
               {news.title}
             </h1>
-            
+
             <div
               className="flex items-center mb-6"
               style={{ color: "var(--color-text-secondary)" }}

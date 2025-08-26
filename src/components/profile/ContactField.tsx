@@ -42,20 +42,34 @@ export default function ContactField({
         placeholder={placeholder}
         maxLength={maxLength}
         className={`w-full px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed ${
-          error ? 'border-red-500' : maxLength && value.length > maxLength ? 'border-red-500' : ''
+          error
+            ? "border-red-500"
+            : maxLength && value.length > maxLength
+            ? "border-red-500"
+            : ""
         }`}
         style={{
           background: disabled
             ? "var(--color-primary-400)"
             : "var(--color-primary-100)",
-          borderColor: error ? "#ef4444" : maxLength && value.length > maxLength ? "#ef4444" : "var(--color-primary-400)",
+          borderColor: error
+            ? "#ef4444"
+            : maxLength && value.length > maxLength
+            ? "#ef4444"
+            : "var(--color-primary-400)",
           color: disabled
             ? "var(--color-text-secondary)"
             : "var(--color-primary-400)",
         }}
       />
       {(error || helpText || showCounter) && (
-        <div className={`mt-1 ${showCounter && (helpText || error) ? 'flex justify-between items-center' : ''}`}>
+        <div
+          className={`mt-1 ${
+            showCounter && (helpText || error)
+              ? "flex justify-between items-center"
+              : ""
+          }`}
+        >
           {error ? (
             <p className="text-xs text-red-500">{error}</p>
           ) : helpText ? (
@@ -68,7 +82,9 @@ export default function ContactField({
           ) : null}
           {showCounter && maxLength && (
             <span
-              className={`text-xs ${value.length > maxLength ? 'text-red-500' : 'text-gray-500'}`}
+              className={`text-xs ${
+                value.length > maxLength ? "text-red-500" : "text-gray-500"
+              }`}
             >
               {value.length}/{maxLength}
             </span>

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.role || session.user.role !== "ADMIN") {
       return NextResponse.json(
         {
@@ -19,11 +19,13 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
-    const whereClause = status ? { status: status as "pending" | "approved" | "rejected" } : {};
+    const whereClause = status
+      ? { status: status as "pending" | "approved" | "rejected" }
+      : {};
 
     const [reviews, total, stats] = await Promise.all([
       prisma.review.findMany({
@@ -75,7 +77,9 @@ export async function GET(request: NextRequest) {
         pending: statsObject.pending || 0,
         approved: statsObject.approved || 0,
         rejected: statsObject.rejected || 0,
-        total: statsObject.pending + statsObject.approved + statsObject.rejected || 0,
+        total:
+          statsObject.pending + statsObject.approved + statsObject.rejected ||
+          0,
       },
     });
   } catch (error) {

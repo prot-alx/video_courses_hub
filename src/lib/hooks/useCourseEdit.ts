@@ -53,10 +53,10 @@ export function useCourseEdit({
   const [error, setError] = useState<string | null>(null);
 
   const { validate, validationErrors, clearErrors } = useFormValidation(
-    UpdateCourseSchema, 
+    UpdateCourseSchema,
     {
       showToastOnError: true,
-      toastErrorTitle: "Ошибка валидации курса"
+      toastErrorTitle: "Ошибка валидации курса",
     }
   );
 

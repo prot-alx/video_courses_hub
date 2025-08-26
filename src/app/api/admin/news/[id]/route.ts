@@ -84,11 +84,21 @@ export async function PUT(
     const news = await prisma.news.update({
       where: { id },
       data: {
-        ...(validatedData.title !== undefined && { title: validatedData.title }),
-        ...(validatedData.shortDescription !== undefined && { shortDescription: validatedData.shortDescription }),
-        ...(validatedData.fullDescription !== undefined && { fullDescription: validatedData.fullDescription }),
-        ...(validatedData.image !== undefined && { image: validatedData.image }),
-        ...(validatedData.isActive !== undefined && { isActive: validatedData.isActive }),
+        ...(validatedData.title !== undefined && {
+          title: validatedData.title,
+        }),
+        ...(validatedData.shortDescription !== undefined && {
+          shortDescription: validatedData.shortDescription,
+        }),
+        ...(validatedData.fullDescription !== undefined && {
+          fullDescription: validatedData.fullDescription,
+        }),
+        ...(validatedData.image !== undefined && {
+          image: validatedData.image,
+        }),
+        ...(validatedData.isActive !== undefined && {
+          isActive: validatedData.isActive,
+        }),
       },
       include: {
         author: {

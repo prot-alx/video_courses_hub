@@ -212,10 +212,13 @@ export default function AdminSettingsPage() {
                   placeholder="@support_username"
                   maxLength={50}
                   className={`input-discord w-full ${
-                    settings.supportTelegram.length > 50 ? 'border-red-500' : ''
+                    settings.supportTelegram.length > 50 ? "border-red-500" : ""
                   }`}
                   style={{
-                    borderColor: settings.supportTelegram.length > 50 ? "#ef4444" : undefined,
+                    borderColor:
+                      settings.supportTelegram.length > 50
+                        ? "#ef4444"
+                        : undefined,
                   }}
                   disabled={saving}
                 />
@@ -227,7 +230,11 @@ export default function AdminSettingsPage() {
                     Пример: @support_team или @admin_contact
                   </p>
                   <span
-                    className={`text-xs ${settings.supportTelegram.length > 50 ? 'text-red-500' : 'text-gray-500'}`}
+                    className={`text-xs ${
+                      settings.supportTelegram.length > 50
+                        ? "text-red-500"
+                        : "text-gray-500"
+                    }`}
                   >
                     {settings.supportTelegram.length}/50
                   </span>
@@ -253,16 +260,21 @@ export default function AdminSettingsPage() {
                   placeholder="+7 (900) 123-45-67"
                   maxLength={20}
                   className={`input-discord w-full ${
-                    settings.supportPhone.length > 20 ? 'border-red-500' : ''
+                    settings.supportPhone.length > 20 ? "border-red-500" : ""
                   }`}
                   style={{
-                    borderColor: settings.supportPhone.length > 20 ? "#ef4444" : undefined,
+                    borderColor:
+                      settings.supportPhone.length > 20 ? "#ef4444" : undefined,
                   }}
                   disabled={saving}
                 />
                 <div className="flex justify-end mt-1">
                   <span
-                    className={`text-xs ${settings.supportPhone.length > 20 ? 'text-red-500' : 'text-gray-500'}`}
+                    className={`text-xs ${
+                      settings.supportPhone.length > 20
+                        ? "text-red-500"
+                        : "text-gray-500"
+                    }`}
                   >
                     {settings.supportPhone.length}/20
                   </span>
@@ -288,16 +300,23 @@ export default function AdminSettingsPage() {
                   placeholder="support@example.com"
                   maxLength={100}
                   className={`input-discord w-full ${
-                    settings.supportEmail.length > 100 ? 'border-red-500' : ''
+                    settings.supportEmail.length > 100 ? "border-red-500" : ""
                   }`}
                   style={{
-                    borderColor: settings.supportEmail.length > 100 ? "#ef4444" : undefined,
+                    borderColor:
+                      settings.supportEmail.length > 100
+                        ? "#ef4444"
+                        : undefined,
                   }}
                   disabled={saving}
                 />
                 <div className="flex justify-end mt-1">
                   <span
-                    className={`text-xs ${settings.supportEmail.length > 100 ? 'text-red-500' : 'text-gray-500'}`}
+                    className={`text-xs ${
+                      settings.supportEmail.length > 100
+                        ? "text-red-500"
+                        : "text-gray-500"
+                    }`}
                   >
                     {settings.supportEmail.length}/100
                   </span>

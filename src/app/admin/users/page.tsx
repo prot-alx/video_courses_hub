@@ -49,9 +49,9 @@ export default function AdminUsersPage() {
       setIsLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '10',
+        limit: "10",
       });
-      
+
       const response = await fetch(`/api/admin/users?${params}`);
       const data: ApiResponse<AdminUserView[]> = await response.json();
 
@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
 
         setUsers(normalizedUsers);
         setStats(calculateStats(normalizedUsers));
-        const apiData = data as { 
+        const apiData = data as {
           pagination?: {
             page: number;
             limit: number;
@@ -82,7 +82,7 @@ export default function AdminUsersPage() {
             totalPages: number;
             hasNext: boolean;
             hasPrev: boolean;
-          }
+          };
         };
         setPagination(apiData.pagination || null);
         setCurrentPage(page);
@@ -227,28 +227,28 @@ export default function AdminUsersPage() {
                 >
                   ← Предыдущая
                 </button>
-                
+
                 <div className="flex items-center gap-1">
                   {(() => {
                     const totalPages = pagination.totalPages;
                     const current = currentPage;
                     const pages: number[] = [];
-                    
+
                     const start = Math.max(1, current - 2);
                     const end = Math.min(totalPages, current + 2);
-                    
+
                     for (let i = start; i <= end; i++) {
                       pages.push(i);
                     }
-                    
-                    return pages.map(pageNum => (
+
+                    return pages.map((pageNum) => (
                       <button
                         key={pageNum}
                         onClick={() => fetchUsers(pageNum)}
                         className={`px-3 py-1 text-sm rounded border ${
                           pageNum === currentPage
-                            ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            ? "bg-blue-500 text-white border-blue-500"
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                         }`}
                       >
                         {pageNum}
@@ -256,7 +256,7 @@ export default function AdminUsersPage() {
                     ));
                   })()}
                 </div>
-                
+
                 <button
                   onClick={() => fetchUsers(currentPage + 1)}
                   disabled={!pagination.hasNext}
@@ -264,10 +264,13 @@ export default function AdminUsersPage() {
                 >
                   Следующая →
                 </button>
-                
-                <span className="text-sm ml-4" style={{ color: "var(--color-text-secondary)" }}>
-                  Страница {pagination.page} из {pagination.totalPages} 
-                  ({pagination.total} пользователей)
+
+                <span
+                  className="text-sm ml-4"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  Страница {pagination.page} из {pagination.totalPages}(
+                  {pagination.total} пользователей)
                 </span>
               </div>
             )}

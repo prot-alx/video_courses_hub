@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -7,23 +6,7 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import Link from "next/link";
 import { useToastContext } from "@/components/providers/ToastProvider";
-import type { ApiResponse } from "@/types";
-
-interface News {
-  id: string;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  image: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    displayName: string | null;
-    name: string | null;
-    email: string;
-  };
-}
+import type { ApiResponse, News } from "@/types";
 
 interface NewsResponse {
   news: News[];
@@ -337,7 +320,9 @@ export default function AdminNewsPage() {
                                 <button
                                   onClick={() => deleteNews(item.id)}
                                   className="text-sm hover:opacity-80"
-                                  style={{ color: "var(--color-danger, #dc2626)" }}
+                                  style={{
+                                    color: "var(--color-danger, #dc2626)",
+                                  }}
                                 >
                                   Удалить
                                 </button>

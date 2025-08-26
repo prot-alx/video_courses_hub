@@ -1,4 +1,3 @@
-// components/layout/Header.tsx
 "use client";
 import { useHeaderAuth } from "@/lib/hooks/useHeaderAuth";
 import { useMobileMenu } from "@/lib/hooks/useMobileMenu";

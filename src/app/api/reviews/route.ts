@@ -12,17 +12,17 @@ const CreateReviewSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const userId = searchParams.get('userId');
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const userId = searchParams.get("userId");
     const skip = (page - 1) * limit;
 
     // Получаем одобренные отзывы + pending отзывы для конкретного пользователя
     const where = {
       OR: [
         { status: "approved" as const },
-        ...(userId ? [{ status: "pending" as const, userId }] : [])
-      ]
+        ...(userId ? [{ status: "pending" as const, userId }] : []),
+      ],
     };
 
     // Отдельные условия для одобренных отзывов (для статистики)
@@ -60,11 +60,13 @@ export async function GET(request: NextRequest) {
         _avg: {
           rating: true,
         },
-      })
+      }),
     ]);
 
     const totalPages = Math.ceil(total / limit);
-    const averageRating = avgResult._avg.rating ? Number(avgResult._avg.rating.toFixed(1)) : 0;
+    const averageRating = avgResult._avg.rating
+      ? Number(avgResult._avg.rating.toFixed(1))
+      : 0;
 
     return NextResponse.json({
       success: true,
@@ -96,7 +98,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         {
@@ -122,7 +124,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "У вас уже есть отзыв на модерации. Дождитесь его рассмотрения перед добавлением нового.",
+          error:
+            "У вас уже есть отзыв на модерации. Дождитесь его рассмотрения перед добавлением нового.",
         },
         { status: 400 }
       );
@@ -174,5 +177,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Добавляем новый эндпоинт для удаления конкретного отзыва

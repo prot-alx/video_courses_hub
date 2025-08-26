@@ -8,8 +8,14 @@ import CourseStatusToggle from "@/components/admin/CourseStatusToggle";
 import NextStepsInfo from "@/components/admin/NextStepsInfo";
 
 export default function CreateCoursePage() {
-  const { formData, isSubmitting, error, validationErrors, updateFormData, handleSubmit } =
-    useCourseCreation();
+  const {
+    formData,
+    isSubmitting,
+    error,
+    validationErrors,
+    updateFormData,
+    handleSubmit,
+  } = useCourseCreation();
 
   return (
     <div
