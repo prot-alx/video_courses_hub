@@ -59,8 +59,20 @@ export function useContactForm(): UseContactFormReturn {
     setIsSubmitting(true);
 
     try {
-      // Здесь должен быть реальный API для отправки сообщения
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Имитация запроса
+      // Отправляем данные формы на API
+      const response = await fetch('/api/contact/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Ошибка отправки');
+      }
 
       toast.success(
         "Сообщение отправлено!",
@@ -73,7 +85,7 @@ export function useContactForm(): UseContactFormReturn {
       console.log(error);
       toast.error(
         "Ошибка",
-        "Не удалось отправить сообщение. Попробуйте позже."
+        error instanceof Error ? error.message : "Не удалось отправить сообщение. Попробуйте позже."
       );
     } finally {
       setIsSubmitting(false);
