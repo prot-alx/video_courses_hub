@@ -15,7 +15,7 @@ export default function OrderChangeNotification({
         color: "var(--color-primary-300)",
       }}
     >
-      <span className="text-sm font-medium">📋 Порядок курсов изменен</span>
+      <span className="text-sm font-medium">📋 Порядок изменен</span>
       <button
         onClick={onSaveOrder}
         disabled={saving}

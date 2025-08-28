@@ -26,6 +26,7 @@ interface AdminVideoData {
   courseId: string;
   filename: string;
   duration: number | null;
+  fileSize: number | null;
 }
 
 interface UseVideoUploadProps {
@@ -215,6 +216,7 @@ export function useVideoUpload({
           isFree: videoMetadata.isFree,
           orderIndex: videoMetadata.orderIndex,
           duration: uploadedFile.duration, // Передаем длительность
+          fileSize: uploadedFile.size, // Передаем размер файла
         }),
       });
 

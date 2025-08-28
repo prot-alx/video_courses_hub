@@ -97,6 +97,7 @@ model Video {
   orderIndex  Int      @default(0)
   isFree      Boolean  @default(false)
   duration    Int?     // в секундах
+  fileSize    Int?     // размер файла в байтах
   poster      String?  // путь к постеру
   createdAt   DateTime @default(now())
  

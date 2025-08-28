@@ -27,6 +27,9 @@ export default function SortableCourseTable({
   onDelete,
   isLoading = false,
 }: Readonly<SortableCourseTableProps>) {
+  const { saving, saveOrder, hasOrderChanged, setOrderChanged } =
+    useCourseOrder();
+
   const sortedInitialCourses = [...courses].sort(
     (a, b) => a.orderIndex - b.orderIndex
   );
@@ -38,9 +41,7 @@ export default function SortableCourseTable({
     handleDragStart,
     handleDragOver,
     handleDrop,
-  } = useDragAndDrop<AdminCourse>(sortedInitialCourses);
-
-  const { saving, saveOrder, hasOrderChanged } = useCourseOrder();
+  } = useDragAndDrop<AdminCourse>(sortedInitialCourses, setOrderChanged);
 
   // Обновляем список при изменении пропса
   useEffect(() => {

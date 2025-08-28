@@ -49,6 +49,7 @@ export const CreateVideoSchema = z.object({
   orderIndex: z.number().int().min(0).default(0),
   isFree: z.boolean().default(false),
   duration: z.number().int().min(0).optional(),
+  fileSize: z.number().int().min(0).optional(),
   poster: z.string().optional(),
 });
 
@@ -66,6 +67,7 @@ export const UpdateVideoSchema = z.object({
   orderIndex: z.number().int().min(0).optional(),
   isFree: z.boolean().optional(),
   duration: z.number().int().min(0).optional(),
+  fileSize: z.number().int().min(0).optional(),
   // title, courseId и filename не редактируются в update
 });
 

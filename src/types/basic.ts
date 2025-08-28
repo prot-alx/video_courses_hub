@@ -36,6 +36,7 @@ export interface Video extends BaseEntity {
   orderIndex: number;
   isFree: boolean;
   duration: number | null;
+  fileSize: number | null;
   poster: string | null;
 }
 

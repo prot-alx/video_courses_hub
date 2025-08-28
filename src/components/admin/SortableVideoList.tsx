@@ -1,7 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
-import { useToastContext } from "@/components/providers/ToastProvider";
+import { useDragAndDrop } from "@/lib/hooks/useDragAndDrop";
+import { useVideoOrder } from "@/lib/hooks/useVideoOrder";
+import { formatDuration } from "@/lib/utils/duration";
+import { formatFileSize } from "@/lib/fileValidation";
+import OrderChangeNotification from "./OrderChangeNotification";
 import type { Video } from "@/types";
 
 // Расширяем базовый Video для админских полей
@@ -24,93 +28,35 @@ export default function SortableVideoList({
   onDelete,
   deletingVideo,
 }: Readonly<SortableVideoListProps>) {
-  const toast = useToastContext();
-  const [sortedVideos, setSortedVideos] = useState<AdminVideo[]>([]);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [saving, setSaving] = useState(false);
+  const { saving, saveOrder, hasOrderChanged, setOrderChanged } = useVideoOrder();
+  
+  const sortedInitialVideos = [...videos].sort(
+    (a, b) => a.orderIndex - b.orderIndex
+  );
+
+  const {
+    draggedIndex,
+    items: sortedVideos,
+    setItems: setSortedVideos,
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+  } = useDragAndDrop<AdminVideo>(sortedInitialVideos, setOrderChanged);
 
   // Обновляем список при изменении пропса
   useEffect(() => {
-    setSortedVideos([...videos].sort((a, b) => a.orderIndex - b.orderIndex));
-  }, [videos]);
+    const newSortedVideos = [...videos].sort(
+      (a, b) => a.orderIndex - b.orderIndex
+    );
+    setSortedVideos(newSortedVideos);
+  }, [videos, setSortedVideos]);
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
+  const handleSaveOrder = async () => {
+    const videoIds = sortedVideos.map((video) => video.id);
+    await saveOrder(videoIds);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      return;
-    }
-
-    const newVideos = [...sortedVideos];
-    const draggedVideo = newVideos[draggedIndex];
-
-    // Удаляем из старой позиции
-    newVideos.splice(draggedIndex, 1);
-    // Вставляем в новую позиции
-    newVideos.splice(dropIndex, 0, draggedVideo);
-
-    setSortedVideos(newVideos);
-    setDraggedIndex(null);
-  };
-
-  const saveOrder = async () => {
-    setSaving(true);
-
-    try {
-      const videoIds = sortedVideos.map((video) => video.id);
-
-      const response = await fetch("/api/admin/videos/reorder", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ videoIds }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success("Порядок сохранён!", "Порядок видео в курсе обновлён");
-      } else {
-        toast.error(
-          "Ошибка сортировки",
-          result.error || "Ошибка сохранения порядка"
-        );
-      }
-    } catch (error) {
-      console.error("Ошибка сохранения порядка:", error);
-      toast.error("Сетевая ошибка", "Ошибка сохранения порядка");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const formatDuration = (seconds: number | null) => {
-    if (!seconds) return "N/A";
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return hours > 0 ? `${hours}ч ${minutes}м` : `${minutes}м`;
-  };
-
-  const formatFileSize = (filename: string) => {
-    console.log(filename);
-    // Примерная оценка, в реальности нужно получать размер файла
-    return "~50-100MB";
-  };
-
-  // Проверяем, изменился ли порядок
-  const hasOrderChanged = sortedVideos.some(
-    (video, index) => video.orderIndex !== index
-  );
+  const orderChanged = hasOrderChanged(sortedVideos);
 
   if (videos.length === 0) {
     return (
@@ -131,27 +77,8 @@ export default function SortableVideoList({
 
   return (
     <div>
-      {hasOrderChanged && (
-        <div
-          className="p-3 rounded mb-4 flex items-center justify-between"
-          style={{
-            background: "var(--color-warning)",
-            color: "var(--color-primary-300)",
-          }}
-        >
-          <span className="text-sm font-medium">📋 Порядок видео изменен</span>
-          <button
-            onClick={saveOrder}
-            disabled={saving}
-            className="text-sm px-3 py-1 rounded"
-            style={{
-              background: "var(--color-primary-300)",
-              color: "var(--color-text-primary)",
-            }}
-          >
-            {saving ? "Сохранение..." : "Сохранить порядок"}
-          </button>
-        </div>
+      {orderChanged && (
+        <OrderChangeNotification saving={saving} onSaveOrder={handleSaveOrder} />
       )}
 
       <div className="space-y-4">
@@ -193,9 +120,9 @@ export default function SortableVideoList({
                 >
                   <span>{video.filename}</span>
                   {video.duration && (
-                    <span>• {formatDuration(video.duration)}</span>
+                    <span>• {formatDuration(video.duration, "short")}</span>
                   )}
-                  <span>• {formatFileSize(video.filename)}</span>
+                  <span>• {video.fileSize ? formatFileSize(video.fileSize) : "~50-100MB"}</span>
                   {video.isFree && (
                     <span
                       className="px-2 py-1 text-xs rounded-full"

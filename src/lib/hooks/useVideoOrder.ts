@@ -1,40 +1,40 @@
 import { useState } from "react";
 import { useToastContext } from "@/components/providers/ToastProvider";
 
-interface Course {
+interface Video {
   id: string;
   orderIndex: number;
 }
 
-interface UseCourseOrderReturn {
+interface UseVideoOrderReturn {
   saving: boolean;
-  saveOrder: (courseIds: string[]) => Promise<void>;
-  hasOrderChanged: (courses: Course[]) => boolean;
+  saveOrder: (videoIds: string[]) => Promise<void>;
+  hasOrderChanged: (videos: Video[]) => boolean;
   setOrderChanged: () => void;
 }
 
-export function useCourseOrder(): UseCourseOrderReturn {
+export function useVideoOrder(): UseVideoOrderReturn {
   const toast = useToastContext();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const saveOrder = async (courseIds: string[]) => {
+  const saveOrder = async (videoIds: string[]) => {
     setSaving(true);
 
     try {
-      const response = await fetch("/api/admin/courses/reorder", {
+      const response = await fetch("/api/admin/videos/reorder", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ courseIds }),
+        body: JSON.stringify({ videoIds }),
       });
 
       const result = await response.json();
 
       if (result.success) {
         setHasChanges(false);
-        toast.success("Порядок сохранён!", "Порядок курсов успешно обновлён");
+        toast.success("Порядок сохранён!", "Порядок видео в курсе обновлён");
       } else {
         toast.error(
           "Ошибка сортировки",
@@ -49,7 +49,7 @@ export function useCourseOrder(): UseCourseOrderReturn {
     }
   };
 
-  const hasOrderChanged = (courses: Course[]): boolean => {
+  const hasOrderChanged = (videos: Video[]): boolean => {
     return hasChanges;
   };
 

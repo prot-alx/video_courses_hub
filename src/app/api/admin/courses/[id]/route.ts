@@ -32,6 +32,7 @@ export async function GET(
             filename: true,
             isFree: true,
             duration: true,
+            fileSize: true,
             orderIndex: true,
             createdAt: true,
           },

@@ -9,7 +9,10 @@ interface UseDragAndDropReturn<T> {
   handleDrop: (e: React.DragEvent, dropIndex: number) => void;
 }
 
-export function useDragAndDrop<T>(initialItems: T[]): UseDragAndDropReturn<T> {
+export function useDragAndDrop<T>(
+  initialItems: T[],
+  onOrderChange?: () => void
+): UseDragAndDropReturn<T> {
   const [items, setItems] = useState<T[]>(initialItems);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -39,6 +42,7 @@ export function useDragAndDrop<T>(initialItems: T[]): UseDragAndDropReturn<T> {
 
     setItems(newItems);
     setDraggedIndex(null);
+    onOrderChange?.();
   };
 
   return {
