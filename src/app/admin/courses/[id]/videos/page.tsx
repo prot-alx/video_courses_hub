@@ -193,12 +193,9 @@ export default function ManageVideosPage({
             >
               ← К редактированию
             </Link>
-            <h1
-              className="text-xl font-semibold"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <h2 style={{ color: "var(--color-text-primary)" }}>
               🎥 Видео курса: {course.title}
-            </h1>
+            </h2>
           </div>
 
           {/* Disk Space Info */}
