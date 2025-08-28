@@ -131,25 +131,9 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
-### 6. SSL сертификаты
+### 6. SSL сертификаты (для продакшена)
 
-Сервер автоматически определяет домен из `AUTH_URL` в .env файле и ищет соответствующие сертификаты в корневой папке проекта.
-
-**Создайте SSL сертификаты любым удобным способом:**
-- Let's Encrypt (для продакшена)
-- mkcert (для разработки)
-- OpenSSL
-- Любой другой способ
-
-**Сервер автоматически найдёт сертификаты по шаблону имени домена:**
-- `domain-key.pem` (приватный ключ)
-- `domain.pem`, `domain-chain.pem` или `domain-crt.pem` (сертификат)
-
-## Настройка домена
-
-### Продакшн
-
-Настройте DNS записи для вашего домена, чтобы они указывали на IP адрес вашего сервера.
+Для HTTPS создайте SSL сертификаты и разместите их в корневой папке проекта.
 
 ## Запуск приложения
 
@@ -171,9 +155,6 @@ npm run build
 
 # Запуск HTTPS сервера
 npm run start:prod
-
-# Или через PM2 (рекомендуется)
-pm2 start ecosystem.config.js
 ```
 
 ## Доступ к приложению
@@ -229,28 +210,9 @@ UPDATE users SET role = 'ADMIN' WHERE id = 'YOUR_USER_ID';
 - Настройка контактов поддержки
 - Просмотр логов системы
 
-## База данных
-
-### Основные таблицы
-
-- `users` - Пользователи системы с ролями и контактами
-- `courses` - Курсы с описаниями и ценами
-- `videos` - Видеоуроки с постерами и длительностью
-- `user_course_access` - Доступы пользователей к курсам
-- `course_requests` - Запросы на доступ к курсам
-- `news` - Новости с изображениями и модерацией
-- `reviews` - Отзывы пользователей с рейтингами
-- `admin_settings` - Настройки поддержки и контактов
-- `simple_logs` - Логи действий администраторов
 
 ## Безопасность
 
-### SSL/TLS
-
-Приложение использует HTTPS с собственными сертификатами:
-- Автоматический редирект с HTTP на HTTPS
-- TLS сертификаты через mkcert для разработки
-- Поддержка реальных SSL сертификатов для продакшна
 
 ### Аутентификация
 
@@ -264,60 +226,7 @@ UPDATE users SET role = 'ADMIN' WHERE id = 'YOUR_USER_ID';
 - Rate limiting для API
 - Валидация загружаемых файлов
 
-## API Endpoints
 
-### Публичные
-- `GET /api/courses` - Каталог курсов
-- `GET /api/courses/[id]` - Детали курса
-- `GET /api/news` - Список новостей
-- `GET /api/news/[id]` - Детали новости
-- `POST /api/course-request` - Запрос доступа к курсу
-- `POST /api/contact/send` - Форма обратной связи
-- `GET /api/health` - Статус системы
-
-### Авторизованные пользователи
-- `GET /api/videos/[id]/stream` - Стриминг видео
-- `GET /api/profile` - Профиль пользователя
-- `PUT /api/profile` - Обновление профиля
-- `GET /api/profile/stats` - Статистика пользователя
-- `POST /api/reviews` - Создание отзыва
-
-### Администраторские
-- `POST /api/admin/courses` - Управление курсами
-- `POST /api/admin/videos` - Управление видео
-- `POST /api/admin/news` - Управление новостями
-- `GET /api/admin/requests` - Заявки на доступ
-- `GET /api/admin/reviews` - Модерация отзывов
-- `GET /api/admin/users` - Управление пользователями
-- `POST /api/admin/upload/video` - Загрузка видео
-- `POST /api/admin/upload/thumbnail` - Загрузка постеров
-- `GET /api/admin/contact` - Настройки поддержки
-- `POST /api/admin/cleanup-files` - Очистка файлов
-
-## Конфигурация сервера
-
-### Development Server (server.mjs)
-
-```javascript
-// HTTP редирект на HTTPS (порт 80)
-// HTTPS сервер на порту 443
-// Автоматическая загрузка SSL сертификатов
-```
-
-### PM2 для продакшена
-
-Скопируйте конфигурацию PM2:
-```bash
-cp ecosystem.config.example.js ecosystem.config.js
-```
-
-Отредактируйте пути и настройки под ваш сервер:
-```javascript
-// Кластерный режим (2 инстанса)
-// Автоперезапуск при ошибках
-// Логирование в /var/log/pm2/
-// Переменные окружения из .env
-```
 
 ## Загрузка контента
 
@@ -358,15 +267,6 @@ npx prisma studio
 
 ## Деплой
 
-### Подготовка сервера
-
-1. Установить Node.js, Docker, PM2
-2. Настроить домен и DNS
-3. Получить SSL сертификаты
-4. Настроить firewall (порты 80, 443)
-
-### Процесс деплоя
-
 ```bash
 # Клонирование и установка
 git clone <repo>
@@ -377,31 +277,20 @@ npm install
 docker-compose up -d
 npx prisma migrate deploy
 
-# Настройка PM2
-cp ecosystem.config.example.js ecosystem.config.js
-# Отредактируйте пути в ecosystem.config.js
-
 # Сборка и запуск
 npm run build
-pm2 start ecosystem.config.js
+npm run start:prod
 ```
 
 ## Обновления
 
-### Обновление кода
+### Обновление
 
 ```bash
 git pull origin main
 npm install
 npm run build
-pm2 restart video-courses
-```
-
-### Миграции БД
-
-```bash
-npx prisma migrate deploy
-pm2 restart video-courses
+# Перезапустите сервер
 ```
 
 ## Система обратной связи
