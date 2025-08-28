@@ -23,12 +23,7 @@ export default function AdminHeader({
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1
-            className="text-xl font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            🛠️ {title}
-          </h1>
+          <h2 style={{ color: "var(--color-text-primary)" }}>🛠️ {title}</h2>
         </div>
 
         <div className="flex items-center gap-4">

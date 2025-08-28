@@ -139,7 +139,7 @@ export default function AdminSettingsPage() {
       className="min-h-screen"
       style={{ background: "var(--color-primary-200)" }}
     >
-      <AdminHeader onSignOut={handleSignOut} />
+      <AdminHeader title="Настройки" onSignOut={handleSignOut} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <AdminNavigation />

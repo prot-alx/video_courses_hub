@@ -76,19 +76,13 @@ export default function AdminFilesPage() {
       className="min-h-screen"
       style={{ background: "var(--color-primary-200)" }}
     >
-      <AdminHeader onSignOut={handleSignOut} />
+      <AdminHeader title="Управление файлами" onSignOut={handleSignOut} />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <AdminNavigation />
 
         {/* Заголовок страницы */}
         <div className="mb-8">
-          <h1
-            className="text-2xl font-bold mb-2"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            🗂️ Управление файлами
-          </h1>
           <p
             className="text-base"
             style={{ color: "var(--color-text-secondary)" }}
