@@ -62,9 +62,7 @@ export default function CourseEditForm({
               validationErrors.title ? "border-red-500" : ""
             }`}
             style={{
-              borderColor: validationErrors.title
-                ? "#ef4444"
-                : undefined,
+              borderColor: validationErrors.title ? "#ef4444" : undefined,
             }}
             disabled={isSubmitting}
             required
@@ -218,7 +216,7 @@ export default function CourseEditForm({
               >
                 Текущая превьюшка:
               </p>
-              <div className="relative w-full max-w-sm h-32 rounded border overflow-hidden">
+              <div className="relative w-full max-w-sm aspect-video rounded border overflow-hidden">
                 <Image
                   src={thumbnailUrl}
                   alt="Текущая превьюшка курса"
@@ -320,9 +318,7 @@ export default function CourseEditForm({
                 validationErrors.price ? "border-red-500" : ""
               }`}
               style={{
-                borderColor: validationErrors.price
-                  ? "#ef4444"
-                  : undefined,
+                borderColor: validationErrors.price ? "#ef4444" : undefined,
               }}
               disabled={isSubmitting}
               required={!formData.isFree}

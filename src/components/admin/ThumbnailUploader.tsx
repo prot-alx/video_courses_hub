@@ -28,7 +28,7 @@ export default function ThumbnailUploader({
         className="block text-sm font-medium mb-2"
         style={{ color: "var(--color-text-primary)" }}
       >
-        Превью курса
+        Превью
       </label>
 
       <input
@@ -48,7 +48,7 @@ export default function ThumbnailUploader({
       {thumbnail && thumbnailUrl && (
         <div className="mt-3">
           <div
-            className="relative w-full max-w-sm h-32 rounded border overflow-hidden"
+            className="relative w-full max-w-sm aspect-video rounded border overflow-hidden"
             style={{ borderColor: "var(--color-primary-400)" }}
           >
             <Image
