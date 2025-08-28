@@ -22,7 +22,7 @@ jobs:
           cd /root/video_courses_hub
           ./deploy.sh
 
-    - name: Health check
+    - name: Extended health check
       if: success()
       uses: appleboy/ssh-action@v0.1.7
       with:
@@ -30,10 +30,27 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          sleep 15
-          if curl -f -m 10 https://videoplatform.duckdns.org > /dev/null 2>&1; then
-            echo "Health check passed"
-          else
-            echo "Health check failed"
+          echo "Waiting for application to fully start..."
+          sleep 30
+          
+          # Проверить PM2 статус
+          if ! /root/.nvm/versions/node/v22.18.0/lib/node_modules/pm2/bin/pm2 list | grep -q "online.*video-platform"; then
+            echo "PM2 process not online"
+            /root/.nvm/versions/node/v22.18.0/lib/node_modules/pm2/bin/pm2 status
             exit 1
           fi
+          
+          # Несколько попыток проверки сайта
+          for i in {1..5}; do
+            echo "Health check attempt $i/5"
+            if curl -f -m 15 -s https://videoplatform.duckdns.org > /dev/null 2>&1; then
+              echo "Health check passed on attempt $i"
+              exit 0
+            fi
+            sleep 10
+          done
+          
+          echo "Health check failed after 5 attempts"
+          echo "Checking local connection:"
+          curl -I -m 5 http://127.0.0.1:3000 || echo "Local connection failed"
+          exit 1
