@@ -54,7 +54,7 @@ export default function CourseCard({
         <Link
           href={`/courses/${course.id}`}
           className="btn-discord btn-discord-success block text-center"
-          style={{ width: '240px' }}
+          style={{ width: "240px" }}
         >
           🆓 Смотреть бесплатно
         </Link>
@@ -66,7 +66,7 @@ export default function CourseCard({
         <Link
           href={`/courses/${course.id}`}
           className="btn-discord btn-discord-success block text-center"
-          style={{ width: '240px' }}
+          style={{ width: "240px" }}
         >
           🎥 Смотреть курс
         </Link>
@@ -78,7 +78,7 @@ export default function CourseCard({
         <Link
           href="/auth/signin"
           className="btn-discord btn-discord-secondary block text-center"
-          style={{ width: '240px' }}
+          style={{ width: "240px" }}
         >
           🔐 Войти для покупки
         </Link>
@@ -93,7 +93,7 @@ export default function CourseCard({
             <Link
               href={`/courses/${course.id}`}
               className="btn-discord btn-discord-warning block text-center"
-              style={{ width: '240px' }}
+              style={{ width: "240px" }}
             >
               ⏳ Заявка на рассмотрении
             </Link>
@@ -103,7 +103,7 @@ export default function CourseCard({
             <Link
               href={`/courses/${course.id}`}
               className="btn-discord btn-discord-success block text-center"
-              style={{ width: '240px' }}
+              style={{ width: "240px" }}
             >
               🎥 Смотреть курс
             </Link>
@@ -113,7 +113,7 @@ export default function CourseCard({
             <button
               onClick={handleActionClick}
               className="btn-discord btn-discord-primary"
-              style={{ width: '240px' }}
+              style={{ width: "240px" }}
             >
               💰 Запросить повторно
             </button>
@@ -125,7 +125,7 @@ export default function CourseCard({
       <button
         onClick={handleActionClick}
         className="btn-discord btn-discord-primary"
-        style={{ width: '240px' }}
+        style={{ width: "240px" }}
       >
         💰 Запросить доступ
       </button>
@@ -141,14 +141,17 @@ export default function CourseCard({
       style={{
         background: "var(--color-primary-300)",
         borderColor: "var(--color-primary-400)",
-        width: '320px',
-        height: '420px',
+        width: "360px",
+        height: "500px",
       }}
     >
       {/* Превью */}
       <div
         className="aspect-video rounded mb-4 flex items-center justify-center overflow-hidden relative"
-        style={{ background: "var(--color-primary-400)" }}
+        style={{
+          background: "var(--color-primary-400)",
+          minHeight: "200px",
+        }}
       >
         {shouldShowImage ? (
           <OptimizedImage
