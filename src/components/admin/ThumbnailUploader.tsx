@@ -5,16 +5,19 @@ interface ThumbnailUploaderProps {
   thumbnail: string;
   onThumbnailUpdated: (filename: string) => void;
   isSubmitting: boolean;
+  onUploadStateChange?: (isUploading: boolean) => void;
 }
 
 export default function ThumbnailUploader({
   thumbnail,
   onThumbnailUpdated,
   isSubmitting,
+  onUploadStateChange,
 }: Readonly<ThumbnailUploaderProps>) {
   const { isUploading, handleThumbnailUpload, getThumbnailUrl } =
     useThumbnailUpload({
       onThumbnailUpdated,
+      onUploadStateChange,
     });
 
   const thumbnailUrl = getThumbnailUrl(thumbnail);

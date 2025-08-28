@@ -3,6 +3,7 @@ import { useToastContext } from "@/components/providers/ToastProvider";
 
 interface UseThumbnailUploadProps {
   onThumbnailUpdated: (filename: string) => void;
+  onUploadStateChange?: (isUploading: boolean) => void;
 }
 
 interface UseThumbnailUploadReturn {
@@ -15,6 +16,7 @@ interface UseThumbnailUploadReturn {
 
 export function useThumbnailUpload({
   onThumbnailUpdated,
+  onUploadStateChange,
 }: UseThumbnailUploadProps): UseThumbnailUploadReturn {
   const toast = useToastContext();
   const [isUploading, setIsUploading] = useState(false);
@@ -38,6 +40,7 @@ export function useThumbnailUpload({
     if (!file) return;
 
     setIsUploading(true);
+    onUploadStateChange?.(true);
     try {
       const uploadFormData = new FormData();
       uploadFormData.append("thumbnail", file);
@@ -64,6 +67,7 @@ export function useThumbnailUpload({
       toast.error("Сетевая ошибка", "Ошибка загрузки превью");
     } finally {
       setIsUploading(false);
+      onUploadStateChange?.(false);
     }
   };
 

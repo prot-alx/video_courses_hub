@@ -37,9 +37,10 @@ export default function DurationUpdater() {
       const response = await fetch("/api/admin/videos");
       const data: ApiResponse<AdminVideoData[]> = await response.json();
 
-      if (data.success && data.data) {
-        const totalVideos = data.data.length;
-        const videosWithoutDuration = data.data.filter(
+      if (data.success) {
+        const videos = data.data || [];
+        const totalVideos = videos.length;
+        const videosWithoutDuration = videos.filter(
           (video) => !video.duration || video.duration === 0
         ).length;
 

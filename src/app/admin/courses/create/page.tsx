@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { useCourseCreation } from "@/lib/hooks/useCourseCreation";
 import CourseBasicInfoForm from "@/components/admin/CourseBasicInfoForm";
@@ -16,6 +17,8 @@ export default function CreateCoursePage() {
     updateFormData,
     handleSubmit,
   } = useCourseCreation();
+  
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
 
   return (
     <div
@@ -69,6 +72,7 @@ export default function CreateCoursePage() {
                 updateFormData({ thumbnail: filename })
               }
               isSubmitting={isSubmitting}
+              onUploadStateChange={setIsUploadingThumbnail}
             />
 
             <CourseTypeSelector
@@ -88,10 +92,14 @@ export default function CreateCoursePage() {
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploadingThumbnail}
                 className="btn-discord btn-discord-primary disabled:opacity-50"
               >
-                {isSubmitting ? "Создаем..." : "Создать курс"}
+                {isSubmitting
+                  ? "Создаем..."
+                  : isUploadingThumbnail
+                  ? "Загрузка изображения..."
+                  : "Создать курс"}
               </button>
               <Link href="/admin" className="btn-discord btn-discord-secondary">
                 Отмена

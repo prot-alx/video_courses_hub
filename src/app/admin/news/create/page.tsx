@@ -17,6 +17,7 @@ export default function CreateNewsPage() {
   const router = useRouter();
   const toast = useToastContext();
   const [submitting, setSubmitting] = useState(false);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
 
   const { validate, validationErrors, getFieldError } = useFormValidation(
     CreateNewsSchema,
@@ -263,15 +264,20 @@ export default function CreateNewsPage() {
               thumbnail={formData.image}
               onThumbnailUpdated={handleImageUpdate}
               isSubmitting={submitting}
+              onUploadStateChange={setIsUploadingThumbnail}
             />
 
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || isUploadingThumbnail}
                 className="btn-discord btn-discord-primary disabled:opacity-50"
               >
-                {submitting ? "Создание..." : "Создать новость"}
+                {submitting
+                  ? "Создание..."
+                  : isUploadingThumbnail
+                  ? "Загрузка изображения..."
+                  : "Создать новость"}
               </button>
               <button
                 type="button"

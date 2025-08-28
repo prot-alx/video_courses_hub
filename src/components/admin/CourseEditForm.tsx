@@ -361,10 +361,14 @@ export default function CourseEditForm({
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploading}
             className="btn-discord btn-discord-primary disabled:opacity-50"
           >
-            {isSubmitting ? "Сохраняем..." : "Сохранить изменения"}
+            {isSubmitting
+              ? "Сохраняем..."
+              : isUploading
+              ? "Загрузка изображения..."
+              : "Сохранить изменения"}
           </button>
           <Link href="/admin" className="btn-discord btn-discord-secondary">
             Отмена

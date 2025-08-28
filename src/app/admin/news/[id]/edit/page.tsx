@@ -19,6 +19,7 @@ export default function EditNewsPage({
   const toast = useToastContext();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
 
   const { validate, validationErrors, getFieldError } = useFormValidation(
     UpdateNewsSchema,
@@ -272,6 +273,7 @@ export default function EditNewsPage({
             thumbnail={formData.image}
             onThumbnailUpdated={handleImageUpdate}
             isSubmitting={submitting}
+            onUploadStateChange={setIsUploadingThumbnail}
           />
 
           <div>
@@ -294,10 +296,14 @@ export default function EditNewsPage({
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || isUploadingThumbnail}
               className="btn-discord btn-discord-primary disabled:opacity-50"
             >
-              {submitting ? "Сохранение..." : "Сохранить изменения"}
+              {submitting
+                ? "Сохранение..."
+                : isUploadingThumbnail
+                ? "Загрузка изображения..."
+                : "Сохранить изменения"}
             </button>
             <button
               type="button"
