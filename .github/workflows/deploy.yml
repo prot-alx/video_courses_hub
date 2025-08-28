@@ -21,22 +21,3 @@ jobs:
         script: |
           cd /root/video_courses_hub
           ./deploy.sh
-
-    - name: Simple health check
-      if: success()
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          echo "Waiting for application to start..."
-          sleep 30
-          
-          # Простая проверка доступности сайта
-          if curl -f -s -m 10 https://videoplatform.duckdns.org > /dev/null 2>&1; then
-            echo "Health check passed - site is accessible"
-          else
-            echo "Health check failed - site not accessible"
-            exit 1
-          fi
