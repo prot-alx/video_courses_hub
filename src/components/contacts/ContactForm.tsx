@@ -1,8 +1,18 @@
 import { useContactForm } from "@/lib/hooks/useContactForm";
 
 export default function ContactForm() {
-  const { formData, isSubmitting, handleSubmit, handleChange } =
-    useContactForm();
+  const {
+    formData,
+    isSubmitting,
+    validationErrors,
+    handleSubmit,
+    handleChange,
+  } = useContactForm();
+
+  const limits = {
+    name: 100,
+    message: 2000,
+  };
 
   return (
     <section>
@@ -35,7 +45,22 @@ export default function ContactForm() {
               color: "var(--color-primary-400)",
             }}
             placeholder="Ваше имя"
+            maxLength={limits.name}
           />
+          <div className="flex justify-between text-xs mt-1">
+            {validationErrors.name && (
+              <span className="text-red-500">{validationErrors.name}</span>
+            )}
+            <span
+              className={`ml-auto ${
+                formData.name.length > limits.name * 0.9
+                  ? "text-orange-500"
+                  : "text-gray-400"
+              }`}
+            >
+              {formData.name.length}/{limits.name}
+            </span>
+          </div>
         </div>
 
         <div>
@@ -61,6 +86,11 @@ export default function ContactForm() {
             }}
             placeholder="your@email.com"
           />
+          {validationErrors.email && (
+            <div className="text-red-500 text-xs mt-1">
+              {validationErrors.email}
+            </div>
+          )}
         </div>
 
         <div>
@@ -91,6 +121,11 @@ export default function ContactForm() {
             <option value="partnership">Сотрудничество</option>
             <option value="other">Другое</option>
           </select>
+          {validationErrors.subject && (
+            <div className="text-red-500 text-xs mt-1">
+              {validationErrors.subject}
+            </div>
+          )}
         </div>
 
         <div>
@@ -115,7 +150,22 @@ export default function ContactForm() {
               color: "var(--color-primary-400)",
             }}
             placeholder="Опишите ваш вопрос или предложение..."
+            maxLength={limits.message}
           />
+          <div className="flex justify-between text-xs mt-1">
+            {validationErrors.message && (
+              <span className="text-red-500">{validationErrors.message}</span>
+            )}
+            <span
+              className={`ml-auto ${
+                formData.message.length > limits.message * 0.9
+                  ? "text-orange-500"
+                  : "text-gray-400"
+              }`}
+            >
+              {formData.message.length}/{limits.message}
+            </span>
+          </div>
         </div>
 
         <button
