@@ -7,8 +7,8 @@ export interface ImageValidationResult {
 const ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-// Максимальный размер изображения (5MB)
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+// Максимальный размер изображения (500kb)
+const MAX_IMAGE_SIZE = 0.5 * 1024 * 1024;
 
 export function validateImageExtension(
   filename: string

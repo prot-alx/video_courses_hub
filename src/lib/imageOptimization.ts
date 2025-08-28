@@ -12,12 +12,12 @@ export function validateImageFile(file: File): {
     };
   }
 
-  // Проверяем размер файла (максимум 5MB)
-  const maxSize = 5 * 1024 * 1024; // 5MB в байтах
+  // Проверяем размер файла (максимум 500kb)
+  const maxSize = 0.5 * 1024 * 1024; // 500kb в байтах
   if (file.size > maxSize) {
     return {
       isValid: false,
-      error: "Размер файла не должен превышать 5MB",
+      error: "Размер файла не должен превышать 500kb",
     };
   }
 

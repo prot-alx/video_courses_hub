@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Проверка размера файла (максимум 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Проверка размера файла (максимум 500kb)
+    const maxSize = 0.5 * 1024 * 1024; // 500kb
     if (file.size > maxSize) {
       return NextResponse.json(
-        { success: false, error: "Файл слишком большой. Максимум 5MB" },
+        { success: false, error: "Файл слишком большой. Максимум 500KB" },
         { status: 400 }
       );
     }

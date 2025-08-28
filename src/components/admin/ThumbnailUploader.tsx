@@ -66,7 +66,7 @@ export default function ThumbnailUploader({
         className="text-xs mt-2"
         style={{ color: "var(--color-text-secondary)" }}
       >
-        Загрузите изображение (JPG, PNG, WebP, макс. 5MB). Рекомендуемое
+        Загрузите изображение (JPG, PNG, WebP, макс. 500kb). Рекомендуемое
         соотношение: 16:9, минимум 800x450px
       </p>
 
