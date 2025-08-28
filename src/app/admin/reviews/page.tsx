@@ -10,7 +10,7 @@ interface Review {
   id: string;
   rating: number;
   comment: string | null;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "deleted";
   createdAt: string;
   updatedAt: string;
   user: {
@@ -100,7 +100,7 @@ export default function AdminReviewsPage() {
 
   const moderateReview = async (
     reviewId: string,
-    status: "approved" | "rejected"
+    status: "approved" | "rejected" | "pending" | "deleted"
   ) => {
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
