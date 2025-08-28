@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const ModerationSchema = z.object({
-  status: z.enum(["pending", "approved", "rejected"]),
+  status: z.enum(["pending", "approved", "rejected", "deleted"]),
 });
 
 // PATCH - модерация отзыва (одобрить/отклонить)
@@ -74,6 +74,8 @@ export async function PATCH(
           ? "одобрен"
           : status === "rejected"
           ? "отклонен"
+          : status === "deleted"
+          ? "удален"
           : "возвращен на модерацию"
       }`,
     });
@@ -135,14 +137,16 @@ export async function DELETE(
       );
     }
 
-    // Удаляем отзыв
-    await prisma.review.delete({
+    // Помечаем отзыв как удаленный вместо физического удаления
+    const updatedReview = await prisma.review.update({
       where: { id },
+      data: { status: "deleted" },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Отзыв удален",
+      message: "Отзыв помечен как удаленный",
+      data: updatedReview,
     });
   } catch (error) {
     console.error("Ошибка удаления отзыва:", error);

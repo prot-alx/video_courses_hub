@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     const whereClause = status
-      ? { status: status as "pending" | "approved" | "rejected" }
+      ? { status: status as "pending" | "approved" | "rejected" | "deleted" }
       : {};
 
     const [reviews, total, stats] = await Promise.all([
@@ -77,9 +77,9 @@ export async function GET(request: NextRequest) {
         pending: statsObject.pending || 0,
         approved: statsObject.approved || 0,
         rejected: statsObject.rejected || 0,
+        deleted: statsObject.deleted || 0,
         total:
-          statsObject.pending + statsObject.approved + statsObject.rejected ||
-          0,
+          (statsObject.pending || 0) + (statsObject.approved || 0) + (statsObject.rejected || 0) + (statsObject.deleted || 0),
       },
     });
   } catch (error) {

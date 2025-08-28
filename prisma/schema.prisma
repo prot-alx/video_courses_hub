@@ -29,6 +29,7 @@ enum ReviewStatus {
   pending
   approved
   rejected
+  deleted
 }
 
 model AdminSettings {

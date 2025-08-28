@@ -120,7 +120,7 @@ export default function NewsPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
               {news.map((item) => (
                 <div
                   key={item.id}
@@ -147,7 +147,7 @@ export default function NewsPage() {
                     </div>
                   </Link>
 
-                  <div className="p-6">
+                  <div className="p-8">
                     <div
                       className="flex items-center text-sm mb-3"
                       style={{ color: "var(--color-primary-100)" }}
@@ -159,7 +159,7 @@ export default function NewsPage() {
 
                     <Link href={`/news/${item.id}`}>
                       <h2
-                        className="text-xl font-semibold mb-3 line-clamp-2 transition-colors"
+                        className="text-2xl font-semibold mb-4 line-clamp-2 transition-colors"
                         style={{
                           color: "var(--color-primary-100)",
                         }}
@@ -169,7 +169,7 @@ export default function NewsPage() {
                     </Link>
 
                     <p
-                      className="text-sm line-clamp-3 mb-4"
+                      className="text-base line-clamp-4 mb-6"
                       style={{ color: "var(--color-primary-100)" }}
                     >
                       {item.shortDescription}
@@ -177,7 +177,7 @@ export default function NewsPage() {
 
                     <Link
                       href={`/news/${item.id}`}
-                      className="inline-flex items-center font-medium text-sm transition-colors hover:opacity-80"
+                      className="inline-flex items-center font-medium text-base transition-colors hover:opacity-80"
                       style={{ color: "var(--color-primary-100)" }}
                     >
                       Читать далее

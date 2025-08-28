@@ -24,6 +24,7 @@ interface ReviewStats {
   pending: number;
   approved: number;
   rejected: number;
+  deleted: number;
   total: number;
 }
 
@@ -43,6 +44,7 @@ export default function AdminReviewsPage() {
     pending: 0,
     approved: 0,
     rejected: 0,
+    deleted: 0,
     total: 0,
   });
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -178,6 +180,8 @@ export default function AdminReviewsPage() {
         return "#10b981";
       case "rejected":
         return "#ef4444";
+      case "deleted":
+        return "#6b7280";
       default:
         return "#6b7280";
     }
@@ -191,6 +195,8 @@ export default function AdminReviewsPage() {
         return "Одобрен";
       case "rejected":
         return "Отклонен";
+      case "deleted":
+        return "Удален";
       default:
         return status;
     }
@@ -237,7 +243,7 @@ export default function AdminReviewsPage() {
         <AdminNavigation />
 
         {/* Статистика */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div
             className="p-4 rounded-lg text-center"
             style={{
@@ -296,6 +302,23 @@ export default function AdminReviewsPage() {
               borderColor: "var(--color-primary-400)",
             }}
           >
+            <div className="text-2xl font-bold" style={{ color: "#6b7280" }}>
+              {stats.deleted}
+            </div>
+            <div
+              className="text-sm"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Удалено
+            </div>
+          </div>
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{
+              background: "var(--color-primary-300)",
+              borderColor: "var(--color-primary-400)",
+            }}
+          >
             <div
               className="text-2xl font-bold"
               style={{ color: "var(--color-text-primary)" }}
@@ -319,6 +342,7 @@ export default function AdminReviewsPage() {
               { key: "pending", label: "На модерации" },
               { key: "approved", label: "Одобренные" },
               { key: "rejected", label: "Отклоненные" },
+              { key: "deleted", label: "Удаленные" },
             ].map((filter) => (
               <button
                 key={filter.key}
@@ -452,12 +476,32 @@ export default function AdminReviewsPage() {
                       ✗ Отклонить
                     </button>
                   )}
-                  <button
-                    onClick={() => deleteReview(review.id)}
-                    className="btn-discord btn-discord-secondary text-sm"
-                  >
-                    🗑 Удалить
-                  </button>
+                  {review.status === "deleted" && (
+                    <>
+                      <button
+                        onClick={() => moderateReview(review.id, "approved")}
+                        className="btn-discord text-sm"
+                        style={{ background: "#10b981", borderColor: "#059669" }}
+                      >
+                        ✓ Восстановить как одобренный
+                      </button>
+                      <button
+                        onClick={() => moderateReview(review.id, "pending")}
+                        className="btn-discord text-sm"
+                        style={{ background: "#f59e0b", borderColor: "#d97706" }}
+                      >
+                        ↻ Вернуть на модерацию
+                      </button>
+                    </>
+                  )}
+                  {review.status !== "deleted" && (
+                    <button
+                      onClick={() => deleteReview(review.id)}
+                      className="btn-discord btn-discord-secondary text-sm"
+                    >
+                      🗑 Удалить
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

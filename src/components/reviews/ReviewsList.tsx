@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useToast } from "@/stores/notifications";
 import { useReviewsStore } from "@/stores/reviews";
@@ -20,12 +20,14 @@ export default function ReviewsList({
     isLoading,
     error,
     fetchReviews,
-    loadMoreReviews,
     deleteReview,
   } = useReviewsStore();
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     fetchReviews(1, 10, user?.id);
+    setCurrentPage(1);
   }, [fetchReviews, user?.id]);
 
   const formatDate = (dateString: string) => {
@@ -71,9 +73,16 @@ export default function ReviewsList({
     try {
       const message = await deleteReview(reviewId);
       showSuccessToast(message);
+      // Перезагружаем текущую страницу после удаления
+      fetchReviews(currentPage, 10, user?.id);
     } catch (error) {
       showErrorToast(error as string);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchReviews(page, 10, user?.id);
   };
 
   if (isLoading) {
@@ -223,15 +232,61 @@ export default function ReviewsList({
       </div>
 
       {/* Пагинация */}
-      {pagination?.hasNext && (
-        <div className="flex justify-center mt-6">
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
           <button
-            onClick={() => loadMoreReviews()}
-            disabled={isLoading}
-            className="btn-discord btn-discord-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={!pagination.hasPrev || isLoading}
+            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? "Загрузка..." : "Показать еще"}
+            ← Предыдущая
           </button>
+
+          <div className="flex items-center gap-1">
+            {(() => {
+              const totalPages = pagination.totalPages;
+              const current = currentPage;
+              const pages: number[] = [];
+
+              // Показываем до 5 страниц вокруг текущей
+              const start = Math.max(1, current - 2);
+              const end = Math.min(totalPages, current + 2);
+
+              for (let i = start; i <= end; i++) {
+                pages.push(i);
+              }
+
+              return pages.map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  disabled={isLoading}
+                  className={`px-3 py-1 text-sm rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    pageNum === currentPage
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ));
+            })()}
+          </div>
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={!pagination.hasNext || isLoading}
+            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Следующая →
+          </button>
+
+          <span
+            className="text-sm ml-4"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
+            Страница {pagination.page} из {pagination.totalPages} ({pagination.approvedTotal} отзывов)
+          </span>
         </div>
       )}
     </div>
