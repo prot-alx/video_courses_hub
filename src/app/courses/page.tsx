@@ -6,7 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CourseGrid from "@/components/courses/CourseGrid";
 import CourseFilter from "@/components/courses/CourseFilter";
-import type { CourseFilterType } from "@/types";
+import type { CourseMainFilter, CourseSubFilter } from "@/types";
 
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -14,9 +14,13 @@ export default function CoursesPage() {
     courses,
     isLoading,
     error,
-    filter,
+    mainFilter,
+    subFilter,
+    searchQuery,
     fetchCourses,
-    setFilter,
+    setMainFilter,
+    setSubFilter,
+    setSearchQuery,
     getFilteredCourses,
   } = useCoursesStore();
 
@@ -25,8 +29,16 @@ export default function CoursesPage() {
     fetchCourses();
   }, [fetchCourses]);
 
-  const handleFilterChange = (newFilter: CourseFilterType) => {
-    setFilter(newFilter);
+  const handleMainFilterChange = (newFilter: CourseMainFilter) => {
+    setMainFilter(newFilter);
+  };
+
+  const handleSubFilterChange = (newFilter: CourseSubFilter) => {
+    setSubFilter(newFilter);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
   };
 
   // Получаем отфильтрованные курсы
@@ -64,8 +76,13 @@ export default function CoursesPage() {
 
           {/* Course Filter */}
           <CourseFilter
-            activeFilter={filter}
-            onFilterChange={handleFilterChange}
+            mainFilter={mainFilter}
+            onMainFilterChange={handleMainFilterChange}
+            subFilter={subFilter}
+            onSubFilterChange={handleSubFilterChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            courses={courses}
           />
         </div>
 
@@ -115,11 +132,9 @@ export default function CoursesPage() {
               Пока нет курсов
             </h3>
             <p style={{ color: "var(--color-text-secondary)" }}>
-              {filter === "all"
+              {mainFilter === "all" && subFilter === "all"
                 ? "Курсы появятся здесь, когда администратор их добавит."
-                : `Нет курсов в категории "${
-                    filter === "free" ? "бесплатные" : "платные"
-                  }".`}
+                : "Нет курсов, соответствующих выбранным фильтрам."}
             </p>
           </div>
         )}

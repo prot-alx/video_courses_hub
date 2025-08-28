@@ -20,7 +20,7 @@ export default function CourseGrid({
 }: Readonly<CourseGridProps>) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
         {[1, 2, 3].map((index) => (
           <div
             key={index}
@@ -28,6 +28,8 @@ export default function CourseGrid({
             style={{
               background: "var(--color-primary-300)",
               borderColor: "var(--color-primary-400)",
+              width: '320px',
+              height: '420px',
             }}
           >
             <div
@@ -74,7 +76,7 @@ export default function CourseGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
       {courses.map((course) => (
         <CourseCard
           key={course.id}

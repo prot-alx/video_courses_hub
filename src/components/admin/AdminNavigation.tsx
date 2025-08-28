@@ -92,8 +92,8 @@ export default function AdminNavigation({
 
   return (
     <nav className="mb-8">
-      {/* Десктопная версия */}
-      <div className="hidden md:flex gap-4">
+      {/* Десктопная версия - показываем только на больших экранах */}
+      <div className="hidden lg:flex gap-4">
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -112,8 +112,8 @@ export default function AdminNavigation({
         ))}
       </div>
 
-      {/* Мобильная версия - горизонтальный скролл */}
-      <div className="md:hidden overflow-x-auto scrollbar-hide">
+      {/* Мобильная версия - показываем на средних и маленьких экранах */}
+      <div className="lg:hidden overflow-x-auto scrollbar-hide">
         <div className="flex gap-3 pb-2 min-w-max">
           {navItems.map((item) => (
             <Link

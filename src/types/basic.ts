@@ -1,6 +1,7 @@
 // === БАЗОВЫЕ ТИПЫ ===
 export type UserRole = "USER" | "ADMIN";
-export type CourseFilterType = "all" | "free" | "paid" | "featured";
+export type CourseMainFilter = "my" | "all";
+export type CourseSubFilter = "all" | "free" | "paid";
 export type RequestStatus = "new" | "approved" | "rejected" | "cancelled";
 export type PreferredContact = "email" | "phone" | "telegram";
 export type ContactMethod = "email" | "phone" | "telegram";

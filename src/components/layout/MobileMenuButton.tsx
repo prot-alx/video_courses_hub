@@ -10,7 +10,7 @@ export default function MobileMenuButton({
   return (
     <button
       onClick={onToggle}
-      className="md:hidden p-2 rounded-md"
+      className="block md:hidden p-2 rounded-md"
       style={{ color: "var(--color-text-primary)" }}
       aria-label="Открыть меню"
     >

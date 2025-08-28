@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { GetCoursesSchema } from "@/lib/validations";
 import type { Prisma } from "@prisma/client";
-import { CourseFilterType } from "@/types";
 
 interface CourseWhereClause {
   isActive: boolean;
@@ -16,19 +15,16 @@ export async function GET(request: NextRequest) {
     const isAdmin = session?.user?.role === "ADMIN";
     const { searchParams } = new URL(request.url);
 
-    // Валидация параметров
     const typeParam = searchParams.get("type") || "all";
     const limitParam = searchParams.get("limit");
     const limit = limitParam ? parseInt(limitParam, 10) : undefined;
     const validatedParams = GetCoursesSchema.parse({ type: typeParam });
 
-    // Типизированные фильтры для типов курсов
     const whereClause: CourseWhereClause = {
       isActive: true,
     };
 
-    // Используем наш централизованный тип CourseFilterType
-    const filterType = validatedParams.type as CourseFilterType;
+    const filterType = validatedParams.type;
 
     switch (filterType) {
       case "free":

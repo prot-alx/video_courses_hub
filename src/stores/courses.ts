@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Course, Video, CourseFilterType } from "@/types";
+import type { Course, Video, CourseMainFilter, CourseSubFilter } from "@/types";
 
 interface CoursesStore {
   // State
@@ -8,7 +8,9 @@ interface CoursesStore {
   videos: Video[];
   isLoading: boolean;
   error: string | null;
-  filter: CourseFilterType;
+  mainFilter: CourseMainFilter;
+  subFilter: CourseSubFilter;
+  searchQuery: string;
 
   // Actions
   setCourses: (courses: Course[]) => void;
@@ -16,7 +18,9 @@ interface CoursesStore {
   setVideos: (videos: Video[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setFilter: (filter: CourseFilterType) => void;
+  setMainFilter: (filter: CourseMainFilter) => void;
+  setSubFilter: (filter: CourseSubFilter) => void;
+  setSearchQuery: (query: string) => void;
 
   // Course management
   addCourse: (course: Course) => void;
@@ -48,7 +52,9 @@ export const useCoursesStore = create<CoursesStore>()((set, get) => ({
   videos: [],
   isLoading: false,
   error: null,
-  filter: "all",
+  mainFilter: "my",
+  subFilter: "all",
+  searchQuery: "",
 
   // Basic setters
   setCourses: (courses) => set({ courses, error: null }),
@@ -56,7 +62,9 @@ export const useCoursesStore = create<CoursesStore>()((set, get) => ({
   setVideos: (videos) => set({ videos }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error, isLoading: false }),
-  setFilter: (filter) => set({ filter }),
+  setMainFilter: (mainFilter) => set({ mainFilter }),
+  setSubFilter: (subFilter) => set({ subFilter }),
+  setSearchQuery: (searchQuery) => set({ searchQuery }),
 
   // Course management
   addCourse: (course) => {
@@ -182,20 +190,39 @@ export const useCoursesStore = create<CoursesStore>()((set, get) => ({
 
   // Computed getters
   getFilteredCourses: () => {
-    const { courses, filter } = get();
-
-    switch (filter) {
-      case "free":
-        return courses.filter((course) => course.isFree);
-      case "paid":
-        return courses.filter((course) => !course.isFree);
-      case "featured":
-        return courses.filter(
-          (course) => !course.isFree && course.price && course.price > 0
-        );
-      default:
-        return courses;
+    const { courses, mainFilter, subFilter, searchQuery } = get();
+    
+    let filteredCourses = courses;
+    
+    // Основной фильтр: Мои курсы или Все курсы
+    if (mainFilter === "my") {
+      filteredCourses = filteredCourses.filter((course) => course.hasAccess === true);
     }
+    // Если mainFilter === "all", показываем все курсы
+    
+    // Подфильтр по типу курса
+    switch (subFilter) {
+      case "free":
+        filteredCourses = filteredCourses.filter((course) => course.isFree);
+        break;
+      case "paid":
+        filteredCourses = filteredCourses.filter((course) => !course.isFree);
+        break;
+      default:
+        // "all" - показываем все из выбранной основной категории
+        break;
+    }
+    
+    // Поиск по названию и описанию
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filteredCourses = filteredCourses.filter((course) =>
+        course.title.toLowerCase().includes(query) ||
+        (course.shortDescription && course.shortDescription.toLowerCase().includes(query))
+      );
+    }
+    
+    return filteredCourses;
   },
 
   getCourseById: (id) => {

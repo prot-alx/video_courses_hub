@@ -53,7 +53,8 @@ export default function CourseCard({
       return (
         <Link
           href={`/courses/${course.id}`}
-          className="btn-discord btn-discord-success w-full block text-center"
+          className="btn-discord btn-discord-success block text-center"
+          style={{ width: '240px' }}
         >
           🆓 Смотреть бесплатно
         </Link>
@@ -64,7 +65,8 @@ export default function CourseCard({
       return (
         <Link
           href={`/courses/${course.id}`}
-          className="btn-discord btn-discord-success w-full block text-center"
+          className="btn-discord btn-discord-success block text-center"
+          style={{ width: '240px' }}
         >
           🎥 Смотреть курс
         </Link>
@@ -75,7 +77,8 @@ export default function CourseCard({
       return (
         <Link
           href="/auth/signin"
-          className="btn-discord btn-discord-secondary w-full block text-center"
+          className="btn-discord btn-discord-secondary block text-center"
+          style={{ width: '240px' }}
         >
           🔐 Войти для покупки
         </Link>
@@ -89,7 +92,8 @@ export default function CourseCard({
           return (
             <Link
               href={`/courses/${course.id}`}
-              className="btn-discord btn-discord-warning w-full block text-center"
+              className="btn-discord btn-discord-warning block text-center"
+              style={{ width: '240px' }}
             >
               ⏳ Заявка на рассмотрении
             </Link>
@@ -98,7 +102,8 @@ export default function CourseCard({
           return (
             <Link
               href={`/courses/${course.id}`}
-              className="btn-discord btn-discord-success w-full block text-center"
+              className="btn-discord btn-discord-success block text-center"
+              style={{ width: '240px' }}
             >
               🎥 Смотреть курс
             </Link>
@@ -107,7 +112,8 @@ export default function CourseCard({
           return (
             <button
               onClick={handleActionClick}
-              className="btn-discord btn-discord-primary w-full"
+              className="btn-discord btn-discord-primary"
+              style={{ width: '240px' }}
             >
               💰 Запросить повторно
             </button>
@@ -118,7 +124,8 @@ export default function CourseCard({
     return (
       <button
         onClick={handleActionClick}
-        className="btn-discord btn-discord-primary w-full"
+        className="btn-discord btn-discord-primary"
+        style={{ width: '240px' }}
       >
         💰 Запросить доступ
       </button>
@@ -130,10 +137,12 @@ export default function CourseCard({
 
   return (
     <div
-      className="p-6 rounded-lg border transition-all duration-200 hover:border-accent flex flex-col h-full"
+      className="p-6 rounded-lg border transition-all duration-200 hover:border-accent flex flex-col"
       style={{
         background: "var(--color-primary-300)",
         borderColor: "var(--color-primary-400)",
+        width: '320px',
+        height: '420px',
       }}
     >
       {/* Превью */}
@@ -171,8 +180,9 @@ export default function CourseCard({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <h3
-            className="font-semibold"
+            className="font-semibold truncate max-w-[180px]"
             style={{ color: "var(--color-text-primary)" }}
+            title={course.title}
           >
             {course.title}
           </h3>
@@ -209,8 +219,9 @@ export default function CourseCard({
 
       {/* Описание */}
       <p
-        className="text-sm mb-4"
+        className="text-sm mb-4 line-clamp-3"
         style={{ color: "var(--color-text-secondary)" }}
+        title={course.shortDescription || "Описание курса скоро появится."}
       >
         {course.shortDescription || "Описание курса скоро появится."}
       </p>
@@ -226,7 +237,9 @@ export default function CourseCard({
       </div>
 
       {/* Кнопка действия */}
-      <div className="mt-auto min-h-[44px] min-w-[230px] flex items-end">{getActionButton()}</div>
+      <div className="mt-auto min-h-[44px] flex items-end justify-center">
+        {getActionButton()}
+      </div>
     </div>
   );
 }

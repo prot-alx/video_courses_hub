@@ -98,7 +98,7 @@ export default function AuthSection({
       {isAuthenticated ? (
         <>
           <span
-            className="hidden lg:block text-sm font-medium"
+            className="hidden xl:block text-sm font-medium"
             style={{ color: "var(--color-text-primary)" }}
           >
             Привет, {user?.name || user?.email?.split("@")[0]}!

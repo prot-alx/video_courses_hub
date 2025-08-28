@@ -14,8 +14,8 @@ function calculateStats(users: AdminUserView[]): UserStats {
     totalUsers: users.length,
     activeUsers: users.filter((u) => u.role === "USER").length,
     admins: users.filter((u) => u.role === "ADMIN").length,
-    withActiveRequests: 0, // TODO: Implement proper activeRequests counting
-    newUsersThisWeek: 0, // TODO: Calculate based on createdAt
+    withActiveRequests: 0, // TODO: вычислять реально
+    newUsersThisWeek: 0, // TODO: вычислять реально
   };
 }
 
