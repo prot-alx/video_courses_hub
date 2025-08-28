@@ -136,12 +136,7 @@ function ReviewFormContent({
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={4}
-          className="w-full p-3 rounded border resize-none"
-          style={{
-            background: "var(--color-primary-300)",
-            borderColor: "var(--color-primary-400)",
-            color: "var(--color-text-primary)",
-          }}
+          className="w-full input-discord resize-none"
           placeholder="Расскажите о своем опыте обучения..."
           maxLength={500}
         />

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useToast } from "@/stores/notifications";
 import { useReviewsStore } from "@/stores/reviews";
+import Pagination from "@/components/admin/Pagination";
 
 interface ReviewsListProps {
   showTitle?: boolean;
@@ -44,7 +45,7 @@ export default function ReviewsList({
         key={i}
         className={size}
         style={{
-          color: i < rating ? "#fbbf24" : "#6b7280",
+          color: i < rating ? "var(--color-warning)" : "var(--color-text-secondary)",
         }}
       >
         {i < rating ? "★" : "☆"}
@@ -144,7 +145,7 @@ export default function ReviewsList({
               </div>
               <span
                 className="text-lg font-semibold"
-                style={{ color: "var(--color-primary-400)" }}
+                style={{ color: "var(--color-text-primary)" }}
               >
                 {averageRating.toFixed(1)}/5
               </span>
@@ -161,10 +162,7 @@ export default function ReviewsList({
               review.status === "pending" ? "opacity-75" : ""
             }`}
             style={{
-              background:
-                review.status === "pending"
-                  ? "var(--color-primary-50)"
-                  : "var(--color-primary-100)",
+              background: "var(--color-primary-300)",
               borderColor:
                 review.status === "pending"
                   ? "var(--color-warning)"
@@ -177,7 +175,7 @@ export default function ReviewsList({
               <div className="flex">{renderStars(review.rating)}</div>
               <span
                 className="text-sm"
-                style={{ color: "var(--color-primary-400)" }}
+                style={{ color: "var(--color-text-secondary)" }}
               >
                 {review.rating}/5
               </span>
@@ -186,7 +184,7 @@ export default function ReviewsList({
                   className="text-xs px-2 py-1 rounded"
                   style={{
                     background: "var(--color-warning)",
-                    color: "white",
+                    color: "var(--color-primary-300)",
                   }}
                 >
                   На модерации
@@ -197,20 +195,20 @@ export default function ReviewsList({
             {/* Автор и дата */}
             <div
               className="text-sm mb-3"
-              style={{ color: "var(--color-primary-400)" }}
+              style={{ color: "var(--color-text-secondary)" }}
             >
               От: {getDisplayName(review.user)}
             </div>
             <div
               className="text-sm mb-4"
-              style={{ color: "var(--color-primary-400)" }}
+              style={{ color: "var(--color-text-secondary)" }}
             >
               Дата: {formatDate(review.createdAt)}
             </div>
 
             {/* Комментарий */}
             {review.comment && (
-              <p className="mb-3" style={{ color: "var(--color-primary-400)" }}>
+              <p className="mb-3" style={{ color: "var(--color-text-primary)" }}>
                 {review.comment}
               </p>
             )}
@@ -220,10 +218,13 @@ export default function ReviewsList({
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => handleDeleteReview(review.id)}
-                  className="btn-discord btn-discord-secondary text-sm"
-                  style={{ background: "#ef4444", borderColor: "#dc2626" }}
+                  className="btn-discord text-sm"
+                  style={{ 
+                    background: "var(--color-danger)", 
+                    color: "var(--color-text-primary)" 
+                  }}
                 >
-                  Удалить
+                  🗑️ Удалить
                 </button>
               </div>
             )}
@@ -233,61 +234,13 @@ export default function ReviewsList({
 
       {/* Пагинация */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={!pagination.hasPrev || isLoading}
-            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            ← Предыдущая
-          </button>
-
-          <div className="flex items-center gap-1">
-            {(() => {
-              const totalPages = pagination.totalPages;
-              const current = currentPage;
-              const pages: number[] = [];
-
-              // Показываем до 5 страниц вокруг текущей
-              const start = Math.max(1, current - 2);
-              const end = Math.min(totalPages, current + 2);
-
-              for (let i = start; i <= end; i++) {
-                pages.push(i);
-              }
-
-              return pages.map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => handlePageChange(pageNum)}
-                  disabled={isLoading}
-                  className={`px-3 py-1 text-sm rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                    pageNum === currentPage
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ));
-            })()}
-          </div>
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={!pagination.hasNext || isLoading}
-            className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Следующая →
-          </button>
-
-          <span
-            className="text-sm ml-4"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Страница {pagination.page} из {pagination.totalPages} ({pagination.approvedTotal} отзывов)
-          </span>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.approvedTotal}
+          onPageChange={handlePageChange}
+          loading={isLoading}
+        />
       )}
     </div>
   );

@@ -94,8 +94,10 @@ export default function RequestTableRow({
 
   return (
     <tr
-      className="border-b hover:bg-primary-400 transition-colors"
+      className="border-b transition-colors"
       style={{ borderColor: "var(--color-primary-400)" }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-primary-400)"}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
     >
       {/* Пользователь */}
       <td className="py-3 px-4">

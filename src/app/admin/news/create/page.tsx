@@ -154,18 +154,10 @@ export default function CreateNewsPage() {
                 value={formData.title}
                 onChange={handleInputChange}
                 maxLength={100}
-                className={`w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full input-discord ${
                   getFieldError("title") ? "border-red-500" : ""
                 }`}
-                style={{
-                  background: "var(--color-primary-100)",
-                  border: `1px solid ${
-                    getFieldError("title")
-                      ? "#ef4444"
-                      : "var(--color-primary-400)"
-                  }`,
-                  color: "var(--color-primary-400)",
-                }}
+                style={getFieldError("title") ? { borderColor: "#ef4444" } : {}}
                 placeholder="Введите заголовок новости"
                 disabled={submitting}
               />
@@ -199,16 +191,10 @@ export default function CreateNewsPage() {
                 onChange={handleInputChange}
                 maxLength={150}
                 rows={3}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
+                className={`w-full input-discord resize-none ${
                   getFieldError("shortDescription") ? "border-red-500" : ""
                 }`}
-                style={{
-                  background: "var(--color-primary-100)",
-                  borderColor: getFieldError("shortDescription")
-                    ? "#ef4444"
-                    : "var(--color-primary-400)",
-                  color: "var(--color-primary-400)",
-                }}
+                style={getFieldError("shortDescription") ? { borderColor: "#ef4444" } : {}}
                 placeholder="Краткое описание для отображения в списке новостей"
                 disabled={submitting}
               />
@@ -244,16 +230,10 @@ export default function CreateNewsPage() {
                 onChange={handleInputChange}
                 maxLength={2000}
                 rows={8}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
+                className={`w-full input-discord resize-none ${
                   getFieldError("fullDescription") ? "border-red-500" : ""
                 }`}
-                style={{
-                  background: "var(--color-primary-100)",
-                  borderColor: getFieldError("fullDescription")
-                    ? "#ef4444"
-                    : "var(--color-primary-400)",
-                  color: "var(--color-primary-400)",
-                }}
+                style={getFieldError("fullDescription") ? { borderColor: "#ef4444" } : {}}
                 placeholder="Полное содержание новости"
                 disabled={submitting}
               />

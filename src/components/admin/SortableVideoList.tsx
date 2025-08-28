@@ -93,16 +93,21 @@ export default function SortableVideoList({
               draggedIndex === index ? "opacity-50 scale-95" : ""
             }`}
             style={{
-              background: "var(--color-primary-100)",
+              background: "var(--color-primary-300)",
               borderColor: "var(--color-primary-400)",
             }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-primary-400)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--color-primary-300)"}
           >
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="text-gray-400">☰</div>
+                <div style={{ color: "var(--color-text-secondary)" }}>☰</div>
                 <div
                   className="w-8 h-8 rounded flex items-center justify-center text-sm font-medium"
-                  style={{ background: "var(--color-primary-400)" }}
+                  style={{ 
+                    background: "var(--color-primary-400)",
+                    color: "var(--color-text-primary)"
+                  }}
                 >
                   {index + 1}
                 </div>
@@ -110,13 +115,13 @@ export default function SortableVideoList({
               <div>
                 <h4
                   className="font-medium"
-                  style={{ color: "var(--color-primary-400)" }}
+                  style={{ color: "var(--color-text-primary)" }}
                 >
                   {video.displayName}
                 </h4>
                 <div
                   className="text-sm flex items-center gap-2"
-                  style={{ color: "var(--color-primary-400)" }}
+                  style={{ color: "var(--color-text-secondary)" }}
                 >
                   <span>{video.filename}</span>
                   {video.duration && (
@@ -149,23 +154,24 @@ export default function SortableVideoList({
               <Link
                 href={`/videos/${video.id}`}
                 target="_blank"
-                className="text-sm px-3 py-1 rounded hover:opacity-80"
-                style={{ color: "var(--color-text-link)" }}
+                className="btn-discord btn-discord-secondary text-xs px-2 py-1"
               >
                 👁️ Просмотр
               </Link>
               <button
                 onClick={() => onEdit(video)}
-                className="text-sm px-3 py-1 rounded hover:opacity-80"
-                style={{ color: "var(--color-text-link)" }}
+                className="btn-discord btn-discord-secondary text-xs px-2 py-1"
               >
                 ✏️ Изменить
               </button>
               <button
                 onClick={() => onDelete(video.id, video.title)}
                 disabled={deletingVideo === video.id}
-                className="text-sm px-3 py-1 rounded hover:opacity-80 disabled:opacity-50"
-                style={{ color: "var(--color-danger)" }}
+                className="btn-discord text-xs px-2 py-1 disabled:opacity-50"
+                style={{
+                  background: "var(--color-danger)",
+                  color: "var(--color-text-primary)"
+                }}
               >
                 {deletingVideo === video.id ? "⏳" : "🗑️"} Удалить
               </button>

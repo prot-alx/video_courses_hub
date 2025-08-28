@@ -132,7 +132,7 @@ export default function LandingPage() {
             {isAuthenticated ? (
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/courses"
+                  href="/courses?filter=my"
                   className="btn-discord btn-discord-primary"
                 >
                   📚 Мои курсы

@@ -49,12 +49,9 @@ export default function EditCoursePage({
           <Link href="/admin" className="btn-discord btn-discord-secondary">
             ← К курсам
           </Link>
-          <h1
-            className="text-xl font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+          <h2 style={{ color: "var(--color-text-primary)" }}>
             ✏️ Редактирование курса
-          </h1>
+          </h2>
         </div>
       </header>
 

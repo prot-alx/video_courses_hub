@@ -85,6 +85,11 @@ export default function AdminNavigation({
       label: "Настройки поддержки",
       isActive: pathname.startsWith("/admin/settings"),
     },
+    {
+      href: "/admin/logs",
+      label: "Логи",
+      isActive: pathname.startsWith("/admin/logs"),
+    },
   ];
 
   // Используем переданные items или автоматические

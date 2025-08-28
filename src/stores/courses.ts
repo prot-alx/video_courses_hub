@@ -52,7 +52,7 @@ export const useCoursesStore = create<CoursesStore>()((set, get) => ({
   videos: [],
   isLoading: false,
   error: null,
-  mainFilter: "my",
+  mainFilter: "all",
   subFilter: "all",
   searchQuery: "",
 

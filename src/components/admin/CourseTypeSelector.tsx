@@ -70,15 +70,13 @@ export default function CourseTypeSelector({
             min="1"
             max="999999"
             step="1"
-            className={`w-full px-3 py-2 rounded border ${
+            className={`w-full input-discord ${
               validationErrors.price ? "border-red-500" : ""
             }`}
             style={{
-              background: "var(--color-primary-100)",
               borderColor: validationErrors.price
                 ? "#ef4444"
-                : "var(--color-primary-400)",
-              color: "var(--color-primary-300)",
+                : undefined,
             }}
             disabled={isSubmitting}
             required={!formData.isFree}

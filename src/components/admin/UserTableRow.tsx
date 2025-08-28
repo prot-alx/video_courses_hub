@@ -71,8 +71,10 @@ function getPreferredContactElement(user: AdminUserView) {
 export default function UserTableRow({ user }: Readonly<UserTableRowProps>) {
   return (
     <tr
-      className="border-b hover:bg-primary-400 transition-colors"
+      className="border-b transition-colors"
       style={{ borderColor: "var(--color-primary-400)" }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-primary-400)"}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
     >
       <td className="py-3 px-4">
         <div>
@@ -80,7 +82,7 @@ export default function UserTableRow({ user }: Readonly<UserTableRowProps>) {
             className="font-medium"
             style={{ color: "var(--color-text-primary)" }}
           >
-            {user.name}
+            {user.displayName ? `${user.name} (${user.displayName})` : user.name}
           </div>
           <div
             className="text-sm"

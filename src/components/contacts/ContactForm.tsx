@@ -38,12 +38,7 @@ export default function ContactForm() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-primary-400)",
-            }}
+            className="w-full input-discord"
             placeholder="Ваше имя"
             maxLength={limits.name}
           />
@@ -78,12 +73,7 @@ export default function ContactForm() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-primary-400)",
-            }}
+            className="w-full input-discord"
             placeholder="your@email.com"
           />
           {validationErrors.email && (
@@ -106,12 +96,7 @@ export default function ContactForm() {
             name="subject"
             value={formData.subject}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{
-              background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-primary-400)",
-            }}
+            className="w-full input-discord"
           >
             <option value="">Выберите тему</option>
             <option value="general">Общий вопрос</option>
@@ -143,12 +128,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             rows={6}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
-            style={{
-              background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-primary-400)",
-            }}
+            className="w-full input-discord resize-vertical"
             placeholder="Опишите ваш вопрос или предложение..."
             maxLength={limits.message}
           />

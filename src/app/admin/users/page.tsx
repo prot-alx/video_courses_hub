@@ -7,6 +7,7 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import UserStatsCards from "@/components/admin/UserStatsCards";
 import UsersTable from "@/components/admin/UsersTable";
+import Pagination from "@/components/admin/Pagination";
 import type { AdminUserView, UserStats, ApiResponse } from "@/types";
 
 function calculateStats(users: AdminUserView[]): UserStats {
@@ -218,60 +219,15 @@ export default function AdminUsersPage() {
             />
 
             {/* Пагинация */}
-            {stats.totalUsers > 10 && pagination && (
-              <div className="flex justify-center items-center gap-2 mt-6">
-                <button
-                  onClick={() => fetchUsers(currentPage - 1)}
-                  disabled={!pagination.hasPrev}
-                  className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  ← Предыдущая
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {(() => {
-                    const totalPages = pagination.totalPages;
-                    const current = currentPage;
-                    const pages: number[] = [];
-
-                    const start = Math.max(1, current - 2);
-                    const end = Math.min(totalPages, current + 2);
-
-                    for (let i = start; i <= end; i++) {
-                      pages.push(i);
-                    }
-
-                    return pages.map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        onClick={() => fetchUsers(pageNum)}
-                        className={`px-3 py-1 text-sm rounded border ${
-                          pageNum === currentPage
-                            ? "bg-blue-500 text-white border-blue-500"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    ));
-                  })()}
-                </div>
-
-                <button
-                  onClick={() => fetchUsers(currentPage + 1)}
-                  disabled={!pagination.hasNext}
-                  className="btn-discord btn-discord-secondary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Следующая →
-                </button>
-
-                <span
-                  className="text-sm ml-4"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  Страница {pagination.page} из {pagination.totalPages}(
-                  {pagination.total} пользователей)
-                </span>
+            {pagination && pagination.totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  onPageChange={fetchUsers}
+                  loading={isLoading}
+                />
               </div>
             )}
           </>

@@ -14,20 +14,14 @@ export default function DesktopNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden md:flex items-center gap-6">
+    <nav className="hidden md:flex items-center gap-2">
       {navigationItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}
-          className={`text-sm font-medium hover:opacity-80 transition-opacity ${
-            pathname === item.href ? "font-semibold" : ""
+          className={`channel-item text-sm font-medium transition-all duration-200 ${
+            pathname === item.href ? "active" : ""
           }`}
-          style={{
-            color:
-              pathname === item.href
-                ? "var(--color-primary-400)"
-                : "var(--color-text-primary)",
-          }}
         >
           {item.label}
         </Link>

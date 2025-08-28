@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface UserStatsData {
   purchasedCourses: number;
@@ -94,6 +95,16 @@ export default function UserStats() {
         >
           {stats?.memberSince || "—"}
         </div>
+      </div>
+      
+      {/* Кнопка перехода к моим курсам */}
+      <div className="pt-2">
+        <Link
+          href="/courses?filter=my"
+          className="btn-discord btn-discord-primary text-sm w-full inline-flex items-center justify-center"
+        >
+          📚 Мои курсы
+        </Link>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useCoursesStore } from "@/stores/courses";
 import Header from "@/components/layout/Header";
@@ -10,6 +11,8 @@ import type { CourseMainFilter, CourseSubFilter } from "@/types";
 
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const {
     courses,
     isLoading,
@@ -28,6 +31,16 @@ export default function CoursesPage() {
     // Всегда загружаем свежие курсы при монтировании компонента
     fetchCourses();
   }, [fetchCourses]);
+
+  useEffect(() => {
+    // Применяем фильтр из URL параметров при загрузке страницы
+    const filterParam = searchParams.get('filter') as CourseMainFilter;
+    const targetFilter = filterParam && filterParam === 'my' ? 'my' : 'all';
+    
+    if (targetFilter !== mainFilter) {
+      setMainFilter(targetFilter);
+    }
+  }, [searchParams, setMainFilter, mainFilter]);
 
   const handleMainFilterChange = (newFilter: CourseMainFilter) => {
     setMainFilter(newFilter);

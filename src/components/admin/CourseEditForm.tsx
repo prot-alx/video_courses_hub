@@ -58,15 +58,13 @@ export default function CourseEditForm({
             onChange={(e) => onFormDataChange({ title: e.target.value })}
             placeholder="Например: Основы React"
             maxLength={100}
-            className={`w-full px-3 py-2 rounded border ${
+            className={`w-full input-discord ${
               validationErrors.title ? "border-red-500" : ""
             }`}
             style={{
-              background: "var(--color-primary-100)",
               borderColor: validationErrors.title
                 ? "#ef4444"
-                : "var(--color-primary-400)",
-              color: "var(--color-primary-300)",
+                : undefined,
             }}
             disabled={isSubmitting}
             required
@@ -112,15 +110,13 @@ export default function CourseEditForm({
             placeholder="Краткое описание для отображения в карточке курса"
             maxLength={150}
             rows={3}
-            className={`w-full px-3 py-2 rounded border resize-none ${
+            className={`w-full input-discord resize-none ${
               validationErrors.shortDescription ? "border-red-500" : ""
             }`}
             style={{
-              background: "var(--color-primary-100)",
               borderColor: validationErrors.shortDescription
                 ? "#ef4444"
-                : "var(--color-primary-400)",
-              color: "var(--color-primary-300)",
+                : undefined,
             }}
             disabled={isSubmitting}
           />
@@ -167,15 +163,13 @@ export default function CourseEditForm({
             placeholder="Подробное описание курса, что изучит студент..."
             maxLength={2000}
             rows={6}
-            className={`w-full px-3 py-2 rounded border resize-none ${
+            className={`w-full input-discord resize-none ${
               validationErrors.fullDescription ? "border-red-500" : ""
             }`}
             style={{
-              background: "var(--color-primary-100)",
               borderColor: validationErrors.fullDescription
                 ? "#ef4444"
-                : "var(--color-primary-400)",
-              color: "var(--color-primary-300)",
+                : undefined,
             }}
             disabled={isSubmitting}
           />
@@ -243,12 +237,7 @@ export default function CourseEditForm({
             accept="image/*"
             onChange={handleThumbnailUpload}
             disabled={isSubmitting || isUploading}
-            className="w-full px-3 py-2 rounded border"
-            style={{
-              background: "var(--color-primary-100)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-primary-300)",
-            }}
+            className="w-full input-discord"
           />
 
           <p
@@ -327,15 +316,13 @@ export default function CourseEditForm({
               min="1"
               max="999999"
               step="1"
-              className={`w-full px-3 py-2 rounded border ${
+              className={`w-full input-discord ${
                 validationErrors.price ? "border-red-500" : ""
               }`}
               style={{
-                background: "var(--color-primary-100)",
                 borderColor: validationErrors.price
                   ? "#ef4444"
-                  : "var(--color-primary-400)",
-                color: "var(--color-primary-400)",
+                  : undefined,
               }}
               disabled={isSubmitting}
               required={!formData.isFree}

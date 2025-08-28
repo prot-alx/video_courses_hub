@@ -4,6 +4,8 @@ import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminNavigation from "@/components/admin/AdminNavigation";
+import Pagination from "@/components/admin/Pagination";
+import AdminTable from "@/components/admin/AdminTable";
 import Link from "next/link";
 import { useToastContext } from "@/components/providers/ToastProvider";
 import type { ApiResponse, News } from "@/types";
@@ -208,150 +210,102 @@ export default function AdminNewsPage() {
               </div>
             ) : (
               <>
-                <div
-                  className="rounded-lg shadow-sm border overflow-hidden"
-                  style={{
-                    background: "var(--color-primary-100)",
-                    borderColor: "var(--color-primary-400)",
-                  }}
-                >
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead
-                        className="border-b"
-                        style={{
-                          background: "var(--color-primary-200)",
-                          borderColor: "var(--color-primary-400)",
-                        }}
+                <AdminTable
+                  columns={[
+                    { key: "title", title: "Заголовок" },
+                    { key: "author", title: "Автор", className: "hidden md:table-cell" },
+                    { key: "date", title: "Дата создания", className: "hidden lg:table-cell" },
+                    { key: "status", title: "Статус", align: "center" },
+                    { key: "actions", title: "Действия", align: "center" },
+                  ]}
+                  data={news}
+                  renderRow={(item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b transition-colors"
+                      style={{ borderColor: "var(--color-primary-400)" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-primary-400)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <td className="px-4 py-3">
+                        <div>
+                          <h3
+                            className="font-medium truncate max-w-xs"
+                            style={{ color: "var(--color-text-primary)" }}
+                          >
+                            {item.title}
+                          </h3>
+                          <p
+                            className="text-sm truncate max-w-xs mt-1"
+                            style={{ color: "var(--color-text-secondary)" }}
+                          >
+                            {item.shortDescription}
+                          </p>
+                        </div>
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm hidden md:table-cell"
+                        style={{ color: "var(--color-text-secondary)" }}
                       >
-                        <tr>
-                          <th
-                            className="px-4 py-3 text-left font-medium"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            Заголовок
-                          </th>
-                          <th
-                            className="px-4 py-3 text-left font-medium hidden md:table-cell"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            Автор
-                          </th>
-                          <th
-                            className="px-4 py-3 text-left font-medium hidden lg:table-cell"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            Дата создания
-                          </th>
-                          <th
-                            className="px-4 py-3 text-center font-medium"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            Статус
-                          </th>
-                          <th
-                            className="px-4 py-3 text-center font-medium"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            Действия
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody
-                        className="divide-y"
-                        style={{ borderColor: "var(--color-primary-400)" }}
+                        {item.author.displayName || item.author.name}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm hidden lg:table-cell"
+                        style={{ color: "var(--color-text-secondary)" }}
                       >
-                        {news.map((item) => (
-                          <tr
-                            key={item.id}
-                            className="hover:opacity-80 transition-opacity"
+                        {formatDate(item.createdAt)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() =>
+                            toggleNewsStatus(item.id, item.isActive)
+                          }
+                          className="px-2 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor: item.isActive 
+                              ? "var(--color-success)" 
+                              : "var(--color-primary-400)",
+                            color: "var(--color-text-primary)"
+                          }}
+                        >
+                          {item.isActive ? "Активна" : "Скрыта"}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2 justify-center">
+                          <Link
+                            href={`/admin/news/${item.id}/edit`}
+                            className="btn-discord btn-discord-secondary text-xs px-2 py-1"
                           >
-                            <td className="px-4 py-3">
-                              <div>
-                                <h3
-                                  className="font-medium truncate max-w-xs"
-                                  style={{ color: "var(--color-primary-400)" }}
-                                >
-                                  {item.title}
-                                </h3>
-                                <p
-                                  className="text-sm truncate max-w-xs mt-1"
-                                  style={{ color: "var(--color-primary-400)" }}
-                                >
-                                  {item.shortDescription}
-                                </p>
-                              </div>
-                            </td>
-                            <td
-                              className="px-4 py-3 text-sm hidden md:table-cell"
-                              style={{ color: "var(--color-primary-400)" }}
-                            >
-                              {item.author.displayName || item.author.name}
-                            </td>
-                            <td
-                              className="px-4 py-3 text-sm hidden lg:table-cell"
-                              style={{ color: "var(--color-primary-400)" }}
-                            >
-                              {formatDate(item.createdAt)}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <button
-                                onClick={() =>
-                                  toggleNewsStatus(item.id, item.isActive)
-                                }
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  item.isActive
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-gray-100 text-gray-800"
-                                }`}
-                              >
-                                {item.isActive ? "Активна" : "Скрыта"}
-                              </button>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex gap-2 justify-center">
-                                <Link
-                                  href={`/admin/news/${item.id}/edit`}
-                                  className="text-sm hover:opacity-80"
-                                  style={{ color: "var(--color-primary-500)" }}
-                                >
-                                  Изменить
-                                </Link>
-                                <button
-                                  onClick={() => deleteNews(item.id)}
-                                  className="text-sm hover:opacity-80"
-                                  style={{
-                                    color: "var(--color-danger, #dc2626)",
-                                  }}
-                                >
-                                  Удалить
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                            ✏️ Изменить
+                          </Link>
+                          <button
+                            onClick={() => deleteNews(item.id)}
+                            className="text-xs px-2 py-1 rounded transition-colors"
+                            style={{
+                              backgroundColor: "var(--color-danger)",
+                              color: "var(--color-text-primary)"
+                            }}
+                          >
+                            🗑️ Удалить
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  emptyMessage="Новостей пока нет"
+                  loading={loading}
+                />
 
                 {totalPages > 1 && (
-                  <div className="flex justify-center mt-6 gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-2 rounded ${
-                            currentPage === page
-                              ? "btn-discord btn-discord-primary"
-                              : "btn-discord btn-discord-secondary"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      )
-                    )}
+                  <div className="mt-6">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={totalCount}
+                      onPageChange={setCurrentPage}
+                      loading={loading}
+                    />
                   </div>
                 )}
               </>

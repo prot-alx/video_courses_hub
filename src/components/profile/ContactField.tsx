@@ -41,26 +41,14 @@ export default function ContactField({
         disabled={disabled}
         placeholder={placeholder}
         maxLength={maxLength}
-        className={`w-full px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed ${
-          error
-            ? "border-red-500"
-            : maxLength && value.length > maxLength
+        className={`w-full input-discord disabled:opacity-50 disabled:cursor-not-allowed ${
+          error || (maxLength && value.length > maxLength)
             ? "border-red-500"
             : ""
         }`}
-        style={{
-          background: disabled
-            ? "var(--color-primary-400)"
-            : "var(--color-primary-100)",
-          borderColor: error
-            ? "#ef4444"
-            : maxLength && value.length > maxLength
-            ? "#ef4444"
-            : "var(--color-primary-400)",
-          color: disabled
-            ? "var(--color-text-secondary)"
-            : "var(--color-primary-400)",
-        }}
+        style={error || (maxLength && value.length > maxLength) ? {
+          borderColor: "#ef4444"
+        } : {}}
       />
       {(error || helpText || showCounter) && (
         <div

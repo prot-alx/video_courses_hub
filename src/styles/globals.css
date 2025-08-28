@@ -202,6 +202,24 @@ button {
     background: oklch(0.65 0.15 60);
   }
 
+  /* Discord-style inputs */
+  .input-discord {
+    background: var(--color-primary-400);
+    border: 1px solid var(--color-primary-500);
+    color: var(--color-text-primary);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-200) var(--ease-snappy);
+  }
+  .input-discord:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+  .input-discord::placeholder {
+    color: var(--color-text-secondary);
+  }
+
   /* Sidebar channel hover effect */
   .channel-item {
     padding: var(--spacing-2) var(--spacing-3);

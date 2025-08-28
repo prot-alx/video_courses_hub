@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { CourseMainFilter, CourseSubFilter, Course } from "@/types";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 interface CourseFilterProps {
   mainFilter: CourseMainFilter;
@@ -11,23 +13,6 @@ interface CourseFilterProps {
   courses: Course[];
 }
 
-// Простой дебаунс без библиотек
-const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
-
 export default function CourseFilter({
   mainFilter,
   onMainFilterChange,
@@ -37,6 +22,7 @@ export default function CourseFilter({
   onSearchChange,
   courses,
 }: Readonly<CourseFilterProps>) {
+  const router = useRouter();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   
@@ -61,20 +47,27 @@ export default function CourseFilter({
     setLocalSearchQuery(value);
   }, []);
 
+  const handleMainFilterClick = useCallback((filter: CourseMainFilter) => {
+    onMainFilterChange(filter);
+    // Обновляем URL с параметром фильтра
+    const url = filter === 'all' ? '/courses' : `/courses?filter=${filter}`;
+    router.push(url, { scroll: false });
+  }, [onMainFilterChange, router]);
+
   const mainFilters: Array<{
     id: CourseMainFilter;
     label: string;
     description: string;
   }> = [
     {
-      id: "my",
-      label: "Мои курсы",
-      description: "Курсы с доступом",
-    },
-    {
       id: "all",
       label: "Все курсы",
       description: "Показать все курсы",
+    },
+    {
+      id: "my",
+      label: "Мои курсы",
+      description: "Курсы с доступом",
     },
   ];
 
@@ -115,7 +108,7 @@ export default function CourseFilter({
         {mainFilters.map((filter) => (
           <button
             key={filter.id}
-            onClick={() => onMainFilterChange(filter.id)}
+            onClick={() => handleMainFilterClick(filter.id)}
             className={`w-60 px-4 py-3 rounded-lg border transition-all duration-200 ${
               mainFilter === filter.id
                 ? "border-accent bg-accent text-primary-300"
@@ -190,12 +183,7 @@ export default function CourseFilter({
             onChange={(e) => handleLocalSearchChange(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-            className="px-4 py-2 rounded-lg border border-primary-400 bg-primary-300 text-text-primary placeholder-text-secondary w-64 focus:border-accent focus:outline-none"
-            style={{
-              background: "var(--color-primary-300)",
-              borderColor: "var(--color-primary-400)",
-              color: "var(--color-text-primary)",
-            }}
+            className="input-discord w-64"
           />
           
           {/* Выпадающий список автозаполнения */}
