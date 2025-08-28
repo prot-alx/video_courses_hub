@@ -104,12 +104,9 @@ export default function VideoPage({
             ← Назад к курсу
           </Link>
           <div>
-            <h1
-              className="text-lg font-semibold"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <h2 style={{ color: "var(--color-text-primary)" }}>
               {video.title}
-            </h1>
+            </h2>
             <p
               className="text-sm"
               style={{ color: "var(--color-text-secondary)" }}

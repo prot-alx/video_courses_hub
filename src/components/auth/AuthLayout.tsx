@@ -30,12 +30,9 @@ export default function AuthLayout({
       <div className={`w-full ${getMaxWidth()}`}>
         {/* Logo and Platform Name */}
         <div className="text-center mb-8">
-          <h1
-            className="text-3xl font-bold mb-2"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+          <h2 style={{ color: "var(--color-text-primary)" }}>
             📚 VideoCourses
-          </h1>
+          </h2>
           <p style={{ color: "var(--color-text-secondary)" }}>
             Платформа видеокурсов
           </p>

@@ -21,12 +21,7 @@ export default function CourseHeader({
         <Link href={backUrl} className="btn-discord btn-discord-secondary">
           ← {backLabel}
         </Link>
-        <h1
-          className="text-xl font-semibold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          📚 VideoCourses
-        </h1>
+        <h2 style={{ color: "var(--color-text-primary)" }}>📚 VideoCourses</h2>
       </div>
     </header>
   );

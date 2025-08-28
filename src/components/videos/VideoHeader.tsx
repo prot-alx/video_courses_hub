@@ -27,12 +27,7 @@ export default function VideoHeader({
           ← Назад к курсу
         </Link>
         <div>
-          <h1
-            className="text-lg font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            {videoTitle}
-          </h1>
+          <h2 style={{ color: "var(--color-text-primary)" }}>{videoTitle}</h2>
           <p
             className="text-sm"
             style={{ color: "var(--color-text-secondary)" }}
