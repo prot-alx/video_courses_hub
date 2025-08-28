@@ -57,7 +57,7 @@ export default function LandingPage() {
               className="text-5xl md:text-6xl font-bold mb-6"
               style={{ color: "var(--color-text-primary)" }}
             >
-              Образовательная школа
+              Образовательная школа №1
             </h1>
             <p
               className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto"
