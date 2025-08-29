@@ -53,9 +53,7 @@ video-courses-mvp/
 ├── uploads/               # Загруженные файлы
 │   ├── videos/           # Видеофайлы
 │   └── thumbnails/       # Постеры
-├── your-domain.com+2.pem      # SSL сертификат
-├── your-domain.com+2-key.pem  # Приватный ключ
-├── server.mjs                  # HTTPS сервер
+├── server.mjs                  # HTTPS сервер (для разработки)
 └── docker-compose.yml         # PostgreSQL контейнер
 ```
 
@@ -131,9 +129,15 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
-### 6. SSL сертификаты (для продакшена)
+### 6. SSL сертификаты
 
-Для HTTPS создайте SSL сертификаты и разместите их в корневой папке проекта.
+**Для разработки (server.mjs):**
+Разместите SSL сертификаты в корневой папке проекта:
+- `your-domain.com+2.pem` (сертификат)
+- `your-domain.com+2-key.pem` (приватный ключ)
+
+**Для продакшена (nginx/apache):**
+SSL сертификаты настраиваются в конфигурации веб-сервера согласно его документации.
 
 ## Запуск приложения
 
