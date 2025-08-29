@@ -197,7 +197,6 @@ export async function DELETE(
         if (existsSync(videoPath)) {
           await unlink(videoPath);
           deletedFiles.push(`video: ${video.filename}`);
-          console.log(`Удален видеофайл: ${videoPath}`);
         }
       } catch (fileError) {
         console.error(
@@ -228,7 +227,6 @@ export async function DELETE(
         if (existsSync(thumbnailPath)) {
           await unlink(thumbnailPath);
           deletedFiles.push(`thumbnail: ${course.thumbnail}`);
-          console.log(`Удалена превью: ${thumbnailPath}`);
         }
       } catch (fileError) {
         console.error(`Ошибка удаления превью ${course.thumbnail}:`, fileError);

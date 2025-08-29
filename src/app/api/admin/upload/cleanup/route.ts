@@ -45,8 +45,6 @@ export async function DELETE(request: NextRequest) {
     // Удаляем файл
     await unlink(filePath);
 
-    console.log(`Неиспользуемый файл удален: ${filePath}`);
-
     return NextResponse.json({
       success: true,
       message: "Файл удален",

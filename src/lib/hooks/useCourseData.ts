@@ -116,7 +116,6 @@ export function useCourseData({
       const response = await getRequestStatus(course.id);
       if (response.success && response.data) {
         const statusData = response.data;
-        console.log("statusData: ", statusData);
 
         setRequestStatus(statusData.status);
 

@@ -150,7 +150,6 @@ export async function DELETE(request: NextRequest) {
     try {
       if (existsSync(videoPath)) {
         await unlink(videoPath);
-        console.log(`Видеофайл удален: ${videoPath}`);
       }
     } catch (fileError) {
       console.error("Ошибка удаления файла:", fileError);

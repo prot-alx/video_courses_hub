@@ -46,7 +46,6 @@ export async function updateAllCoursesDuration(): Promise<void> {
     );
 
     await Promise.all(updatePromises);
-    console.log(`Обновлена длительность для ${courses.length} курсов`);
   } catch (error) {
     console.error("Ошибка массового обновления длительности курсов:", error);
   }
