@@ -3,7 +3,7 @@ import {
   ReviewSchema,
   ContactFormSchema,
   CourseRequestSchema,
-} from "@/lib/validations";
+} from "../lib/validations";
 
 describe("Validations", () => {
   describe("CreateCourseSchema", () => {

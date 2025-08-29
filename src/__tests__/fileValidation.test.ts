@@ -4,7 +4,7 @@ import {
   validateFileSize,
   validateFileSignature,
   formatFileSize,
-} from "@/lib/fileValidation";
+} from "../lib/fileValidation";
 
 // Мокаем File API для Node.js окружения
 class MockFile {
